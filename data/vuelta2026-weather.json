@@ -7,7 +7,7 @@
   "rain": "mm",
   "humidity": "%"
  },
- "updated": "2026-09-12T13:59:00+03:00",
+ "updated": "2026-09-13T15:07:37+03:00",
  "stages": {
   "1": {
    "start": {
@@ -469,6 +469,31 @@
     "humidity": 70,
     "alt": 1284,
     "town": "Peñas Blancas"
+   }
+  },
+  "20": {
+   "start": {
+    "temp": 30,
+    "low": 16,
+    "feels": 28,
+    "cond": "clear",
+    "wind": 13,
+    "dir": "SE",
+    "precip": 0.0,
+    "humidity": 42,
+    "town": "La Calahorra"
+   },
+   "finish": {
+    "temp": 23,
+    "low": 13,
+    "feels": 21,
+    "cond": "clear",
+    "wind": 15,
+    "dir": "N",
+    "precip": 0.0,
+    "humidity": 41,
+    "alt": 1895,
+    "town": "Collada de Alguacil"
    }
   }
  }
