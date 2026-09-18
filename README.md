@@ -13,7 +13,7 @@ index.html                            # "Grand Tours" landing page (race picker 
 riders.html                           # rider search across the available 2026 race data
 riders.css                            # rider-search page styles
 2026/tdf.html                         # Tour de France — stages, profiles, map & final results (static)
-2026/giro.html                        # Giro d'Italia — stages, profiles, map & final results (static)
+2026/giro.html                        # Giro d'Italia — stages, profiles, map, final rankings & stage results (static)
 2026/femmes.html                      # Tour de France Femmes — stages, profiles, map & final results (static)
 2026/vuelta.html                      # Vuelta a España — stages, profiles, map & auto-updating results (live)
 src/race-page.ts                      # helper functions shared by all four race pages (i18n, formatting, rendering) — compiles to dist/race-page.js
@@ -50,6 +50,8 @@ TODO.md                               # planned work, kept out of this file
 The rider-search page reads the four start lists, suggests matching names, and
 groups a selected rider's available stage placings by race. The Giro's stage
 placings come from its official individual order of arrival for all 21 stages.
+The Giro Rankings tab also shows GC, points, mountains, youth and team standings
+after each selected stage.
 Each tour page has a back arrow to the landing page. Race pages live under a
 season folder (`2026/<race>.html`) so a future season can be added alongside
 it as `2027/<race>.html` without touching the existing pages. The landing
@@ -125,6 +127,13 @@ sources. Riders absent from a stage's individual classification have no row;
 the search page shows `—` and explains that this does not by itself establish
 a withdrawal. Stage winners and final classifications are kept as they were.
 
+Each stage also has `classifications` with the five published standings after
+that stage: GC, points, mountains, youth and teams. These come from the
+[official after-stage rankings](https://www.giroditalia.it/en/classifiche/generali/tappa/1/)
+(replace the final stage number for stages 2–21). They are cumulative
+standings, separate from the individual order of arrival. Team positions use
+the official table order because RCS does not display a team rank cell.
+
 To reproduce the static backfill, install the existing Python dependencies
 (`requests` and `selectolax`) and run:
 
@@ -132,7 +141,8 @@ To reproduce the static backfill, install the existing Python dependencies
 python3 scripts/backfill_giro2026_stage_results.py
 ```
 
-The command validates all 21 tables and each winner before replacing
+The command validates all 21 finishing orders, their winners, and the five
+after-stage standings before replacing
 `stageResults`. It is intentionally separate from the scheduled
 `fetch_results.py` workflow.
 
