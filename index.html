@@ -84,6 +84,28 @@
   }
   .race-arrow{flex:none;font-size:24px;line-height:1;color:var(--color-accent-700);}
 
+  .search-section{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,420px);
+    align-items:end;gap:32px;padding:48px 24px 56px;
+    border-bottom:2px solid var(--color-divider);background:var(--color-surface);
+  }
+  .search-section h2{
+    margin:12px 0 10px;font-family:var(--font-heading);font-weight:700;
+    font-size:clamp(28px,5vw,52px);line-height:1;letter-spacing:-.02em;
+  }
+  .search-section p{max-width:46ch;margin:0;line-height:1.5;color:var(--color-neutral-700);}
+  .search-link{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    min-height:68px;padding:16px 18px;border:2px solid var(--color-text);
+    background:var(--color-bg);font-weight:600;transition:background 120ms ease;
+  }
+  .search-link:hover{background:var(--color-accent-100);}
+  .search-link .search-arrow{font-size:26px;line-height:1;color:var(--color-accent-700);}
+
+  @media(max-width:720px){
+    .search-section{grid-template-columns:1fr;gap:24px;padding-block:36px 40px;}
+  }
+
   .gt-footer{
     display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
     padding:32px 24px 40px;
@@ -152,6 +174,18 @@
       <span class="race-arrow">→</span>
     </a>
   </div>
+
+  <section class="search-section" aria-labelledby="searchHeading">
+    <div>
+      <span class="kicker" id="searchKicker"></span>
+      <h2 id="searchHeading"></h2>
+      <p id="searchDescription"></p>
+    </div>
+    <a class="search-link" href="riders.html">
+      <span id="searchLinkText"></span>
+      <span class="search-arrow" aria-hidden="true">↗</span>
+    </a>
+  </section>
 </main>
 
 <footer class="gt-footer">
@@ -167,14 +201,26 @@ const LANG_KEY = 'tdf2026-lang';
 const STRINGS = {
   fi: {
     kicker: 'Valitse kilpailu',
+    searchKicker: 'Kuljettajahaku',
+    searchHeading: 'Etsi ajaja.',
+    searchDescription: 'Tutki ajajan kilpailuja ja etappisijoituksia yhdessä paikassa.',
+    searchLink: 'Avaa ajajahaku',
     footer: 'Reitit · profiilit · tulokset',
   },
   en: {
     kicker: 'Pick a Grand Tour',
+    searchKicker: 'Rider search',
+    searchHeading: 'Find a rider.',
+    searchDescription: 'Explore a rider’s races and stage placings in one place.',
+    searchLink: 'Open rider search',
     footer: 'Routes · profiles · results',
   },
   fr: {
     kicker: 'Choisissez une course',
+    searchKicker: 'Recherche de coureurs',
+    searchHeading: 'Trouvez un coureur.',
+    searchDescription: 'Explorez ses courses et ses classements d’étape au même endroit.',
+    searchLink: 'Ouvrir la recherche',
     footer: 'Parcours · profils · résultats',
   },
 };
@@ -197,6 +243,10 @@ function t(key){
 
 function render(){
   document.getElementById('kicker').textContent = t('kicker');
+  document.getElementById('searchKicker').textContent = t('searchKicker');
+  document.getElementById('searchHeading').textContent = t('searchHeading');
+  document.getElementById('searchDescription').textContent = t('searchDescription');
+  document.getElementById('searchLinkText').textContent = t('searchLink');
   document.getElementById('footerNote').textContent = t('footer');
   document.querySelectorAll('#langSel .langbtn').forEach(b=>{
     const active = b.dataset.lang===lang;

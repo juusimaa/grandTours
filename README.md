@@ -9,7 +9,9 @@ weather current automatically, while the other three are finished and serve
 static data.
 
 ```
-index.html                            # "Grand Tours" landing page (race picker) — year selection is hidden for now, see below
+index.html                            # "Grand Tours" landing page (race picker and rider-search entry) — year selection is hidden for now, see below
+riders.html                           # rider search across the available 2026 race data
+riders.css                            # rider-search page styles
 2026/tdf.html                         # Tour de France — stages, profiles, map & final results (static)
 2026/giro.html                        # Giro d'Italia — stages, profiles, map & final results (static)
 2026/femmes.html                      # Tour de France Femmes — stages, profiles, map & final results (static)
@@ -18,6 +20,7 @@ src/race-page.ts                      # helper functions shared by all four race
 src/globals.d.ts                      # ambient types for the globals each page's own inline <script> defines
 dist/race-page.js                     # build output (gitignored) — what the HTML pages actually load, via `npm run build`
 test/race-page.test.ts                # Vitest unit tests for the pure helpers in src/race-page.ts, via `npm test`
+test/riders.test.ts                   # landing-page link and rider-search interaction tests
 race-page.css                         # shared component styles for all four race pages, layered on modernist.css
 modernist.css                         # shared design tokens (colour, type, spacing) used by every page
 theme.css                             # earlier colour theme — no longer linked from any page, kept for reference
@@ -42,13 +45,17 @@ eslint.config.mjs                     # ESLint flat config — CI fails a PR on 
 TODO.md                               # planned work, kept out of this file
 ```
 
-`index.html` lets the visitor pick a race; each tour page has a back arrow to
-the landing page. Race pages live under a season folder (`2026/<race>.html`)
-so a future season can be added alongside it as `2027/<race>.html` without
-touching the existing pages. The landing page's design (`design_handoff_year_selection/`)
-already specifies a year-picker screen in front of the race list for when a
-second season exists; today, with only 2026 published, that screen is not
-built — `index.html` links straight into `2026/`.
+`index.html` lets the visitor pick a race or open `riders.html` to search riders.
+The rider-search page reads the four start lists, suggests matching names, and
+groups a selected rider's available stage placings by race. The Giro results
+file has no per-stage placings, so the page says that data is unavailable.
+Each tour page has a back arrow to the landing page. Race pages live under a
+season folder (`2026/<race>.html`) so a future season can be added alongside
+it as `2027/<race>.html` without touching the existing pages. The landing
+page's design (`design_handoff_year_selection/`) already specifies a
+year-picker screen in front of the race list for when a second season exists;
+today, with only 2026 published, that screen is not built — `index.html`
+links straight into `2026/`.
 
 ### Local development
 
@@ -60,7 +67,7 @@ Browsers can't run `.ts` directly, so it needs a build step:
 npm install       # once
 npm run build     # compiles src/race-page.ts -> dist/race-page.js
 npm run watch     # or: rebuild on every save, while editing
-npm test          # runs the Vitest suite in test/ against dist/race-page.js (build first)
+npm test          # runs the Vitest suite in test/ (build first)
 npm run lint      # ESLint over the whole repo
 npm run format    # Prettier, rewriting files in place
 ```

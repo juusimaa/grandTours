@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f3f2f2">
+<title>Rider search — Grand Tours 2026</title>
+<meta name="description" content="Find riders across the 2026 Grand Tours and browse their available stage placings.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231E2A22'/%3E%3Cpath d='M4 23 L11 12 L16 17 L22 7 L28 23 Z' fill='%23C99A2E'/%3E%3Ccircle cx='22' cy='7' r='2.6' fill='%23B23B32'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="modernist.css">
+<link rel="stylesheet" href="riders.css">
+</head>
+<body>
+<header class="search-header">
+  <a class="back-link" href="index.html" id="backLink"></a>
+  <a class="wordmark" href="index.html">Grand Tours</a>
+  <div class="languages" id="langSel" role="group" aria-label="Kieli / Language">
+    <button class="langbtn" data-lang="fi" aria-label="Suomeksi" aria-pressed="false">FI</button>
+    <button class="langbtn" data-lang="fr" aria-label="En français" aria-pressed="false">FR</button>
+    <button class="langbtn" data-lang="en" aria-label="In English" aria-pressed="false">EN</button>
+  </div>
+</header>
+
+<main>
+  <section class="search-hero" aria-labelledby="pageTitle">
+    <span class="kicker" id="kicker"></span>
+    <h1 id="pageTitle"></h1>
+    <p id="intro"></p>
+  </section>
+
+  <section class="search-workspace" aria-labelledby="formHeading">
+    <h2 id="formHeading"></h2>
+    <form id="searchForm" role="search" autocomplete="off">
+      <label for="riderQuery" id="searchLabel"></label>
+      <div class="search-controls">
+        <input id="riderQuery" name="q" type="search" enterkeyhint="search" spellcheck="false" disabled>
+        <button type="submit" id="searchButton" disabled></button>
+      </div>
+    </form>
+    <ul id="suggestions" class="suggestions" aria-label="Rider suggestions" hidden></ul>
+    <p id="searchStatus" class="search-status" role="status" aria-live="polite"></p>
+  </section>
+
+  <section id="riderResult" class="rider-result" aria-labelledby="riderName" hidden>
+    <div class="rider-title">
+      <div>
+        <span class="kicker" id="resultKicker"></span>
+        <h2 id="riderName"></h2>
+      </div>
+      <span id="riderMeta"></span>
+    </div>
+    <div id="raceResults"></div>
+  </section>
+</main>
+
+<footer class="search-footer">
+  <span id="footerNote"></span>
+  <span class="footer-year">2026</span>
+</footer>
+
+<noscript><p class="no-script">Rider search needs JavaScript. / Ajajahaku tarvitsee JavaScriptin. / La recherche nécessite JavaScript.</p></noscript>
+<script>
+const LANG_KEY = 'tdf2026-lang';
+const RACES = [
+  { id: 'giro', name: 'Giro d’Italia', href: '2026/giro.html' },
+  { id: 'tdf', name: 'Tour de France', href: '2026/tdf.html' },
+  { id: 'femmes', name: 'Tour de France Femmes', href: '2026/femmes.html' },
+  { id: 'vuelta', name: 'Vuelta a España', href: '2026/vuelta.html' },
+];
+const STRINGS = {
+  fi: {
+    back: '← Kilpailut', kicker: '2026 / Ajajahaku', title: 'Etsi ajaja.',
+    intro: 'Hae ajajaa kaikista neljästä kilpailusta ja katso saatavilla olevat etappisijoitukset.',
+    form: 'Hae nimellä', label: 'Ajajan nimi', placeholder: 'Kirjoita ajajan nimi',
+    button: 'Hae', loading: 'Ladataan ajajia…', ready: 'Kirjoita vähintään kaksi merkkiä.',
+    noMatch: 'Ajajaa ei löytynyt. Kokeile toista nimeä.',
+    choose: 'Valitse ajaja alla olevista osumista.', loadError: 'Ajajatietojen lataaminen epäonnistui.',
+    stageError: 'Etappitulosten lataaminen epäonnistui.',
+    result: 'Ajajan tulokset', races: n => `${n} kilpailua`,
+    gc: 'Kokonaiskilpailu', stage: 'Etappi', position: 'Sija', time: 'Aika / ero',
+    openRace: 'Avaa kilpailu ↗', noStages: 'Etappisijoituksia ei ole saatavilla tässä aineistossa.',
+    missing: '— tarkoittaa, ettei aineistossa ole ajajalle henkilökohtaista sijoitusta. Se ei yksin tarkoita keskeytystä.',
+    footer: 'Reitit · profiilit · tulokset',
+  },
+  en: {
+    back: '← Races', kicker: '2026 / Rider search', title: 'Find a rider.',
+    intro: 'Search across all four races and explore the stage placings available for each rider.',
+    form: 'Search by name', label: 'Rider name', placeholder: 'Type a rider’s name',
+    button: 'Search', loading: 'Loading riders…', ready: 'Type at least two characters.',
+    noMatch: 'No rider found. Try another name.', choose: 'Choose a rider from the matches below.',
+    loadError: 'Could not load rider data.', stageError: 'Could not load stage results.',
+    result: 'Rider results', races: n => `${n} ${n === 1 ? 'race' : 'races'}`,
+    gc: 'General classification', stage: 'Stage', position: 'Position', time: 'Time / gap',
+    openRace: 'Open race ↗', noStages: 'Stage placings are not available in this data.',
+    missing: '— means no individual placing is present in the available data. It does not by itself mean withdrawal.',
+    footer: 'Routes · profiles · results',
+  },
+  fr: {
+    back: '← Courses', kicker: '2026 / Recherche de coureurs', title: 'Trouvez un coureur.',
+    intro: 'Recherchez dans les quatre courses et explorez les classements d’étape disponibles.',
+    form: 'Rechercher par nom', label: 'Nom du coureur', placeholder: 'Saisissez un nom',
+    button: 'Rechercher', loading: 'Chargement des coureurs…', ready: 'Saisissez au moins deux caractères.',
+    noMatch: 'Aucun coureur trouvé. Essayez un autre nom.',
+    choose: 'Choisissez un coureur parmi les résultats ci-dessous.',
+    loadError: 'Impossible de charger les coureurs.', stageError: 'Impossible de charger les étapes.',
+    result: 'Résultats du coureur', races: n => `${n} ${n === 1 ? 'course' : 'courses'}`,
+    gc: 'Classement général', stage: 'Étape', position: 'Place', time: 'Temps / écart',
+    openRace: 'Voir la course ↗', noStages: 'Les classements d’étape ne sont pas disponibles dans ces données.',
+    missing: '— signifie qu’aucune place individuelle ne figure dans les données. Cela ne signifie pas forcément un abandon.',
+    footer: 'Parcours · profils · résultats',
+  },
+};
+
+function detectLang() {
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved === 'fi' || saved === 'en' || saved === 'fr') return saved;
+  } catch (e) {}
+  const nav = (navigator.language || 'en').toLowerCase();
+  if (nav.startsWith('fi')) return 'fi';
+  if (nav.startsWith('fr')) return 'fr';
+  return 'en';
+}
+let lang = detectLang();
+let riders = [];
+let selected = null;
+let requestId = 0;
+const resultsCache = new Map();
+const input = document.getElementById('riderQuery');
+const suggestions = document.getElementById('suggestions');
+const status = document.getElementById('searchStatus');
+const result = document.getElementById('riderResult');
+const raceResults = document.getElementById('raceResults');
+
+function t(key) { return STRINGS[lang][key]; }
+function normalize(value) {
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+function el(tag, className, value) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (value !== undefined) node.textContent = value;
+  return node;
+}
+
+function renderLanguage() {
+  document.documentElement.lang = lang;
+  document.getElementById('backLink').textContent = t('back');
+  document.getElementById('kicker').textContent = t('kicker');
+  document.getElementById('pageTitle').textContent = t('title');
+  document.getElementById('intro').textContent = t('intro');
+  document.getElementById('formHeading').textContent = t('form');
+  document.getElementById('searchLabel').textContent = t('label');
+  document.getElementById('searchButton').textContent = t('button');
+  document.getElementById('resultKicker').textContent = t('result');
+  document.getElementById('footerNote').textContent = t('footer');
+  input.placeholder = t('placeholder');
+  document.querySelectorAll('#langSel .langbtn').forEach(button => {
+    const active = button.dataset.lang === lang;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  if (selected) renderSelected();
+  else status.textContent = riders.length ? t('ready') : t('loading');
+}
+
+function matches(query) {
+  const needle = normalize(query);
+  return needle.length < 2 ? [] : riders.filter(person => person.key.includes(needle));
+}
+function renderSuggestions() {
+  suggestions.replaceChildren();
+  const query = input.value.trim();
+  if (normalize(query).length < 2) {
+    suggestions.hidden = true;
+    status.textContent = t('ready');
+    return;
+  }
+  const found = matches(query);
+  if (!found.length) {
+    suggestions.hidden = true;
+    status.textContent = t('noMatch');
+    return;
+  }
+  found.slice(0, 8).forEach(person => {
+    const item = el('li');
+    const button = el('button', 'suggestion', person.name);
+    button.type = 'button';
+    button.addEventListener('click', () => select(person));
+    item.append(button);
+    suggestions.append(item);
+  });
+  suggestions.hidden = false;
+  status.textContent = t('choose');
+}
+
+function stageData(race) {
+  if (!resultsCache.has(race.id)) {
+    resultsCache.set(race.id, fetch(`data/${race.id}2026-results.json`).then(response => {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    }));
+  }
+  return resultsCache.get(race.id);
+}
+
+function matchesStageRow(row, entry) {
+  const rowName = normalize(row.rider || row.name);
+  const riderName = normalize(entry.rider.name);
+  if (rowName === riderName) return true;
+  if (!row.nat || row.nat !== entry.rider.nat || !row.team || normalize(row.team) !== normalize(entry.team)) return false;
+  const rowParts = rowName.split(' ');
+  const riderParts = riderName.split(' ');
+  const firstMatches = rowParts[0] === riderParts[0] || rowParts[0] === riderParts[0]?.[0];
+  if (!firstMatches || rowParts.length < 2 || riderParts.length < 2) return false;
+  const rowRest = rowParts.slice(1);
+  const riderRest = riderParts.slice(1);
+  return rowRest.every(part => riderRest.includes(part)) || riderRest.every(part => rowRest.includes(part));
+}
+
+function stagePlacings(data, entry) {
+  const stages = data.stageResults || {};
+  return Object.entries(stages).sort((a, b) => Number(a[0]) - Number(b[0])).map(([number, stage]) => {
+    const rows = Array.isArray(stage) ? stage : Array.isArray(stage.rows) ? stage.rows : [];
+    const placing = rows.find(row => matchesStageRow(row, entry));
+    return { number, position: placing?.pos || '—', time: placing?.gap || placing?.val || '—' };
+  });
+}
+
+async function renderSelected() {
+  const person = selected;
+  const currentRequest = ++requestId;
+  result.hidden = false;
+  document.getElementById('riderName').textContent = person.name;
+  document.getElementById('riderMeta').textContent = `${person.nat} · ${t('races')(person.entries.length)}`;
+  raceResults.replaceChildren();
+  status.textContent = '';
+  for (const entry of person.entries) {
+    const section = el('section', 'race-result');
+    const heading = el('div', 'race-heading');
+    const raceTitle = el('h3', '', entry.race.name);
+    const raceLink = el('a', '', t('openRace'));
+    raceLink.href = entry.race.href;
+    heading.append(raceTitle, raceLink);
+    section.append(heading);
+    const summary = el('p', 'race-summary', `${entry.team} · ${t('gc')}: ${entry.rider.gcPos ? '#' + entry.rider.gcPos : entry.rider.status || '—'}`);
+    section.append(summary);
+    raceResults.append(section);
+    try {
+      const data = await stageData(entry.race);
+      if (currentRequest !== requestId) return;
+      const stages = stagePlacings(data, entry);
+      if (!stages.length) {
+        section.append(el('p', 'empty-stages', t('noStages')));
+        continue;
+      }
+      const table = el('table', 'stage-table');
+      const caption = el('caption', '', `${entry.race.name} — ${t('stage')}`);
+      const head = el('thead');
+      const headRow = el('tr');
+      [t('stage'), t('position'), t('time')].forEach(label => headRow.append(el('th', '', label)));
+      head.append(headRow);
+      const body = el('tbody');
+      stages.forEach(stage => {
+        const row = el('tr');
+        [stage.number, String(stage.position), stage.time].forEach(value => row.append(el('td', '', value)));
+        body.append(row);
+      });
+      table.append(caption, head, body);
+      section.append(table, el('p', 'data-note', t('missing')));
+    } catch (error) {
+      if (currentRequest !== requestId) return;
+      section.append(el('p', 'empty-stages', t('stageError')));
+    }
+  }
+}
+
+function select(person) {
+  selected = person;
+  input.value = person.name;
+  suggestions.hidden = true;
+  const url = new URL(window.location.href);
+  url.searchParams.set('q', person.name);
+  history.replaceState(null, '', url);
+  renderSelected();
+}
+
+document.getElementById('searchForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const found = matches(input.value);
+  const exact = found.find(person => person.key === normalize(input.value));
+  if (exact || found.length === 1) select(exact || found[0]);
+  else renderSuggestions();
+});
+input.addEventListener('input', () => {
+  selected = null;
+  requestId++;
+  result.hidden = true;
+  renderSuggestions();
+});
+document.querySelectorAll('#langSel .langbtn').forEach(button => {
+  button.addEventListener('click', () => {
+    lang = button.dataset.lang;
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    renderLanguage();
+  });
+});
+
+renderLanguage();
+Promise.all(RACES.map(async race => {
+  const response = await fetch(`data/${race.id}2026-riders.json`);
+  if (!response.ok) throw new Error('HTTP ' + response.status);
+  return { race, data: await response.json() };
+})).then(files => {
+  const people = new Map();
+  files.forEach(({ race, data }) => {
+    (data.teams || []).forEach(team => {
+      (team.riders || []).forEach(rider => {
+        const key = normalize(rider.name);
+        const identity = `${key}|${rider.nat || ''}`;
+        if (!people.has(identity)) people.set(identity, { key, name: rider.name, nat: rider.nat || '', entries: [] });
+        people.get(identity).entries.push({ race, team: team.name, rider });
+      });
+    });
+  });
+  riders = [...people.values()].sort((a, b) => a.name.localeCompare(b.name));
+  input.disabled = false;
+  document.getElementById('searchButton').disabled = false;
+  status.textContent = t('ready');
+  const query = new URLSearchParams(window.location.search).get('q');
+  if (query) {
+    input.value = query;
+    const exact = riders.find(person => person.key === normalize(query));
+    if (exact) select(exact);
+    else renderSuggestions();
+  }
+}).catch(() => { status.textContent = t('loadError'); });
+</script>
+<script data-goatcounter="https://grandtours.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
