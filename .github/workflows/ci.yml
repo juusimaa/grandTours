@@ -38,7 +38,6 @@ jobs:
       - name: Build TypeScript
         run: npm run build
 
-      # Unit tests for the pure formatting/parsing helpers in
-      # src/race-page.ts (see test/race-page.test.ts).
+      # Unit and page-interaction tests in test/.
       - name: Run tests
         run: npm test
