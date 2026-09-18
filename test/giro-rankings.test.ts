@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 const results = JSON.parse(readFileSync(resolve(root, 'data/giro2026-results.json'), 'utf8'));
+const routes = JSON.parse(readFileSync(resolve(root, 'data/giro2026-routes.json'), 'utf8'));
+const riders = JSON.parse(readFileSync(resolve(root, 'data/giro2026-riders.json'), 'utf8'));
 
 async function waitFor(check: () => boolean): Promise<void> {
   for (let attempt = 0; attempt < 100; attempt++) {
@@ -22,17 +24,19 @@ function openPage(stageResults = results.stageResults): JSDOM {
     '<script src="../dist/race-page.js"></script>',
     `<script>${shared}</script>`,
   );
+  const fixtures = new Map([
+    ['../data/giro2026-results.json', { ...results, stageResults }],
+    ['../data/giro2026-routes.json', routes],
+    ['../data/giro2026-riders.json', riders],
+  ]);
   return new JSDOM(html, {
     url: 'https://example.test/2026/giro.html',
     runScripts: 'dangerously',
     beforeParse(window) {
-      (window as any).fetch = async (url: string) => ({
-        ok: true,
-        json: async () =>
-          url.includes('giro2026-results.json')
-            ? { ...results, stageResults }
-            : JSON.parse(readFileSync(resolve(root, url.replace('../', '')), 'utf8')),
-      });
+      (window as any).fetch = async (url: string) => {
+        if (!fixtures.has(url)) throw new Error(`Unexpected fixture URL: ${url}`);
+        return { ok: true, json: async () => fixtures.get(url) };
+      };
     },
   });
 }
@@ -52,32 +56,68 @@ describe('Giro Rankings tab', () => {
 
       select.value = '1';
       select.dispatchEvent(new Event('change', { bubbles: true }));
-      let rows = document.querySelectorAll('#view-results table.results tbody tr');
+      let rows = document.querySelectorAll('#resultsGrid > .cls-card table.results tbody tr');
       expect(rows).toHaveLength(10);
       expect(rows[0].querySelector('.rname')?.textContent).toBe('Paul MAGNIER');
       expect(rows[1].querySelector('.rname')?.textContent).toBe('Tobias Lund ANDRESEN');
+      const cards = document.querySelectorAll('#resultsGrid .clsgrid .cls-card');
+      expect(cards).toHaveLength(5);
+      expect([...cards].map((card) => card.querySelector('.rname')?.textContent)).toEqual([
+        'Paul MAGNIER',
+        'Paul MAGNIER',
+        'Diego Pablo SEVILLA',
+        'Paul MAGNIER',
+        'SOUDAL QUICK-STEP',
+      ]);
       expect(document.querySelector('#view-results .stagewins-block')).toBeNull();
       expect(document.querySelector('#view-results .leaflet-container')).toBeNull();
 
-      (document.querySelector('#view-results .expander') as HTMLButtonElement).click();
-      rows = document.querySelectorAll('#view-results table.results tbody tr');
+      (document.querySelector('#resultsGrid > .cls-card .expander') as HTMLButtonElement).click();
+      rows = document.querySelectorAll('#resultsGrid > .cls-card table.results tbody tr');
       expect(rows).toHaveLength(results.stageResults['1'].rows.length);
       expect(rows[10].querySelector('.rname')?.textContent).toBe('Jasper STUYVEN');
+      (
+        document.querySelector(
+          '#resultsGrid .clsgrid .cls-card:first-child .expander',
+        ) as HTMLButtonElement
+      ).click();
+      expect(
+        document.querySelectorAll(
+          '#resultsGrid .clsgrid .cls-card:first-child table.results tbody tr',
+        ),
+      ).toHaveLength(184);
 
       select.value = '2';
       select.dispatchEvent(new Event('change', { bubbles: true }));
       expect(
-        document.querySelector('#view-results table.results tbody tr .rname')?.textContent,
+        document.querySelector('#resultsGrid > .cls-card table.results tbody tr .rname')
+          ?.textContent,
       ).toBe('Guillermo SILVA');
+      expect(
+        document.querySelectorAll(
+          '#resultsGrid .clsgrid .cls-card:first-child table.results tbody tr',
+        ),
+      ).toHaveLength(10);
 
       select.value = '21';
       select.dispatchEvent(new Event('change', { bubbles: true }));
       expect(document.querySelector('#view-results .cls-head .name')?.textContent).toBe(
         'Stage 21 result',
       );
-      expect(document.querySelector('#view-results table.results .rname')?.textContent).toBe(
-        'Jonathan MILAN',
-      );
+      expect(
+        document.querySelector('#resultsGrid > .cls-card table.results .rname')?.textContent,
+      ).toBe('Jonathan MILAN');
+      expect(
+        [...document.querySelectorAll('#resultsGrid .clsgrid .cls-card')].map(
+          (card) => card.querySelector('.rname')?.textContent,
+        ),
+      ).toEqual([
+        'Jonas VINGEGAARD',
+        'Paul MAGNIER',
+        'Giulio CICCONE',
+        'Afonso EULALIO',
+        'TEAM VISMA - LEASE A BIKE',
+      ]);
       (document.querySelector('#langSel [data-lang="fr"]') as HTMLButtonElement).click();
       expect(select.value).toBe('21');
       expect(document.getElementById('tabResults')?.textContent).toBe('Classements');

@@ -135,6 +135,8 @@ const STRINGS = {
     rankStageOpt: (n,route) => `Etappi ${n} · ${route}`,
     stageResultTitle: n => `Etapin ${n} tulos`,
     stageResultEmpty: 'Tämän etapin tuloksia ei ole saatavilla.',
+    stageClassHeading: n => `Luokitukset etapin ${n} jälkeen`,
+    stageClassEmpty: 'Tämän etapin luokituksia ei ole saatavilla.',
     expandLess: '▲ Näytä vain top 10', expandMore: n => `▼ Näytä kaikki (${n})`,
     restDay: 'Lepopäivä',
     stagePrefix: 'Etappi',
@@ -192,6 +194,8 @@ const STRINGS = {
     rankStageOpt: (n,route) => `Stage ${n} · ${route}`,
     stageResultTitle: n => `Stage ${n} result`,
     stageResultEmpty: 'Results for this stage are not available.',
+    stageClassHeading: n => `Rankings after stage ${n}`,
+    stageClassEmpty: 'Rankings after this stage are not available.',
     expandLess: '▲ Show top 10 only', expandMore: n => `▼ Show all (${n})`,
     restDay: 'Rest day',
     stagePrefix: 'Stage',
@@ -249,6 +253,8 @@ const STRINGS = {
     rankStageOpt: (n,route) => `Étape ${n} · ${route}`,
     stageResultTitle: n => `Résultat de l’étape ${n}`,
     stageResultEmpty: 'Les résultats de cette étape ne sont pas disponibles.',
+    stageClassHeading: n => `Classements après l’étape ${n}`,
+    stageClassEmpty: 'Les classements après cette étape ne sont pas disponibles.',
     expandLess: '▲ Afficher seulement le top 10', expandMore: n => `▼ Tout afficher (${n})`,
     restDay: 'Jour de repos',
     stagePrefix: 'Étape',
@@ -637,9 +643,11 @@ function classRowHTML(r, teamOnly){
 /* The shared stageStatTable helper uses this renderer for Giro stage rows. */
 function resultRowHTML(r){ return classRowHTML(r, false); }
 
-function classCard(cfg, i, n){
-  const rows = (RESULTS && RESULTS[cfg.key] && RESULTS[cfg.key].rows) || [];
-  const body = `<table class="results"><tbody>${rows.map(r=>classRowHTML(r, cfg.team)).join('')}</tbody></table>`;
+function classCard(cfg, i, n, source, expandKey){
+  const rows = (source && source[cfg.key] && source[cfg.key].rows) || [];
+  const body = expandKey
+    ? (rows.length ? stageStatTable(rows, expandKey) : `<p class="empty-cls">${esc(t('stageClassEmpty'))}</p>`)
+    : `<table class="results"><tbody>${rows.map(r=>classRowHTML(r, cfg.team)).join('')}</tbody></table>`;
   return `<div class="cls-card" style="${cardBorderStyle(i, n)}">
     <div class="cls-head">
       <span class="names"><span class="name">${esc(t(cfg.nameKey))}</span><span class="fr">${esc(t(cfg.jerseyKey))}</span></span>
@@ -673,26 +681,31 @@ function renderGeneralRankings(){
   }).join('');
   document.getElementById('resultsGrid').innerHTML = `
     <div class="sectionhead">${esc(t('classHeading'))}</div>
-    <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length)).join('')}</div>
+    <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length, RESULTS)).join('')}</div>
     <div class="stagewins-block">
       <h3>${esc(t('stagesHeading'))}</h3>
       <table class="winners"><tbody>${winnerRows}</tbody></table>
     </div>`;
 }
 
-/* Giro has only the published individual order of arrival for each stage. */
+/* Show the individual finish and all five published standings after this stage. */
 function renderStageResult(n){
   const stage = RESULTS && RESULTS.stageResults && RESULTS.stageResults[n];
   const rows = stage && Array.isArray(stage.rows) ? stage.rows : [];
   const winner = RESULTS && RESULTS.stageWinners && RESULTS.stageWinners.find(w=>String(w.n)===String(n));
   const body = rows.length ? stageStatTable(rows, '__stage') : `<p class="empty-cls">${esc(t('stageResultEmpty'))}</p>`;
+  const classifications = stage && stage.classifications;
+  const classCards = classifications
+    ? `<div class="sectionhead">${esc(t('stageClassHeading')(n))}</div>
+       <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length, classifications, `__stage_${cfg.key}`)).join('')}</div>`
+    : `<div class="status-card">${esc(t('stageClassEmpty'))}</div>`;
   document.getElementById('resultsGrid').innerHTML = `<div class="cls-card" style="border-bottom:2px solid var(--color-divider)">
     <div class="cls-head">
       <span class="names"><span class="name">${esc(t('stageResultTitle')(n))}</span><span class="fr">${esc(winner?.route||'')}</span></span>
       <span class="swatch" style="background:var(--color-accent)"></span>
     </div>
     <div class="cls-body">${body}</div>
-  </div>`;
+  </div>${classCards}`;
   bindExpanders(document.getElementById('resultsGrid'));
 }
 
@@ -785,7 +798,7 @@ document.querySelectorAll('#langSel button').forEach(btn=>{
 
 document.getElementById('rankStageSelect').addEventListener('change', event=>{
   rankView = event.target.value==='general' ? 'general' : Number(event.target.value);
-  delete expandState.__stage;
+  Object.keys(expandState).forEach(key=>{ if(key.startsWith('__stage')) delete expandState[key]; });
   renderResults();
 });
 
