@@ -32,6 +32,7 @@ data/tdf2026-weather.json             # actual race-day weather, all 21 stages (
 data/vuelta2026-weather.json          # actual race-day weather, raced stages only — auto-updated
 
 scripts/fetch_results.py              # results fetch script (scrapes letour.fr / lavuelta.es); also holds cancelled-stage overrides
+scripts/backfill_giro2026_stage_results.py # one-off official Giro stage-result backfill
 scripts/fetch_riders.py               # start-list fetch script (letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it)
 scripts/fetch_routes.py               # route fetch script (cyclingstage.com GPX, or komoot for the Vuelta) — run by hand
 scripts/fetch_weather.py              # race-day weather fetch script (Open-Meteo historical archive)
@@ -47,8 +48,8 @@ TODO.md                               # planned work, kept out of this file
 
 `index.html` lets the visitor pick a race or open `riders.html` to search riders.
 The rider-search page reads the four start lists, suggests matching names, and
-groups a selected rider's available stage placings by race. The Giro results
-file has no per-stage placings, so the page says that data is unavailable.
+groups a selected rider's available stage placings by race. The Giro's stage
+placings come from its official individual order of arrival for all 21 stages.
 Each tour page has a back arrow to the landing page. Race pages live under a
 season folder (`2026/<race>.html`) so a future season can be added alongside
 it as `2027/<race>.html` without touching the existing pages. The landing
@@ -111,6 +112,29 @@ To add a live tour, register it in `fetch_results.py`'s `TOURS` (with a
 source handler) and point a page at its `data/<tour>-results.json`. To add a
 finished race, drop a static `data/<tour>-results.json` in place and build a
 page that reads it — no script or registry entry needed.
+
+### Giro 2026 stage-result source
+
+`data/giro2026-results.json` includes the published individual **Order of
+arrival** (`ORARR`) for stages 1–21 from the [official Giro classifications](https://www.giroditalia.it/en/classifiche/di-tappa/1/)
+(replace the final stage number in the URL for each stage). Rows retain the
+published position, rider name, team, nationality, time and nonzero gap, plus
+the race bib from the official rider link. Rider search matches that bib to
+`data/giro2026-riders.json`, including names that differ between the two
+sources. Riders absent from a stage's individual classification have no row;
+the search page shows `—` and explains that this does not by itself establish
+a withdrawal. Stage winners and final classifications are kept as they were.
+
+To reproduce the static backfill, install the existing Python dependencies
+(`requests` and `selectolax`) and run:
+
+```
+python3 scripts/backfill_giro2026_stage_results.py
+```
+
+The command validates all 21 tables and each winner before replacing
+`stageResults`. It is intentionally separate from the scheduled
+`fetch_results.py` workflow.
 
 ## How it works
 
