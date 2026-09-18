@@ -45461,14 +45461,10 @@
      "gap": "+ 00h 05' 27''"
     }
    ],
-   "combative": {
-    "rider": "Wout VAN AERT",
-    "team": "TEAM VISMA | LEASE A BIKE",
-    "nat": "BEL"
-   },
+   "combative": null,
    "withdrawals": []
   }
  },
- "updated": "2026-09-13T22:41:52.850422+03:00",
- "updatedText": "Päivitetty 13.09.2026 klo 22.41 (Suomen aikaa)"
+ "updated": "2026-09-18T10:27:39.379270+03:00",
+ "updatedText": "Päivitetty 18.09.2026 klo 10.27 (Suomen aikaa)"
 }

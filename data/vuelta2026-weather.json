@@ -7,7 +7,7 @@
   "rain": "mm",
   "humidity": "%"
  },
- "updated": "2026-09-13T15:07:37+03:00",
+ "updated": "2026-09-18T10:27:42+03:00",
  "stages": {
   "1": {
    "start": {
@@ -494,6 +494,30 @@
     "humidity": 41,
     "alt": 1895,
     "town": "Collada de Alguacil"
+   }
+  },
+  "21": {
+   "start": {
+    "temp": 34,
+    "low": 17,
+    "feels": 33,
+    "cond": "clear",
+    "wind": 22,
+    "dir": "S",
+    "precip": 0.0,
+    "humidity": 48,
+    "town": "Granada"
+   },
+   "finish": {
+    "temp": 34,
+    "low": 18,
+    "feels": 32,
+    "cond": "clear",
+    "wind": 13,
+    "dir": "W",
+    "precip": 0.0,
+    "humidity": 40,
+    "town": "Granada"
    }
   }
  }
