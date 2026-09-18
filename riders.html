@@ -210,6 +210,8 @@ function stageData(race) {
 }
 
 function matchesStageRow(row, entry) {
+  // Giro stage rows carry the official race bib, which survives name variants.
+  if (row.bib != null && entry.rider.bib != null) return row.bib === entry.rider.bib;
   const rowName = normalize(row.rider || row.name);
   const riderName = normalize(entry.rider.name);
   if (rowName === riderName) return true;

@@ -26,7 +26,7 @@ describe('rider search pages', () => {
     landing.window.close();
   });
 
-  it('suggests riders and groups real stage results by race, including abbreviated names', async () => {
+  it('shows Giro placings for a winner and another rider, while leaving missing results unplaced', async () => {
     const page = new JSDOM(readFileSync(resolve(root, 'riders.html'), 'utf8'), {
       url: 'https://example.test/riders.html',
       runScripts: 'dangerously',
@@ -41,6 +41,48 @@ describe('rider search pages', () => {
       const { document, Event } = page.window;
       const input = document.getElementById('riderQuery') as HTMLInputElement;
       await waitFor(() => !input.disabled);
+      const giro = () =>
+        [...document.querySelectorAll('.race-result')].find((section) =>
+          section.querySelector('h3')?.textContent?.includes('Giro'),
+        );
+      const select = async (name: string) => {
+        input.value = name;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        document
+          .getElementById('searchForm')
+          ?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        await waitFor(
+          () =>
+            document.getElementById('riderName')?.textContent === name &&
+            !!giro()?.querySelector('.stage-table'),
+        );
+      };
+
+      await select('Paul MAGNIER');
+      expect(
+        giro()?.querySelector('.stage-table tbody tr:first-child td:nth-child(2)')?.textContent,
+      ).toBe('1');
+      expect(giro()?.querySelector('.empty-stages')).toBeNull();
+
+      await select('Tobias LUND ANDRESEN');
+      expect(
+        giro()?.querySelector('.stage-table tbody tr:first-child td:nth-child(2)')?.textContent,
+      ).toBe('2');
+
+      // The official table shortens this rider's name to Guillermo SILVA.
+      await select('Guillermo Thomas SILVA COUSSAN');
+      expect(
+        giro()?.querySelector('.stage-table tbody tr:nth-child(2) td:nth-child(2)')?.textContent,
+      ).toBe('1');
+
+      await select('Matteo MOSCHETTI');
+      expect(
+        giro()?.querySelector('.stage-table tbody tr:first-child td:nth-child(2)')?.textContent,
+      ).not.toBe('—');
+      expect(
+        giro()?.querySelector('.stage-table tbody tr:nth-child(2) td:nth-child(2)')?.textContent,
+      ).toBe('—');
+      expect(giro()?.querySelector('.data-note')?.textContent).toContain('no individual placing');
 
       input.value = 'Vingegaard';
       input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -53,11 +95,13 @@ describe('rider search pages', () => {
       );
 
       expect(document.getElementById('riderName')?.textContent).toBe('Jonas VINGEGAARD');
-      expect(document.querySelector('.race-result .empty-stages')?.textContent).toContain(
-        'not available',
-      );
       expect(
-        document.querySelector('.stage-table tbody tr:nth-child(2) td:nth-child(2)')?.textContent,
+        giro()?.querySelector('.stage-table tbody tr:first-child td:nth-child(2)')?.textContent,
+      ).toBe('76');
+      expect(
+        document.querySelector(
+          '.race-result:nth-child(2) .stage-table tbody tr:nth-child(2) td:nth-child(2)',
+        )?.textContent,
       ).toBe('4');
 
       input.value = 'Enric MAS NICOLAU';
