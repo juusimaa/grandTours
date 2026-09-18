@@ -93,12 +93,12 @@
 </section>
 
 <section class="view" id="view-results" role="tabpanel" aria-labelledby="tabResults" tabindex="0">
-  <div class="sectionhead" id="classHeading"></div>
-  <div class="clsgrid" id="classGrid"></div>
-  <div class="stagewins-block">
-    <h3 id="stagesHeading"></h3>
-    <table class="winners"><tbody id="stagesTbody"></tbody></table>
+  <div class="toolbar">
+    <label class="rlabel" id="rankSelectLabel" for="rankStageSelect"></label>
+    <select class="rankselect" id="rankStageSelect"></select>
+    <span class="statusline" id="resultsStatusLine"></span>
   </div>
+  <div id="resultsGrid"></div>
 </section>
 
 <section class="view" id="view-teams" role="tabpanel" aria-labelledby="tabTeams" tabindex="0">
@@ -127,10 +127,15 @@ const STRINGS = {
     eyebrow: 'Lopputulokset · 109. Giro d’Italia · 8.–31.5.2026',
     subDesc: 'Jonas Vingegaard voitti uransa ensimmäisen Giron ja täydensi Grand Tour ‑kokoelmansa. Grande Partenza ajettiin Nessebarista Bulgariasta, maali Roomassa — 21 etappia, 3 459 km.',
     finalTag: 'Lopulliset luokitukset · kilpailu päättynyt',
-    tabStages: 'Etapit & profiilit', tabResults: 'Tulokset', tabTeams: 'Joukkueet & ajajat',
+    tabStages: 'Etapit & profiilit', tabResults: 'Sijoitukset', tabTeams: 'Joukkueet & ajajat',
     stageListHeader: '21 etappia',
     classHeading: 'Loppuluokitukset',
     stagesHeading: 'Etappivoittajat',
+    rankShowLabel: 'Näytä', rankGeneral: 'Kokonaistilanne — kaikki paidat',
+    rankStageOpt: (n,route) => `Etappi ${n} · ${route}`,
+    stageResultTitle: n => `Etapin ${n} tulos`,
+    stageResultEmpty: 'Tämän etapin tuloksia ei ole saatavilla.',
+    expandLess: '▲ Näytä vain top 10', expandMore: n => `▼ Näytä kaikki (${n})`,
     restDay: 'Lepopäivä',
     stagePrefix: 'Etappi',
     factDistance: 'Matka', factGain: 'Nousumetrit', factType: 'Tyyppi', factWinner: 'Etappivoitto',
@@ -179,10 +184,15 @@ const STRINGS = {
     eyebrow: 'Final results · 109th Giro d’Italia · 8–31 May 2026',
     subDesc: 'Jonas Vingegaard won his first Giro d’Italia to complete the Grand Tour set. The Grande Partenza was held in Nessebar, Bulgaria, finishing in Rome — 21 stages, 3,459 km.',
     finalTag: 'Final classifications · race over',
-    tabStages: 'Stages & profiles', tabResults: 'Results', tabTeams: 'Teams & riders',
+    tabStages: 'Stages & profiles', tabResults: 'Rankings', tabTeams: 'Teams & riders',
     stageListHeader: '21 stages',
     classHeading: 'Final classifications',
     stagesHeading: 'Stage winners',
+    rankShowLabel: 'Show', rankGeneral: 'General rankings — all jerseys',
+    rankStageOpt: (n,route) => `Stage ${n} · ${route}`,
+    stageResultTitle: n => `Stage ${n} result`,
+    stageResultEmpty: 'Results for this stage are not available.',
+    expandLess: '▲ Show top 10 only', expandMore: n => `▼ Show all (${n})`,
     restDay: 'Rest day',
     stagePrefix: 'Stage',
     factDistance: 'Distance', factGain: 'Elevation gain', factType: 'Type', factWinner: 'Stage winner',
@@ -235,6 +245,11 @@ const STRINGS = {
     stageListHeader: '21 étapes',
     classHeading: 'Classements finals',
     stagesHeading: 'Vainqueurs d’étape',
+    rankShowLabel: 'Afficher', rankGeneral: 'Classement général — tous les maillots',
+    rankStageOpt: (n,route) => `Étape ${n} · ${route}`,
+    stageResultTitle: n => `Résultat de l’étape ${n}`,
+    stageResultEmpty: 'Les résultats de cette étape ne sont pas disponibles.',
+    expandLess: '▲ Afficher seulement le top 10', expandMore: n => `▼ Tout afficher (${n})`,
     restDay: 'Jour de repos',
     stagePrefix: 'Étape',
     factDistance: 'Distance', factGain: 'Dénivelé', factType: 'Type', factWinner: 'Vainqueur',
@@ -284,6 +299,8 @@ let lang = detectLang();
 
 let RESULTS = null;
 let RIDERS = null;
+let rankView = 'general'; // 'general' or a selected stage number
+const expandState = {}; // The shared stage-table expander reads this state.
 
 /* Climb category colours: Giro GPM categories are numeric 1 (hardest) to 4,
    with many climbs left uncategorized (organiser never published a cat). */
@@ -617,6 +634,9 @@ function classRowHTML(r, teamOnly){
   </tr>`;
 }
 
+/* The shared stageStatTable helper uses this renderer for Giro stage rows. */
+function resultRowHTML(r){ return classRowHTML(r, false); }
+
 function classCard(cfg, i, n){
   const rows = (RESULTS && RESULTS[cfg.key] && RESULTS[cfg.key].rows) || [];
   const body = `<table class="results"><tbody>${rows.map(r=>classRowHTML(r, cfg.team)).join('')}</tbody></table>`;
@@ -629,14 +649,21 @@ function classCard(cfg, i, n){
   </div>`;
 }
 
-function renderResults(){
-  document.getElementById('classHeading').textContent = t('classHeading');
-  document.getElementById('classGrid').innerHTML = CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length)).join('');
+/* Match the TdF Rankings selector while keeping the current stage on rerender. */
+function renderRankSelect(){
+  const select = document.getElementById('rankStageSelect');
+  const winners = (RESULTS && RESULTS.stageWinners) || [];
+  if(rankView!=='general' && !winners.some(w=>String(w.n)===String(rankView))) rankView = 'general';
+  select.innerHTML = `<option value="general">${esc(t('rankGeneral'))}</option>`
+    + winners.map(w=>`<option value="${w.n}">${esc(t('rankStageOpt')(w.n, w.route||''))}</option>`).join('');
+  select.value = String(rankView);
+}
 
-  document.getElementById('stagesHeading').textContent = t('stagesHeading');
+/* Preserve the existing final standings and stage-winner list as the default view. */
+function renderGeneralRankings(){
   const winners = (RESULTS && RESULTS.stageWinners) || [];
   const gcWinner = (RESULTS && RESULTS.gc && RESULTS.gc.rows[0] && RESULTS.gc.rows[0].rider) || '';
-  document.getElementById('stagesTbody').innerHTML = winners.map(w=>{
+  const winnerRows = winners.map(w=>{
     const pink = w.winner && w.winner===gcWinner;
     return `<tr class="${pink?'pink':''}">
       <td class="n">${esc(w.n)}</td>
@@ -644,6 +671,36 @@ function renderResults(){
       <td class="winner">${esc(w.winner||'')}</td>
     </tr>`;
   }).join('');
+  document.getElementById('resultsGrid').innerHTML = `
+    <div class="sectionhead">${esc(t('classHeading'))}</div>
+    <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length)).join('')}</div>
+    <div class="stagewins-block">
+      <h3>${esc(t('stagesHeading'))}</h3>
+      <table class="winners"><tbody>${winnerRows}</tbody></table>
+    </div>`;
+}
+
+/* Giro has only the published individual order of arrival for each stage. */
+function renderStageResult(n){
+  const stage = RESULTS && RESULTS.stageResults && RESULTS.stageResults[n];
+  const rows = stage && Array.isArray(stage.rows) ? stage.rows : [];
+  const winner = RESULTS && RESULTS.stageWinners && RESULTS.stageWinners.find(w=>String(w.n)===String(n));
+  const body = rows.length ? stageStatTable(rows, '__stage') : `<p class="empty-cls">${esc(t('stageResultEmpty'))}</p>`;
+  document.getElementById('resultsGrid').innerHTML = `<div class="cls-card" style="border-bottom:2px solid var(--color-divider)">
+    <div class="cls-head">
+      <span class="names"><span class="name">${esc(t('stageResultTitle')(n))}</span><span class="fr">${esc(winner?.route||'')}</span></span>
+      <span class="swatch" style="background:var(--color-accent)"></span>
+    </div>
+    <div class="cls-body">${body}</div>
+  </div>`;
+  bindExpanders(document.getElementById('resultsGrid'));
+}
+
+function renderResults(){
+  renderRankSelect();
+  document.getElementById('resultsStatusLine').textContent = RESULTS?.updated ? fmtUpdated(RESULTS.updated) : '';
+  if(rankView==='general') renderGeneralRankings();
+  else renderStageResult(rankView);
 }
 
 /* ---------- TEAMS & RIDERS ----------
@@ -695,6 +752,7 @@ function render(){
   document.getElementById('tabStages').textContent = t('tabStages');
   document.getElementById('tabResults').textContent = t('tabResults');
   document.getElementById('tabTeams').textContent = t('tabTeams');
+  document.getElementById('rankSelectLabel').textContent = t('rankShowLabel');
   document.getElementById('stageListHeader').textContent = t('stageListHeader');
   document.getElementById('disclaimerLabel').textContent = t('disclaimerLabel');
   document.getElementById('disclaimerText').textContent = t('disclaimerText');
@@ -723,6 +781,12 @@ document.querySelectorAll('#langSel button').forEach(btn=>{
     localStorage.setItem(LANG_KEY, lang);
     render();
   });
+});
+
+document.getElementById('rankStageSelect').addEventListener('change', event=>{
+  rankView = event.target.value==='general' ? 'general' : Number(event.target.value);
+  delete expandState.__stage;
+  renderResults();
 });
 
 /* ---------- TAB SWITCHING (WAI-ARIA tabs pattern) ---------- */

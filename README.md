@@ -13,7 +13,7 @@ index.html                            # "Grand Tours" landing page (race picker 
 riders.html                           # rider search across the available 2026 race data
 riders.css                            # rider-search page styles
 2026/tdf.html                         # Tour de France — stages, profiles, map & final results (static)
-2026/giro.html                        # Giro d'Italia — stages, profiles, map & final results (static)
+2026/giro.html                        # Giro d'Italia — stages, profiles, map, final rankings & stage results (static)
 2026/femmes.html                      # Tour de France Femmes — stages, profiles, map & final results (static)
 2026/vuelta.html                      # Vuelta a España — stages, profiles, map & auto-updating results (live)
 src/race-page.ts                      # helper functions shared by all four race pages (i18n, formatting, rendering) — compiles to dist/race-page.js
