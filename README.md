@@ -16,7 +16,7 @@ riders.css                            # rider-search page styles
 2026/giro.html                        # Giro d'Italia — stages, profiles, map, final rankings & stage results (static)
 2026/femmes.html                      # Tour de France Femmes — stages, profiles, map & final results (static)
 2026/vuelta.html                      # Vuelta a España — stages, profiles, map & auto-updating results (live)
-2027/tdf.html                         # Tour de France 2027 — Grand Départ stages 1–3 only (from the official press kit); no data/tdf2027-*.json yet
+2027/tdf.html                         # Tour de France 2027 — Grand Départ stages 1–3 only (from the official press kit); only a reconstructed routes file so far
 src/race-page.ts                      # helper functions shared by all four race pages (i18n, formatting, rendering) — compiles to dist/race-page.js
 src/globals.d.ts                      # ambient types for the globals each page's own inline <script> defines
 dist/race-page.js                     # build output (gitignored) — what the HTML pages actually load, via `npm run build`
@@ -36,7 +36,7 @@ data/vuelta2026-weather.json          # actual race-day weather, raced stages on
 scripts/fetch_results.py              # results fetch script (scrapes letour.fr / lavuelta.es); also holds cancelled-stage overrides
 scripts/backfill_giro2026_stage_results.py # one-off official Giro stage-result backfill
 scripts/fetch_riders.py               # start-list fetch script (letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it)
-scripts/fetch_routes.py               # route fetch script (cyclingstage.com GPX, or komoot for the Vuelta) — run by hand
+scripts/fetch_routes.py               # route fetch script (cyclingstage.com GPX, komoot for the Vuelta, OSRM reconstruction for tdf2027) — run by hand
 scripts/fetch_weather.py              # race-day weather fetch script (Open-Meteo historical archive)
 .github/workflows/update-results.yml  # GitHub Actions build, test & publish workflow (push to main / schedule)
 .github/workflows/ci.yml              # GitHub Actions lint, format, build & test workflow (pull requests)
@@ -248,13 +248,19 @@ python scripts/fetch_riders.py tdf2026 giro2026 vuelta2026   # specific tours
 
 Each race page's expanded stage view draws the real route on a Leaflet map,
 from a per-stage GPX track in `data/<tour>-routes.json`. `scripts/fetch_routes.py`
-builds that file from one of two sources per race:
+builds that file from one of three sources per race:
 
 - **cyclingstage.com** GPX exports (`tdf2026`, `giro2026`, `femmes2026`) — a
   public, free-to-download third-party reconstruction of the route.
 - **komoot** (`vuelta2026`) — the organiser's own official komoot account
   (`lavuelta`), which is the actual GPS-recorded course rather than a
   reconstruction, and is preferred wherever the organiser publishes one.
+- **OSRM** (`tdf2027`) — a stopgap until any GPX exists. It routes along roads
+  through a hand-checked waypoint list in the script: the towns and climbs on
+  the official press-kit stage maps, geocoded with Nominatim. It's an
+  approximation that includes the neutralised start, so the routed stages run
+  ~17–34 km over the official distance. `2027/tdf.html` labels the map as
+  reconstructed. Switch the race to a GPX source once one is published.
 
 Each track is simplified with Ramer–Douglas–Peucker so the shipped file stays
 small (the map is an overview locator, not turn-by-turn nav — ~50 m of

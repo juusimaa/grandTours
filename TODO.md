@@ -6,10 +6,11 @@
   (Edinburgh–Carlisle, Keswick–Liverpool, Welshpool–Cardiff), taken from the
   official Grand Départ press kit. Still missing: stages 4–21 and rest days
   once letour.fr publishes the full route; climb categories, intermediate
-  sprints and start times for stages 1–3; route tracks
-  (`data/tdf2027-routes.json` via `scripts/fetch_routes.py` — the map draws
-  a dashed start→finish line until then); and the statrow totals, which
-  currently cover stages 1–3 only.
+  sprints and start times for stages 1–3; official route tracks (the
+  `tdf2027` entry in `scripts/fetch_routes.py` is an OSRM reconstruction
+  through the press-kit towns — switch it to a cyclingstage GPX or official
+  komoot source when one appears); and the statrow totals, which currently
+  cover stages 1–3 only.
 
 #### Minor
 
