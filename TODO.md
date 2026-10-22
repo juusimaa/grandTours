@@ -2,13 +2,14 @@
 
 ## Epic
 
-- 2027 Tour de France page (`2027/tdf.html`). The landing-page year picker
-  is in place and defaults to 2027, but every 2027 race is still listed as
-  "route coming soon". On 22 Oct 2026, letour.fr still showed the 2026 route,
-  and only stages 1–3 were confirmed (Edinburgh–Carlisle, Keswick–Liverpool,
-  Welshpool–Cardiff; 2–25 Jul 2027). Once the full route is published, build
-  the page and set `page: 'tdf.html'` on the 2027 `tdf` entry in `SEASONS`
-  in `index.html`.
+- Finish `2027/tdf.html`. It has only the three Grand Départ stages
+  (Edinburgh–Carlisle, Keswick–Liverpool, Welshpool–Cardiff), taken from the
+  official Grand Départ press kit. Still missing: stages 4–21 and rest days
+  once letour.fr publishes the full route; climb categories, intermediate
+  sprints and start times for stages 1–3; route tracks
+  (`data/tdf2027-routes.json` via `scripts/fetch_routes.py` — the map draws
+  a dashed start→finish line until then); and the statrow totals, which
+  currently cover stages 1–3 only.
 
 #### Minor
 

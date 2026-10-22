@@ -22,13 +22,13 @@ const activeYear = (page: JSDOM) =>
   page.window.document.querySelector('#yearSel .yearbtn.active')?.textContent;
 
 describe('landing page year picker', () => {
-  it('defaults to 2027, where no race route is published yet', () => {
+  it('defaults to 2027, where only the Tour de France page is published yet', () => {
     const page = load();
     const { document } = page.window;
     expect(activeYear(page)).toBe('2027');
     expect(document.getElementById('footerYear')?.textContent).toBe('2027');
-    expect(raceLinks(page)).toEqual([]);
-    expect(document.querySelectorAll('#raceList .race.is-upcoming')).toHaveLength(4);
+    expect(raceLinks(page)).toEqual(['2027/tdf.html']);
+    expect(document.querySelectorAll('#raceList .race.is-upcoming')).toHaveLength(3);
     page.window.close();
   });
 

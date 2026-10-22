@@ -16,6 +16,7 @@ riders.css                            # rider-search page styles
 2026/giro.html                        # Giro d'Italia — stages, profiles, map, final rankings & stage results (static)
 2026/femmes.html                      # Tour de France Femmes — stages, profiles, map & final results (static)
 2026/vuelta.html                      # Vuelta a España — stages, profiles, map & auto-updating results (live)
+2027/tdf.html                         # Tour de France 2027 — Grand Départ stages 1–3 only (from the official press kit); no data/tdf2027-*.json yet
 src/race-page.ts                      # helper functions shared by all four race pages (i18n, formatting, rendering) — compiles to dist/race-page.js
 src/globals.d.ts                      # ambient types for the globals each page's own inline <script> defines
 dist/race-page.js                     # build output (gitignored) — what the HTML pages actually load, via `npm run build`
@@ -59,8 +60,8 @@ it as `2027/<race>.html` without touching the existing pages. The landing
 page has a year picker above the race list. It defaults to 2027, honours a
 `?year=` link, and remembers the visitor's pick in `localStorage["gt-year"]`.
 Seasons and races are listed in the `SEASONS` config in `index.html`. A race
-without a `page` is shown as "route coming soon"; all four 2027 races are like
-that until their `2027/<race>.html` pages are added.
+without a `page` is shown as "route coming soon". For 2027 only the Tour de
+France links to a page (`2027/tdf.html`, stages 1–3 so far).
 
 ### Local development
 
