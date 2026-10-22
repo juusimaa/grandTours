@@ -2,13 +2,13 @@
 
 ## Epic
 
-- Year picker in front of the race list. Race pages already live under a
-  season folder (`2026/<race>.html`, see `design_handoff_year_selection/`),
-  and `index.html` links straight into `2026/` since it's the only season —
-  still needed: the actual year-selection screen (remembers the visitor's
-  choice in `localStorage["gt-year"]`, `?year=` override, "Change year"
-  button), which only makes sense once a second season's pages
-  (`2027/<race>.html`) exist.
+- 2027 Tour de France page (`2027/tdf.html`). The landing-page year picker
+  is in place and defaults to 2027, but every 2027 race is still listed as
+  "route coming soon". On 22 Oct 2026, letour.fr still showed the 2026 route,
+  and only stages 1–3 were confirmed (Edinburgh–Carlisle, Keswick–Liverpool,
+  Welshpool–Cardiff; 2–25 Jul 2027). Once the full route is published, build
+  the page and set `page: 'tdf.html'` on the 2027 `tdf` entry in `SEASONS`
+  in `index.html`.
 
 #### Minor
 

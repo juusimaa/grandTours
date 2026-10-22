@@ -9,7 +9,7 @@ weather current automatically, while the other three are finished and serve
 static data.
 
 ```
-index.html                            # "Grand Tours" landing page (race picker and rider-search entry) — year selection is hidden for now, see below
+index.html                            # "Grand Tours" landing page (race picker and rider-search entry) with a year picker (defaults to 2027), see below
 riders.html                           # rider search across the available 2026 race data
 riders.css                            # rider-search page styles
 2026/tdf.html                         # Tour de France — stages, profiles, map & final results (static)
@@ -21,6 +21,7 @@ src/globals.d.ts                      # ambient types for the globals each page'
 dist/race-page.js                     # build output (gitignored) — what the HTML pages actually load, via `npm run build`
 test/race-page.test.ts                # Vitest unit tests for the pure helpers in src/race-page.ts, via `npm test`
 test/riders.test.ts                   # landing-page link and rider-search interaction tests
+test/landing.test.ts                  # landing-page year picker tests
 race-page.css                         # shared component styles for all four race pages, layered on modernist.css
 modernist.css                         # shared design tokens (colour, type, spacing) used by every page
 theme.css                             # earlier colour theme — no longer linked from any page, kept for reference
@@ -55,10 +56,11 @@ after each selected stage.
 Each tour page has a back arrow to the landing page. Race pages live under a
 season folder (`2026/<race>.html`) so a future season can be added alongside
 it as `2027/<race>.html` without touching the existing pages. The landing
-page's design (`design_handoff_year_selection/`) already specifies a
-year-picker screen in front of the race list for when a second season exists;
-today, with only 2026 published, that screen is not built — `index.html`
-links straight into `2026/`.
+page has a year picker above the race list. It defaults to 2027, honours a
+`?year=` link, and remembers the visitor's pick in `localStorage["gt-year"]`.
+Seasons and races are listed in the `SEASONS` config in `index.html`. A race
+without a `page` is shown as "route coming soon"; all four 2027 races are like
+that until their `2027/<race>.html` pages are added.
 
 ### Local development
 

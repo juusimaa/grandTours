@@ -83,6 +83,24 @@
     font-weight:600;letter-spacing:-.01em;
   }
   .race-arrow{flex:none;font-size:24px;line-height:1;color:var(--color-accent-700);}
+  /* A season's race whose route isn't published yet: listed, not linked. */
+  .race.is-upcoming{cursor:default;}
+  .race.is-upcoming:hover{background:transparent;}
+  .race.is-upcoming .race-name{color:var(--color-neutral-700);}
+  .race-status{
+    flex:none;font-size:12px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--color-neutral-700);text-align:right;
+  }
+
+  .gt-years{display:flex;flex-wrap:wrap;gap:0;margin-top:10px;}
+  .yearbtn{
+    appearance:none;cursor:pointer;margin:0 -2px 0 0;padding:8px 18px;
+    border:2px solid var(--color-text);background:var(--color-bg);color:var(--color-text);
+    font-family:var(--font-heading);font-size:18px;font-weight:700;letter-spacing:.04em;
+    transition:background 120ms ease;
+  }
+  .yearbtn:hover{background:var(--color-accent-100);}
+  .yearbtn.active{background:var(--color-text);color:var(--color-bg);}
 
   .search-section{
     display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,420px);
@@ -134,13 +152,13 @@
   <div class="gt-hero">
     <span class="kicker" id="kicker"></span>
     <h1>Grand Tours</h1>
+    <div class="gt-years" id="yearSel" role="group" aria-label="Vuosi / Year"></div>
   </div>
 
-  <!-- Race order per the design: Giro, Tour, Femmes, Vuelta. Links are
-       scoped to the 2026 season folder — see design_handoff_year_selection/
-       for the (currently hidden) year-picker screen that will front this
-       once a second season's pages exist. -->
-  <div class="race-list">
+  <!-- Race order per the design: Giro, Tour, Femmes, Vuelta. This static
+       2026 list is the no-JS fallback; the script below rebuilds it for the
+       selected season from SEASONS. -->
+  <div class="race-list" id="raceList">
     <a class="race" href="2026/giro.html">
       <span class="race-left">
         <span class="race-num">01</span>
@@ -190,7 +208,7 @@
 
 <footer class="gt-footer">
   <span class="footer-note" id="footerNote"></span>
-  <span class="footer-year">2026</span>
+  <span class="footer-year" id="footerYear">2026</span>
 </footer>
 
 <script>
@@ -206,6 +224,7 @@ const STRINGS = {
     searchDescription: 'Tutki ajajan kilpailuja ja etappisijoituksia yhdessä paikassa.',
     searchLink: 'Avaa ajajahaku',
     footer: 'Reitit · profiilit · tulokset',
+    upcoming: 'Reitti tulossa',
   },
   en: {
     kicker: 'Pick a Grand Tour',
@@ -214,6 +233,7 @@ const STRINGS = {
     searchDescription: 'Explore a rider’s races and stage placings in one place.',
     searchLink: 'Open rider search',
     footer: 'Routes · profiles · results',
+    upcoming: 'Route coming soon',
   },
   fr: {
     kicker: 'Choisissez une course',
@@ -222,8 +242,43 @@ const STRINGS = {
     searchDescription: 'Explorez ses courses et ses classements d’étape au même endroit.',
     searchLink: 'Ouvrir la recherche',
     footer: 'Parcours · profils · résultats',
+    upcoming: 'Parcours à venir',
   },
 };
+
+/* Seasons, newest first. A race with `page` links to <year>/<page>; one
+   without is listed as "route coming soon". To publish a race, add its
+   <year>/<race>.html and set `page` here. */
+const RACES = {
+  giro: { name: 'Giro d’Italia', flag: 'linear-gradient(to right, #008c45 0 33.33%, #f4f5f0 33.33% 66.66%, #cd212a 66.66% 100%)' },
+  tdf: { name: 'Tour de France', flag: 'linear-gradient(to right, #002395 0 33.33%, #f4f5f0 33.33% 66.66%, #ed2939 66.66% 100%)' },
+  femmes: { name: 'Tour de France Femmes', flag: 'linear-gradient(to right, #002395 0 33.33%, #f4f5f0 33.33% 66.66%, #ed2939 66.66% 100%)' },
+  vuelta: { name: 'Vuelta a España', flag: 'linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75% 100%)' },
+};
+const SEASONS = [
+  { year: '2027', races: [{ id: 'giro' }, { id: 'tdf' }, { id: 'femmes' }, { id: 'vuelta' }] },
+  { year: '2026', races: [
+    { id: 'giro', page: 'giro.html' },
+    { id: 'tdf', page: 'tdf.html' },
+    { id: 'femmes', page: 'femmes.html' },
+    { id: 'vuelta', page: 'vuelta.html' },
+  ] },
+];
+const DEFAULT_YEAR = '2027';
+const YEAR_KEY = 'gt-year';
+
+/* ?year= wins (shareable links), then the visitor's last pick, then the default. */
+function detectYear(){
+  const valid = (y) => SEASONS.some((s) => s.year === y);
+  const param = new URLSearchParams(location.search).get('year');
+  if(valid(param)) return param;
+  try {
+    const saved = localStorage.getItem(YEAR_KEY);
+    if(valid(saved)) return saved;
+  } catch (e) {}
+  return DEFAULT_YEAR;
+}
+let year = detectYear();
 
 function detectLang(){
   try {
@@ -241,7 +296,61 @@ function t(key){
   return v !== undefined ? v : STRINGS.en[key];
 }
 
+function renderYears(){
+  const sel = document.getElementById('yearSel');
+  sel.replaceChildren(...SEASONS.map((s) => {
+    const b = document.createElement('button');
+    b.className = 'yearbtn' + (s.year === year ? ' active' : '');
+    b.dataset.year = s.year;
+    b.textContent = s.year;
+    b.setAttribute('aria-pressed', s.year === year ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      year = s.year;
+      try { localStorage.setItem(YEAR_KEY, year); } catch (e) {}
+      render();
+    });
+    return b;
+  }));
+}
+
+function renderRaces(){
+  const season = SEASONS.find((s) => s.year === year);
+  document.getElementById('raceList').replaceChildren(...season.races.map((r, i) => {
+    const race = RACES[r.id];
+    const row = document.createElement(r.page ? 'a' : 'div');
+    row.className = 'race' + (r.page ? '' : ' is-upcoming');
+    if(r.page) row.href = `${season.year}/${r.page}`;
+    const left = document.createElement('span');
+    left.className = 'race-left';
+    const num = document.createElement('span');
+    num.className = 'race-num';
+    num.textContent = String(i + 1).padStart(2, '0');
+    const flag = document.createElement('span');
+    flag.className = 'race-flag';
+    flag.style.background = race.flag;
+    flag.setAttribute('aria-hidden', 'true');
+    const name = document.createElement('span');
+    name.className = 'race-name';
+    name.textContent = race.name;
+    left.append(num, flag, name);
+    const end = document.createElement('span');
+    if(r.page){
+      end.className = 'race-arrow';
+      end.textContent = '→';
+    } else {
+      end.className = 'race-status';
+      end.textContent = t('upcoming');
+    }
+    row.append(left, end);
+    return row;
+  }));
+}
+
 function render(){
+  renderYears();
+  renderRaces();
+  document.getElementById('footerYear').textContent = year;
+  document.title = `Grand Tours ${year}`;
   document.getElementById('kicker').textContent = t('kicker');
   document.getElementById('searchKicker').textContent = t('searchKicker');
   document.getElementById('searchHeading').textContent = t('searchHeading');
