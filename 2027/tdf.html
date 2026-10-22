@@ -120,9 +120,9 @@
    The site is being extended to cover all three grand tours; each tour has
    its own results file at data/<TOUR>-results.json. This page shows the
    2027 Tour de France — only the three Grand Départ stages are published so
-   far (official press kit, see sourcesBody); none of the data/<TOUR>-*.json
-   files exist yet, so results, start list, weather and route tracks all
-   fall back to their empty states. */
+   far (official press kit, see sourcesBody). Only data/<TOUR>-routes.json
+   exists, and it is a reconstruction (see scripts/fetch_routes.py); results,
+   start list and weather fall back to their empty states. */
 const TOUR = 'tdf2027';
 const RESULTS_URL = `../data/${TOUR}-results.json`;
 const ROUTES_URL = `../data/${TOUR}-routes.json`;
@@ -149,7 +149,7 @@ const STRINGS = {
     minimapExpand: 'Suurenna kartta',
     minimapCollapse: 'Pienennä kartta',
     minimapRecenter: 'Keskitä kartta reittiin',
-    minimapCaption: 'Etapin oikea reitti OpenStreetMap-kartalla. Kulta = lähtö, punainen = maali. Sulje oikean yläkulman painikkeesta.',
+    minimapCaption: 'Rekonstruoitu reitti: tieverkkoa pitkin lehdistöaineiston etappikartan paikkakuntien kautta — ei virallinen GPX, ja mukana neutraloitu lähtö. Kulta = lähtö, punainen = maali. Sulje oikean yläkulman painikkeesta.',
     minimapCaptionApprox: 'Reittidataa ei vielä saatavilla — näytetään suora viiva lähdöstä maaliin. Sulje oikean yläkulman painikkeesta.',
     factDistance: 'Matka', factGain: 'Nousumetrit', factClimbs: 'Mäkipisteitä', factSprints: 'Kirisprinttejä', factStart: 'Lähetys alkaa',
     startNote: 'TV-lähetyksen arvioitu alkamisaika (HBO Max / TNT Sports / Eurosport), muunnettu omaan aikavyöhykkeeseesi — perustuu CEST-aikatauluun, joka voi vielä muuttua kisan lähestyessä.',
@@ -210,7 +210,7 @@ const STRINGS = {
     disclaimer: 'SVG-käyrät on piirretty virallisen lehdistöaineiston etappiprofiilien välipisteiden (paikkakunta, kilometri, korkeus) ja nousujen (pituus, keskikaltevuus) pohjalta — ne eivät ole GPS-mitattua korkeusdataa. Nousujen luokat, kirisprintit ja lähtöajat julkaistaan myöhemmin.',
     footerNote: '© 2026 Jouni Uusimaa · Sivun ulkoasu ja koodi (MIT-lisenssi). Epävirallinen, ei-kaupallinen fanisivusto. Ei liity A.S.O.:hon tai Tour de Franceen. Tulokset ovat oikeudenomistajiensa omaisuutta. Tulokset: letour.fr, procyclingstats.com.',
     sourcesTitle: 'Lähteet:',
-    sourcesBody: 'Etapit 1–3 (päivämäärät, matkat, nousumetrit, profiilit, nousut): Tour de France 2027 Grand Départ Grande-Bretagne -lehdistöaineisto (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Kilpailun päivämäärät: letour.fr.',
+    sourcesBody: 'Etapit 1–3 (päivämäärät, matkat, nousumetrit, profiilit, nousut): Tour de France 2027 Grand Départ Grande-Bretagne -lehdistöaineisto (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Kilpailun päivämäärät: letour.fr.<br>Reittikartta: rekonstruoitu reitti lehdistöaineiston etappikarttojen paikkakuntien kautta — paikannus Nominatim (OpenStreetMap), reititys OSRM. Korvataan virallisella GPX:llä, kun se julkaistaan.',
     typeLabels: {flat:'Tasainen', hilly:'Kukkulainen / mäkinen', mountain:'Vuoristoetappi', ttt:'Joukkueaika-ajo', itt:'Yksilöaika-ajo'},
     catLabels: {HC:'HC', C1:'1. lk', C2:'2. lk', C3:'3. lk', C4:'4. lk'},
     classifications: {
@@ -240,7 +240,7 @@ const STRINGS = {
     minimapExpand: 'Enlarge map',
     minimapCollapse: 'Shrink map',
     minimapRecenter: 'Center map on route',
-    minimapCaption: 'Actual stage route on OpenStreetMap. Gold = start, red = finish. Close with the button in the top-right corner.',
+    minimapCaption: 'Reconstructed route: follows roads through the towns on the press-kit stage map — not an official GPX, and it includes the neutralised start. Gold = start, red = finish. Close with the button in the top-right corner.',
     minimapCaptionApprox: 'Route data not available yet — showing a straight line from start to finish. Close with the button in the top-right corner.',
     factDistance: 'Distance', factGain: 'Elevation gain', factClimbs: 'Climb points', factSprints: 'Intermediate sprints', factStart: 'Coverage starts',
     startNote: 'Estimated TV coverage start time (HBO Max / TNT Sports / Eurosport), converted to your own time zone — based on the published CEST schedule, which may still shift closer to the stage.',
@@ -301,7 +301,7 @@ const STRINGS = {
     disclaimer: 'The SVG curves are drawn from the waypoints (town, kilometre, altitude) and climbs (length, average gradient) on the stage profiles in the official press kit — they are not GPS-measured elevation data. Climb categories, intermediate sprints and start times will be published later.',
     footerNote: '© 2026 Jouni Uusimaa · Page & design; code under the MIT licence. An unofficial, non-commercial fan project. Not affiliated with A.S.O. or the Tour de France. Results remain the property of their respective owners. Results: letour.fr, procyclingstats.com.',
     sourcesTitle: 'Sources:',
-    sourcesBody: 'Stages 1–3 (dates, distances, elevation gain, profiles, climbs): Tour de France 2027 Grand Départ Grande-Bretagne press kit (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Race dates: letour.fr.',
+    sourcesBody: 'Stages 1–3 (dates, distances, elevation gain, profiles, climbs): Tour de France 2027 Grand Départ Grande-Bretagne press kit (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Race dates: letour.fr.<br>Route map: reconstructed through the towns on the press-kit stage maps — geocoded with Nominatim (OpenStreetMap), routed with OSRM. To be replaced by the official GPX once published.',
     typeLabels: {flat:'Flat', hilly:'Hilly', mountain:'Mountain stage', ttt:'Team time trial', itt:'Individual time trial'},
     catLabels: {HC:'HC', C1:'Cat 1', C2:'Cat 2', C3:'Cat 3', C4:'Cat 4'},
     classifications: {
@@ -331,7 +331,7 @@ const STRINGS = {
     minimapExpand: 'Agrandir la carte',
     minimapCollapse: 'Réduire la carte',
     minimapRecenter: 'Centrer la carte sur le parcours',
-    minimapCaption: 'Parcours réel de l’étape sur OpenStreetMap. Or = départ, rouge = arrivée. Fermer avec le bouton en haut à droite.',
+    minimapCaption: 'Parcours reconstitué : suit les routes passant par les localités de la carte du dossier de presse — pas un GPX officiel, départ fictif inclus. Or = départ, rouge = arrivée. Fermer avec le bouton en haut à droite.',
     minimapCaptionApprox: 'Données du parcours indisponibles — ligne droite du départ à l’arrivée. Fermer avec le bouton en haut à droite.',
     factDistance: 'Distance', factGain: 'Dénivelé', factClimbs: 'Points de côte', factSprints: 'Sprints intermédiaires', factStart: 'Début de diffusion',
     startNote: 'Heure estimée de début de la diffusion TV (HBO Max / TNT Sports / Eurosport), convertie dans votre propre fuseau horaire — d’après la grille CEST, susceptible d’évoluer à l’approche de l’étape.',
@@ -392,7 +392,7 @@ const STRINGS = {
     disclaimer: 'Les courbes SVG sont tracées à partir des points de passage (localité, kilomètre, altitude) et des ascensions (longueur, pente moyenne) des profils du dossier de presse officiel — il ne s’agit pas de données d’altitude mesurées par GPS. Les catégories des ascensions, les sprints intermédiaires et les horaires de départ seront publiés plus tard.',
     footerNote: '© 2026 Jouni Uusimaa · Page et design ; code sous licence MIT. Projet de fans non officiel et non commercial. Sans lien avec A.S.O. ni le Tour de France. Les résultats restent la propriété de leurs détenteurs. Résultats : letour.fr, procyclingstats.com.',
     sourcesTitle: 'Sources :',
-    sourcesBody: 'Étapes 1–3 (dates, distances, dénivelé, profils, ascensions) : dossier de presse du Grand Départ Grande-Bretagne du Tour de France 2027 (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Dates de la course : letour.fr.',
+    sourcesBody: 'Étapes 1–3 (dates, distances, dénivelé, profils, ascensions) : dossier de presse du Grand Départ Grande-Bretagne du Tour de France 2027 (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Dates de la course : letour.fr.<br>Carte du parcours : reconstituée via les localités des cartes d’étape du dossier de presse — géocodage Nominatim (OpenStreetMap), itinéraire OSRM. Sera remplacée par le GPX officiel dès sa publication.',
     typeLabels: {flat:'Plat', hilly:'Vallonné / accidenté', mountain:'Étape de montagne', ttt:'Contre-la-montre par équipes', itt:'Contre-la-montre individuel'},
     catLabels: {HC:'HC', C1:'1re cat.', C2:'2e cat.', C3:'3e cat.', C4:'4e cat.'},
     classifications: {
@@ -464,12 +464,13 @@ const stages = [
  }}
 ];
 
-/* Start/finish town coordinates [lon, lat]. No GPX tracks are published yet,
-   so the map draws a dashed straight line between them. */
+/* Start/finish coordinates [lon, lat], from the endpoints of the
+   reconstructed tracks in data/tdf2027-routes.json (fetch_routes.py prints
+   them). Used as a dashed straight line if that file can't be loaded. */
 const STAGE_COORDS = {
-  1:[[-3.19,55.95],[-2.93,54.89]],
-  2:[[-3.13,54.60],[-2.99,53.41]],
-  3:[[-3.15,52.66],[-3.18,51.48]]
+  1:[[-3.173,55.952],[-2.942,54.897]],
+  2:[[-3.135,54.601],[-2.993,53.405]],
+  3:[[-3.147,52.66],[-3.179,51.482]]
 };
 
 /* ---------- ELEVATION PROFILE ----------
