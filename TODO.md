@@ -2,13 +2,14 @@
 
 ## Epic
 
-- Year picker in front of the race list. Race pages already live under a
-  season folder (`2026/<race>.html`, see `design_handoff_year_selection/`),
-  and `index.html` links straight into `2026/` since it's the only season —
-  still needed: the actual year-selection screen (remembers the visitor's
-  choice in `localStorage["gt-year"]`, `?year=` override, "Change year"
-  button), which only makes sense once a second season's pages
-  (`2027/<race>.html`) exist.
+- Finish `2027/tdf.html`. It has only the three Grand Départ stages
+  (Edinburgh–Carlisle, Keswick–Liverpool, Welshpool–Cardiff), taken from the
+  official Grand Départ press kit. Still missing: stages 4–21 and rest days
+  once letour.fr publishes the full route; climb categories, intermediate
+  sprints and start times for stages 1–3; route tracks
+  (`data/tdf2027-routes.json` via `scripts/fetch_routes.py` — the map draws
+  a dashed start→finish line until then); and the statrow totals, which
+  currently cover stages 1–3 only.
 
 #### Minor
 

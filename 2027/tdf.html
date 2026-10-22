@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f3f2f2">
+<title>Tour de France 2027 — reitit & profiilit</title>
+<meta name="description" content="Tour de France 2027 -roadbook: Grand Départ Isossa-Britanniassa — etapit 1–3 Edinburghista Cardiffiin, reitit, korkeusprofiilit ja nousut. 2.–25.7.2027. · Roadbook for the 2027 Tour de France Grand Départ in Great Britain.">
+<link rel="canonical" href="https://juusimaa.github.io/Tdf2026/2027/tdf.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tour de France 2027">
+<meta property="og:title" content="Tour de France 2027 — reitit & profiilit">
+<meta property="og:description" content="Grand Départ Isossa-Britanniassa: etapit 1–3, korkeusprofiilit ja nousut. 2.–25.7.2027.">
+<meta property="og:url" content="https://juusimaa.github.io/Tdf2026/2027/tdf.html">
+<meta property="og:locale" content="fi_FI">
+<meta property="og:locale:alternate" content="en_GB">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tour de France 2027 — reitit & profiilit">
+<meta name="twitter:description" content="Grand Départ Isossa-Britanniassa: etapit 1–3, korkeusprofiilit ja nousut.">
+
+<!-- Favicon: on-theme emblem (gold elevation profile + red KOM dot). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231E2A22'/%3E%3Cpath d='M4 23 L11 12 L16 17 L22 7 L28 23 Z' fill='%23C99A2E'/%3E%3Ccircle cx='22' cy='7' r='2.6' fill='%23B23B32'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Leaflet (real interactive route map, restyled to the Modernist chrome).
+     Loaded from unpkg with Subresource Integrity so a tampered CDN response
+     is rejected. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<!-- Modernist design tokens (shared with index.html — see design_handoff_tdf2026/). -->
+<link rel="stylesheet" href="../modernist.css">
+<link rel="stylesheet" href="../race-page.css">
+</head>
+<body>
+<noscript>
+  <div class="noscript-note">
+    <b>JavaScript pois käytöstä</b><br>
+    Tämä sivu rakentaa etapit, profiilit ja tulokset selaimessa JavaScriptillä.
+    Ota JavaScript käyttöön nähdäksesi sisällön. Viralliset tulokset: letour.fr, procyclingstats.com.
+    <hr style="border:none;border-top:1px solid var(--color-divider);margin:10px 0;">
+    <b>JavaScript is disabled</b><br>
+    This page builds the stages, profiles and results in your browser with JavaScript.
+    Please enable JavaScript to view the content. Official results: letour.fr, procyclingstats.com.
+  </div>
+</noscript>
+
+<header class="tdf-header">
+  <div class="left">
+    <a class="backlink" id="backLink" href="../index.html">← <span id="backLinkText"></span></a>
+    <span class="wordmark">Tour de France 2027</span>
+  </div>
+  <div class="tdf-langs" id="langSel" role="group" aria-label="Kieli / Language">
+    <button class="langbtn" data-lang="fi" aria-label="Suomeksi" aria-pressed="false">FI</button>
+    <button class="langbtn" data-lang="fr" aria-label="En français" aria-pressed="false">FR</button>
+    <button class="langbtn" data-lang="en" aria-label="In English" aria-pressed="false">EN</button>
+  </div>
+</header>
+
+<section class="tdf-hero">
+  <span class="eyebrow" id="eyebrow"></span>
+  <h1>Tour de France 2027</h1>
+  <div class="stripe"><span style="background:#0055a4"></span><span style="background:#ffffff"></span><span style="background:#ef4135"></span></div>
+  <p class="lede" id="subDesc"></p>
+</section>
+
+<div class="statrow" id="topstats"></div>
+
+<nav class="tabs" role="tablist" aria-label="Näkymät / Views">
+  <button class="tabbtn active" data-view="etapit" role="tab" id="tabStages"
+          aria-controls="view-etapit" aria-selected="true" tabindex="0"></button>
+  <button class="tabbtn" data-view="tulokset" role="tab" id="tabResults"
+          aria-controls="view-tulokset" aria-selected="false" tabindex="-1"></button>
+  <button class="tabbtn" data-view="joukkueet" role="tab" id="tabTeams"
+          aria-controls="view-joukkueet" aria-selected="false" tabindex="-1"></button>
+</nav>
+
+<section class="view active" id="view-etapit" role="tabpanel" aria-labelledby="tabStages" tabindex="0">
+  <div class="stagelayout">
+    <nav class="stagerail">
+      <div class="railhead" id="stageListHeader"></div>
+      <ul class="stagerail-list" id="stageList"></ul>
+    </nav>
+    <main class="panel" id="panel"></main>
+  </div>
+</section>
+
+<section class="view" id="view-tulokset" role="tabpanel" aria-labelledby="tabResults" tabindex="0">
+  <div class="toolbar">
+    <label class="rlabel" id="rankSelectLabel" for="rankStageSelect"></label>
+    <select class="rankselect" id="rankStageSelect"></select>
+    <span class="statusline" id="resultsStatusLine"></span>
+  </div>
+  <div id="resultsGrid"></div>
+</section>
+
+<section class="view" id="view-joukkueet" role="tabpanel" aria-labelledby="tabTeams" tabindex="0">
+  <div id="teamsGrid"></div>
+</section>
+
+<footer class="tdf-footer">
+  <span class="disclabel" id="disclaimerLabel"></span>
+  <p class="discbody" id="disclaimerText"></p>
+  <span class="sourcestitle" id="sourcesTitle"></span>
+  <p class="sourcesbody" id="sourcesBody"></p>
+  <span class="disclabel" id="footerNote"></span>
+</footer>
+
+<script src="../dist/race-page.js"></script>
+<script>
+/* ---------- TOUR ----------
+   The site is being extended to cover all three grand tours; each tour has
+   its own results file at data/<TOUR>-results.json. This page shows the
+   2027 Tour de France — only the three Grand Départ stages are published so
+   far (official press kit, see sourcesBody); none of the data/<TOUR>-*.json
+   files exist yet, so results, start list, weather and route tracks all
+   fall back to their empty states. */
+const TOUR = 'tdf2027';
+const RESULTS_URL = `../data/${TOUR}-results.json`;
+const ROUTES_URL = `../data/${TOUR}-routes.json`;
+const RIDERS_URL = `../data/${TOUR}-riders.json`;
+const WEATHER_URL = `../data/${TOUR}-weather.json`;
+const LANG_KEY = 'tdf2026-lang';
+const STRINGS = {
+  fi: {
+    backToTours: 'Grand Tourit',
+    eyebrow: 'Roadbook · 114. Tour de France · 2.–25.7.2027',
+    subDesc: 'Grand Départ Isossa-Britanniassa: kolme avausetappia Skotlannissa, Englannissa ja Walesissa — reitit, korkeusprofiilit ja nousut virallisen lehdistöaineiston pohjalta. Loput 18 etappia lisätään, kun koko reitti on julkaistu. Kilpailu alkaa Edinburghista pe 2.7. ja päättyy Pariisiin su 25.7.2027.',
+    tabStages: 'Etapit & profiilit',
+    tabResults: 'Sijoitukset',
+    tabTeams: 'Joukkueet & ajajat',
+    stageListHeader: 'Etapit 1–3 / 21',
+    statDistance: 'Matka, etapit 1–3', statDistanceVal: '630 km',
+    statGain: 'Nousumetrit, etapit 1–3', statGainVal: '7 800 m',
+    statStages: 'Etappeja julkaistu', statStagesVal: '3 / 21',
+    statRestDays: 'Grand Départ', statRestDaysVal: 'Edinburgh 2.7.',
+    statMountainFinish: 'Loppumaali', statMountainFinishVal: 'Pariisi 25.7.',
+    stagePrefix: 'Etappi',
+    profileAria: n => `Etapin ${n} korkeusprofiili`,
+    minimapAria: n => `Etapin ${n} likimääräinen sijainti kartalla`,
+    minimapExpand: 'Suurenna kartta',
+    minimapCollapse: 'Pienennä kartta',
+    minimapRecenter: 'Keskitä kartta reittiin',
+    minimapCaption: 'Etapin oikea reitti OpenStreetMap-kartalla. Kulta = lähtö, punainen = maali. Sulje oikean yläkulman painikkeesta.',
+    minimapCaptionApprox: 'Reittidataa ei vielä saatavilla — näytetään suora viiva lähdöstä maaliin. Sulje oikean yläkulman painikkeesta.',
+    factDistance: 'Matka', factGain: 'Nousumetrit', factClimbs: 'Mäkipisteitä', factSprints: 'Kirisprinttejä', factStart: 'Lähetys alkaa',
+    startNote: 'TV-lähetyksen arvioitu alkamisaika (HBO Max / TNT Sports / Eurosport), muunnettu omaan aikavyöhykkeeseesi — perustuu CEST-aikatauluun, joka voi vielä muuttua kisan lähestyessä.',
+    legendClimb: 'Nousu (luokka julkaistaan myöhemmin)',
+    wxHeader: 'Sää etapilla', wxAtStart: 'Lähdössä', wxAtFinish: 'Maalissa',
+    wxTemp: 'Lämpötila', wxFeels: 'Tuntuu kuin', wxLow: 'Alin', wxWind: 'Tuuli', wxRain: 'Sademäärä', wxHumidity: 'Ilmankosteus', wxAlt: 'Korkeus merenpinnasta',
+    wxDelta: 'Muutos lähdöstä maaliin',
+    wxNote: 'Etapin lähtö- ja maalipaikkakunnan toteutunut sää kilpailupäivänä (Open-Meteon sääarkisto).',
+    wxNoData: 'Säätiedot lisätään kilpailun aikana.',
+    wxConds: {clear:'Selkeää', sunny:'Aurinkoista', partly:'Puolipilvistä', cloudy:'Pilvistä', overcast:'Täysin pilvistä', showers:'Sadekuuroja', rain:'Vesisadetta', storm:'Ukkoskuuroja', mist:'Sumua'},
+    wxDirs: {N:'pohjoisesta', NE:'koillisesta', E:'idästä', SE:'kaakosta', S:'etelästä', SW:'lounaasta', W:'lännestä', NW:'luoteesta'},
+    chartCaption: 'Havainnollistava profiili — ei GPS-mitattua korkeusdataa. X-akseli km, Y-akseli suhteellinen korkeus.',
+    descHeader: 'Etapin kuvaus', climbsHeader: 'Mäkipisteet (KOM)', sprintsHeader: 'Kirisprintit',
+    climbTableHead: ['Nousu','Lk','Pituus','Kalt.','Sijainti'],
+    sprintTableHead: ['Sprintti','Sijainti','Pisteet'],
+    noClimbs: 'Ei luokiteltuja nousuja tällä etapilla.',
+    noSprintTT: 'Aika-ajoetapeilla ei ajeta kirisprinttiä.',
+    noSprint: 'Kirisprintin sijaintia ei ole vielä julkaistu.',
+    sprintChip: 'Kirisprintti', sprintPtsSuffix: 'pistettä',
+    restDayLabel: 'LEPOPÄIVÄ',
+    resultsEmpty: 'Kilpailua ei ole vielä ajettu — tulokset täyttyvät, kun avausetappi Edinburghista Carlisleen on ajettu pe 2.7.2027. Viralliset tulokset: letour.fr, procyclingstats.com.',
+    resultsStatus: (updatedIso, after) => `<b>Tilanne:</b> ${fmtUpdated(updatedIso)} (etapin ${after}/21 jälkeen).`,
+    classEmpty: 'Ei tuloksia vielä — täyttyy avausetapin jälkeen.',
+    colHash: '#', colRider: 'Ajaja', colTeam: 'Joukkue',
+    expandLess: '▲ Näytä vain top 10', expandMore: n => `▼ Näytä kaikki (${n})`,
+    stageWinnersTitle: 'Etappivoittajat', stageWinnersFr: n => `${n}/21 etappia ajettu`,
+    colStage: 'Etappi', colWinner: 'Voittaja', colSpeed: 'km/h',
+    avgSpeed: v => `keskinopeus ${v} km/h`,
+    rankShowLabel: 'Näytä',
+    rankGeneral: 'Kokonaistilanne — kaikki paidat',
+    rankStageOpt: (n,route) => `Etappi ${n} · ${route}`,
+    stageResultTitle: n => `Etapin ${n} tulos`,
+    stageResultValHead: 'Aika / ero',
+    stageResultEmpty: 'Tämän etapin tuloksia ei ole vielä saatavilla.',
+    stageStatEmpty: 'Ei jaettu tällä etapilla.',
+    stageStats: {
+      points:{name:'Etapilla jaetut pisteet', fr:'Vihreän paidan pisteet tältä etapilta', valHead:'Pisteet'},
+      mountains:{name:'Etapilla jaetut mäkipisteet', fr:'Pallopaidan pisteet tältä etapilta', valHead:'Pisteet'},
+      youth:{name:'Nuorten etappitulos', fr:'Alle 26-vuotiaiden ajat tällä etapilla', valHead:'Aika / ero'},
+      teams:{name:'Joukkueiden etappitulos', fr:'Joukkueiden ajat tällä etapilla', valHead:'Aika / ero'},
+      combative:{name:'Taistelevin ajaja', fr:'Prix de la combativité — etapin aktiivisin ajaja'},
+      withdrawals:{name:'Keskeyttäneet', fr:'Kilpailusta poisjääneet tällä etapilla'}
+    },
+    noWithdrawals: 'Ei keskeyttäneitä tällä etapilla.',
+    noWithdrawalsRace: 'Ei keskeyttäneitä toistaiseksi.',
+    allWithdrawalsTitle: 'Keskeyttäneet',
+    allWithdrawalsFr: n => `${n} ajajaa jäänyt pois kilpailusta`,
+    colReason: 'Syy',
+    withdrawalReasons: {DNS:'Ei startannut (DNS)', DNF:'Keskeytti (DNF)', OTL:'Aikaraja ylittyi (OTL)'},
+    teamsStatus: (riders, teams, fin, out) => `Lähtijät: ${teams} joukkuetta ja ${riders} ajajaa — ${fin} ajajaa maalissa Pariisissa, ${out} jäi pois kilpailusta.`,
+    teamsEmpty: 'Lähtölistaa ei ole vielä julkaistu — joukkueet ja ajajat lisätään lähempänä kilpailua.',
+    teamClsLine: (pos, val) => `Joukkuekilpailu #${pos} · ${val}`,
+    teamClsNone: 'Ei sijoitusta joukkuekilpailussa',
+    colBib: 'Nro', colGcPos: 'Sija', colGcTime: 'Aika / ero',
+    riderOutOnStage: n => `Etapilla ${n}`,
+    riderOutUnknown: 'Ei maalissa',
+    disclaimerLabel: 'Huom korkeusprofiileista:',
+    disclaimer: 'SVG-käyrät on piirretty virallisen lehdistöaineiston etappiprofiilien välipisteiden (paikkakunta, kilometri, korkeus) ja nousujen (pituus, keskikaltevuus) pohjalta — ne eivät ole GPS-mitattua korkeusdataa. Nousujen luokat, kirisprintit ja lähtöajat julkaistaan myöhemmin.',
+    footerNote: '© 2026 Jouni Uusimaa · Sivun ulkoasu ja koodi (MIT-lisenssi). Epävirallinen, ei-kaupallinen fanisivusto. Ei liity A.S.O.:hon tai Tour de Franceen. Tulokset ovat oikeudenomistajiensa omaisuutta. Tulokset: letour.fr, procyclingstats.com.',
+    sourcesTitle: 'Lähteet:',
+    sourcesBody: 'Etapit 1–3 (päivämäärät, matkat, nousumetrit, profiilit, nousut): Tour de France 2027 Grand Départ Grande-Bretagne -lehdistöaineisto (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Kilpailun päivämäärät: letour.fr.',
+    typeLabels: {flat:'Tasainen', hilly:'Kukkulainen / mäkinen', mountain:'Vuoristoetappi', ttt:'Joukkueaika-ajo', itt:'Yksilöaika-ajo'},
+    catLabels: {HC:'HC', C1:'1. lk', C2:'2. lk', C3:'3. lk', C4:'4. lk'},
+    classifications: {
+      gc:{name:'Kokonaiskilpailu', fr:'Maillot jaune — keltainen paita', valHead:'Aika/ero'},
+      points:{name:'Pistekilpailu', fr:'Maillot vert — vihreä paita', valHead:'Pisteet'},
+      mountains:{name:'Mäkikilpailu', fr:'Maillot à pois — pallopaita', valHead:'Pisteet'},
+      youth:{name:'Nuorten kilpailu', fr:'Maillot blanc — valkoinen paita (alle 26 v)', valHead:'Aika/ero'},
+      teams:{name:'Joukkuekilpailu', fr:'Classement par équipes', valHead:'Aika/ero'}
+    }
+  },
+  en: {
+    backToTours: 'Grand Tours',
+    eyebrow: 'Roadbook · 114th Tour de France · 2–25 Jul 2027',
+    subDesc: 'Grand Départ in Great Britain: the three opening stages through Scotland, England and Wales — routes, elevation profiles and climbs from the official press kit. The remaining 18 stages will be added once the full route is published. The race starts in Edinburgh on Fri 2 Jul and finishes in Paris on Sun 25 Jul 2027.',
+    tabStages: 'Stages & profiles',
+    tabResults: 'Rankings',
+    tabTeams: 'Teams & riders',
+    stageListHeader: 'Stages 1–3 of 21',
+    statDistance: 'Distance, stages 1–3', statDistanceVal: '630 km',
+    statGain: 'Elevation gain, stages 1–3', statGainVal: '7,800 m',
+    statStages: 'Stages published', statStagesVal: '3 / 21',
+    statRestDays: 'Grand Départ', statRestDaysVal: 'Edinburgh, 2 Jul',
+    statMountainFinish: 'Final finish', statMountainFinishVal: 'Paris, 25 Jul',
+    stagePrefix: 'Stage',
+    profileAria: n => `Stage ${n} elevation profile`,
+    minimapAria: n => `Approximate location of stage ${n} on the map`,
+    minimapExpand: 'Enlarge map',
+    minimapCollapse: 'Shrink map',
+    minimapRecenter: 'Center map on route',
+    minimapCaption: 'Actual stage route on OpenStreetMap. Gold = start, red = finish. Close with the button in the top-right corner.',
+    minimapCaptionApprox: 'Route data not available yet — showing a straight line from start to finish. Close with the button in the top-right corner.',
+    factDistance: 'Distance', factGain: 'Elevation gain', factClimbs: 'Climb points', factSprints: 'Intermediate sprints', factStart: 'Coverage starts',
+    startNote: 'Estimated TV coverage start time (HBO Max / TNT Sports / Eurosport), converted to your own time zone — based on the published CEST schedule, which may still shift closer to the stage.',
+    legendClimb: 'Climb (category not yet published)',
+    wxHeader: 'Race-day weather', wxAtStart: 'At the start', wxAtFinish: 'At the finish',
+    wxTemp: 'Temperature', wxFeels: 'Feels like', wxLow: 'Low', wxWind: 'Wind', wxRain: 'Rainfall', wxHumidity: 'Humidity', wxAlt: 'Altitude',
+    wxDelta: 'Change, start to finish',
+    wxNote: 'Actual weather recorded at the stage’s start and finish location on race day (Open-Meteo historical archive).',
+    wxNoData: 'Weather will be added during the race.',
+    wxConds: {clear:'Clear', sunny:'Sunny', partly:'Partly cloudy', cloudy:'Cloudy', overcast:'Overcast', showers:'Showers', rain:'Rain', storm:'Thunderstorms', mist:'Mist'},
+    wxDirs: {N:'from the north', NE:'from the north-east', E:'from the east', SE:'from the south-east', S:'from the south', SW:'from the south-west', W:'from the west', NW:'from the north-west'},
+    chartCaption: 'Illustrative profile — not GPS-measured elevation data. X-axis: km, Y-axis: relative elevation.',
+    descHeader: 'Stage description', climbsHeader: 'Climb points (KOM)', sprintsHeader: 'Intermediate sprints',
+    climbTableHead: ['Climb','Cat.','Length','Grad.','Location'],
+    sprintTableHead: ['Sprint','Location','Points'],
+    noClimbs: 'No categorized climbs on this stage.',
+    noSprintTT: 'No intermediate sprints on time-trial stages.',
+    noSprint: 'Intermediate sprint location not yet published.',
+    sprintChip: 'Intermediate sprint', sprintPtsSuffix: 'points',
+    restDayLabel: 'REST DAY',
+    resultsEmpty: 'The race has not started yet — results will fill in once the opening stage from Edinburgh to Carlisle has been raced on Fri 2 Jul 2027. Official results: letour.fr, procyclingstats.com.',
+    resultsStatus: (updatedIso, after) => `<b>Status:</b> ${fmtUpdated(updatedIso)} (after stage ${after}/21).`,
+    classEmpty: 'No results yet — will populate after the opening stage.',
+    colHash: '#', colRider: 'Rider', colTeam: 'Team',
+    expandLess: '▲ Show top 10 only', expandMore: n => `▼ Show all (${n})`,
+    stageWinnersTitle: 'Stage winners', stageWinnersFr: n => `${n}/21 stages raced`,
+    colStage: 'Stage', colWinner: 'Winner', colSpeed: 'km/h',
+    avgSpeed: v => `avg speed ${v} km/h`,
+    rankShowLabel: 'Show',
+    rankGeneral: 'General rankings — all jerseys',
+    rankStageOpt: (n,route) => `Stage ${n} · ${route}`,
+    stageResultTitle: n => `Stage ${n} result`,
+    stageResultValHead: 'Time / gap',
+    stageResultEmpty: 'Results for this stage are not available yet.',
+    stageStatEmpty: 'Not awarded on this stage.',
+    stageStats: {
+      points:{name:'Points won on the stage', fr:'Green jersey points from this stage', valHead:'Points'},
+      mountains:{name:'KOM points won on the stage', fr:'Polka dot points from this stage', valHead:'Points'},
+      youth:{name:'Young riders’ stage result', fr:'Under-26 times on this stage', valHead:'Time / gap'},
+      teams:{name:'Teams’ stage result', fr:'Team times on this stage', valHead:'Time / gap'},
+      combative:{name:'Combativity award', fr:'Most aggressive rider of the stage'},
+      withdrawals:{name:'Withdrawals', fr:'Riders who left the race on this stage'}
+    },
+    noWithdrawals: 'No withdrawals on this stage.',
+    noWithdrawalsRace: 'No withdrawals so far.',
+    allWithdrawalsTitle: 'Withdrawals',
+    allWithdrawalsFr: n => `${n} riders out of the race`,
+    colReason: 'Reason',
+    withdrawalReasons: {DNS:'Did not start (DNS)', DNF:'Abandoned (DNF)', OTL:'Outside the time limit (OTL)'},
+    teamsStatus: (riders, teams, fin, out) => `Start list: ${teams} teams and ${riders} riders — ${fin} finished in Paris, ${out} left the race.`,
+    teamsEmpty: 'The start list has not been published yet — teams and riders will be added closer to the race.',
+    teamClsLine: (pos, val) => `Team classification #${pos} · ${val}`,
+    teamClsNone: 'Not placed in the team classification',
+    colBib: 'No.', colGcPos: 'GC', colGcTime: 'Time / gap',
+    riderOutOnStage: n => `On stage ${n}`,
+    riderOutUnknown: 'Did not finish',
+    disclaimerLabel: 'Note on elevation profiles:',
+    disclaimer: 'The SVG curves are drawn from the waypoints (town, kilometre, altitude) and climbs (length, average gradient) on the stage profiles in the official press kit — they are not GPS-measured elevation data. Climb categories, intermediate sprints and start times will be published later.',
+    footerNote: '© 2026 Jouni Uusimaa · Page & design; code under the MIT licence. An unofficial, non-commercial fan project. Not affiliated with A.S.O. or the Tour de France. Results remain the property of their respective owners. Results: letour.fr, procyclingstats.com.',
+    sourcesTitle: 'Sources:',
+    sourcesBody: 'Stages 1–3 (dates, distances, elevation gain, profiles, climbs): Tour de France 2027 Grand Départ Grande-Bretagne press kit (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Race dates: letour.fr.',
+    typeLabels: {flat:'Flat', hilly:'Hilly', mountain:'Mountain stage', ttt:'Team time trial', itt:'Individual time trial'},
+    catLabels: {HC:'HC', C1:'Cat 1', C2:'Cat 2', C3:'Cat 3', C4:'Cat 4'},
+    classifications: {
+      gc:{name:'General classification', fr:'Maillot jaune — yellow jersey', valHead:'Time/Gap'},
+      points:{name:'Points classification', fr:'Maillot vert — green jersey', valHead:'Points'},
+      mountains:{name:'Mountains classification', fr:'Maillot à pois — polka dot jersey', valHead:'Points'},
+      youth:{name:'Young rider classification', fr:'Maillot blanc — white jersey (under 26)', valHead:'Time/Gap'},
+      teams:{name:'Team classification', fr:'Classement par équipes', valHead:'Time/Gap'}
+    }
+  },
+  fr: {
+    backToTours: 'Grands Tours',
+    eyebrow: 'Roadbook · 114e Tour de France · 2–25 juil. 2027',
+    subDesc: 'Grand Départ en Grande-Bretagne : les trois premières étapes à travers l’Écosse, l’Angleterre et le pays de Galles — parcours, profils et ascensions d’après le dossier de presse officiel. Les 18 autres étapes seront ajoutées dès la publication du parcours complet. La course part d’Édimbourg le vendredi 2 juillet et arrive à Paris le dimanche 25 juillet 2027.',
+    tabStages: 'Étapes et profils',
+    tabResults: 'Classements',
+    tabTeams: 'Équipes et coureurs',
+    stageListHeader: 'Étapes 1–3 sur 21',
+    statDistance: 'Distance, étapes 1–3', statDistanceVal: '630 km',
+    statGain: 'Dénivelé, étapes 1–3', statGainVal: '7 800 m',
+    statStages: 'Étapes publiées', statStagesVal: '3 / 21',
+    statRestDays: 'Grand Départ', statRestDaysVal: 'Édimbourg, 2 juil.',
+    statMountainFinish: 'Arrivée finale', statMountainFinishVal: 'Paris, 25 juil.',
+    stagePrefix: 'Étape',
+    profileAria: n => `Profil d’altitude de l’étape ${n}`,
+    minimapAria: n => `Emplacement approximatif de l’étape ${n} sur la carte`,
+    minimapExpand: 'Agrandir la carte',
+    minimapCollapse: 'Réduire la carte',
+    minimapRecenter: 'Centrer la carte sur le parcours',
+    minimapCaption: 'Parcours réel de l’étape sur OpenStreetMap. Or = départ, rouge = arrivée. Fermer avec le bouton en haut à droite.',
+    minimapCaptionApprox: 'Données du parcours indisponibles — ligne droite du départ à l’arrivée. Fermer avec le bouton en haut à droite.',
+    factDistance: 'Distance', factGain: 'Dénivelé', factClimbs: 'Points de côte', factSprints: 'Sprints intermédiaires', factStart: 'Début de diffusion',
+    startNote: 'Heure estimée de début de la diffusion TV (HBO Max / TNT Sports / Eurosport), convertie dans votre propre fuseau horaire — d’après la grille CEST, susceptible d’évoluer à l’approche de l’étape.',
+    legendClimb: 'Ascension (catégorie à venir)',
+    wxHeader: 'Météo du jour', wxAtStart: 'Au départ', wxAtFinish: 'À l’arrivée',
+    wxTemp: 'Température', wxFeels: 'Ressenti', wxLow: 'Min', wxWind: 'Vent', wxRain: 'Précipitations', wxHumidity: 'Humidité', wxAlt: 'Altitude',
+    wxDelta: 'Écart départ / arrivée',
+    wxNote: 'Météo réelle relevée aux lieux de départ et d’arrivée de l’étape le jour de la course (archives historiques Open-Meteo).',
+    wxNoData: 'La météo sera ajoutée pendant la course.',
+    wxConds: {clear:'Ciel dégagé', sunny:'Ensoleillé', partly:'Partiellement nuageux', cloudy:'Nuageux', overcast:'Couvert', showers:'Averses', rain:'Pluie', storm:'Orages', mist:'Brume'},
+    wxDirs: {N:'de nord', NE:'de nord-est', E:'d’est', SE:'de sud-est', S:'de sud', SW:'de sud-ouest', W:'d’ouest', NW:'de nord-ouest'},
+    chartCaption: 'Profil illustratif — pas de données d’altitude mesurées par GPS. Axe X : km, axe Y : altitude relative.',
+    descHeader: 'Description de l’étape', climbsHeader: 'Points de côte (KOM)', sprintsHeader: 'Sprints intermédiaires',
+    climbTableHead: ['Côte','Cat.','Longueur','Pente','Emplacement'],
+    sprintTableHead: ['Sprint','Emplacement','Points'],
+    noClimbs: 'Aucune côte classée sur cette étape.',
+    noSprintTT: 'Pas de sprint intermédiaire sur les étapes contre-la-montre.',
+    noSprint: 'Emplacement du sprint intermédiaire pas encore publié.',
+    sprintChip: 'Sprint intermédiaire', sprintPtsSuffix: 'points',
+    restDayLabel: 'JOUR DE REPOS',
+    resultsEmpty: 'La course n’a pas encore commencé — les résultats apparaîtront une fois l’étape d’ouverture Édimbourg–Carlisle courue, le vendredi 2 juillet 2027. Résultats officiels : letour.fr, procyclingstats.com.',
+    resultsStatus: (updatedIso, after) => `<b>Situation :</b> ${fmtUpdated(updatedIso)} (après l’étape ${after}/21).`,
+    classEmpty: 'Pas encore de résultats — se remplira après l’étape d’ouverture.',
+    colHash: '#', colRider: 'Coureur', colTeam: 'Équipe',
+    expandLess: '▲ Afficher seulement le top 10', expandMore: n => `▼ Tout afficher (${n})`,
+    stageWinnersTitle: 'Vainqueurs d’étape', stageWinnersFr: n => `${n}/21 étapes courues`,
+    colStage: 'Étape', colWinner: 'Vainqueur', colSpeed: 'km/h',
+    avgSpeed: v => `vitesse moyenne ${v} km/h`,
+    rankShowLabel: 'Afficher',
+    rankGeneral: 'Classement général — tous les maillots',
+    rankStageOpt: (n,route) => `Étape ${n} · ${route}`,
+    stageResultTitle: n => `Résultat de l’étape ${n}`,
+    stageResultValHead: 'Temps / écart',
+    stageResultEmpty: 'Les résultats de cette étape ne sont pas encore disponibles.',
+    stageStatEmpty: 'Non attribué sur cette étape.',
+    stageStats: {
+      points:{name:'Points gagnés sur l’étape', fr:'Points du maillot vert sur cette étape', valHead:'Points'},
+      mountains:{name:'Points de la montagne sur l’étape', fr:'Points du maillot à pois sur cette étape', valHead:'Points'},
+      youth:{name:'Résultat d’étape des jeunes', fr:'Temps des moins de 26 ans sur cette étape', valHead:'Temps / écart'},
+      teams:{name:'Résultat d’étape par équipes', fr:'Temps des équipes sur cette étape', valHead:'Temps / écart'},
+      combative:{name:'Prix de la combativité', fr:'Coureur le plus combatif de l’étape'},
+      withdrawals:{name:'Abandons', fr:'Coureurs ayant quitté la course sur cette étape'}
+    },
+    noWithdrawals: 'Aucun abandon sur cette étape.',
+    noWithdrawalsRace: 'Aucun abandon pour l’instant.',
+    allWithdrawalsTitle: 'Abandons',
+    allWithdrawalsFr: n => `${n} coureurs hors course`,
+    colReason: 'Motif',
+    withdrawalReasons: {DNS:'Non-partant (DNS)', DNF:'Abandon (DNF)', OTL:'Hors délai (OTL)'},
+    teamsStatus: (riders, teams, fin, out) => `Liste des partants : ${teams} équipes et ${riders} coureurs — ${fin} à l’arrivée à Paris, ${out} hors course.`,
+    teamsEmpty: 'La liste des partants n’est pas encore publiée — équipes et coureurs seront ajoutés à l’approche de la course.',
+    teamClsLine: (pos, val) => `Classement par équipes #${pos} · ${val}`,
+    teamClsNone: 'Non classée au classement par équipes',
+    colBib: 'Dossard', colGcPos: 'Clt', colGcTime: 'Temps / écart',
+    riderOutOnStage: n => `Étape ${n}`,
+    riderOutUnknown: 'Non-partant / abandon',
+    disclaimerLabel: 'Remarque sur les profils d’altitude :',
+    disclaimer: 'Les courbes SVG sont tracées à partir des points de passage (localité, kilomètre, altitude) et des ascensions (longueur, pente moyenne) des profils du dossier de presse officiel — il ne s’agit pas de données d’altitude mesurées par GPS. Les catégories des ascensions, les sprints intermédiaires et les horaires de départ seront publiés plus tard.',
+    footerNote: '© 2026 Jouni Uusimaa · Page et design ; code sous licence MIT. Projet de fans non officiel et non commercial. Sans lien avec A.S.O. ni le Tour de France. Les résultats restent la propriété de leurs détenteurs. Résultats : letour.fr, procyclingstats.com.',
+    sourcesTitle: 'Sources :',
+    sourcesBody: 'Étapes 1–3 (dates, distances, dénivelé, profils, ascensions) : dossier de presse du Grand Départ Grande-Bretagne du Tour de France 2027 (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Dates de la course : letour.fr.',
+    typeLabels: {flat:'Plat', hilly:'Vallonné / accidenté', mountain:'Étape de montagne', ttt:'Contre-la-montre par équipes', itt:'Contre-la-montre individuel'},
+    catLabels: {HC:'HC', C1:'1re cat.', C2:'2e cat.', C3:'3e cat.', C4:'4e cat.'},
+    classifications: {
+      gc:{name:'Classement général', fr:'Maillot jaune', valHead:'Temps/écart'},
+      points:{name:'Classement par points', fr:'Maillot vert', valHead:'Points'},
+      mountains:{name:'Classement de la montagne', fr:'Maillot à pois', valHead:'Points'},
+      youth:{name:'Classement du meilleur jeune', fr:'Maillot blanc (moins de 26 ans)', valHead:'Temps/écart'},
+      teams:{name:'Classement par équipes', fr:'Classement par équipes', valHead:'Temps/écart'}
+    }
+  }
+};
+
+let lang = detectLang();
+
+/* ---------- COLOUR MAPS ----------
+   Climb categories and classification jerseys as flat colour swatches, per
+   the Modernist system (no illustrative icons — see design handoff). */
+const CAT_COLOR = {HC:'var(--color-accent-800)', C1:'var(--color-accent-600)', C2:'var(--color-accent-500)', C3:'var(--color-accent-400)', C4:'var(--color-accent-300)'};
+const JERSEY = {gc:'#f5d33f', points:'#3e9b4f', mountains:'var(--color-accent)', youth:'var(--color-neutral-100)', teams:'var(--color-neutral-700)'};
+const AUX_SWATCH = {winners:'var(--color-neutral-700)', combative:'var(--color-accent)', withdrawals:'var(--color-neutral-400)'};
+const CLASS_KEYS = ['gc','points','mountains','youth','teams'];
+const stages = [
+{n:1, dateIso:'2027-07-02', start:'Edinburgh', finish:'Carlisle', km:184, type:'flat', gain:2000,
+ // Profile traced from the press-kit waypoints (relative height ≈ 15 + altitude/6).
+ profile:[[0,27],[18,83],[36,41],[53,41],[61.8,32],[64,56],[90.5,39],[124.5,33],[150.5,17],[168,26],[184,18]],
+ climbs:[
+   {name:{en:'Côte de Melrose'},km:64,len:2.2,grad:6.7,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Avausetappi lähtee Skotlannin pääkaupungista etelään ja voi hyvin päättyä joukkokiriin, jolloin ensimmäinen keltainen paita menee sprintterille. Reitti kulkee maaseudun halki komeissa maisemissa ja kohoaa Broad Law'n kohdalla noin 400 metriin, mutta nousu tapahtuu enimmäkseen pitkinä loivina ylämäkinä. Ainoa luokiteltu nousu on Côte de Melrose (2,2 km, 6,7 %) 64 kilometrin kohdalla.</p><p>Loppuosa on tasainen: reitti ylittää rajan Skotlannista Englantiin ja päättyy Carlisleen lyhyelle loppusuoralle.</p>`,
+  en:`<p>The opening stage heads south from the Scottish capital and could well end in a bunch sprint, handing the first yellow jersey to a sprinter. The route crosses open countryside with fine scenery and tops out at around 400 metres near Broad Law, but most of the climbing comes on long, gentle drags. The only categorised climb is the Côte de Melrose (2.2 km at 6.7%) at kilometre 64.</p><p>The run-in is flat: the race crosses the border from Scotland into England and finishes in Carlisle on a short home straight.</p>`,
+  fr:`<p>L’étape d’ouverture file plein sud depuis la capitale écossaise et pourrait bien se conclure par un sprint massif, offrant le premier maillot jaune à un sprinteur. Le parcours traverse une campagne aux beaux paysages et culmine vers 400 m près de Broad Law, mais l’essentiel du dénivelé se fait sur de longs faux plats. La seule ascension répertoriée est la côte de Melrose (2,2 km à 6,7 %), au km 64.</p><p>Le final est plat : la course passe d’Écosse en Angleterre et se termine à Carlisle sur une courte ligne droite.</p>`
+ }},
+
+{n:2, dateIso:'2027-07-03', start:'Keswick', finish:'Liverpool', km:223, type:'hilly', gain:2800,
+ profile:[[0,43],[28.5,33],[52.5,23],[65.5,19],[76,17],[84.2,24],[88,63],[96.6,47],[98.5,64],[108.6,37],[112,73],[132.5,40],[150.5,56],[152.5,69],[161,33],[181.2,19],[183,35],[206,29],[223,19]],
+ climbs:[
+   {name:{en:'Côte de Jubilee Tower'},km:88,len:3.8,grad:6.1,cat:null},
+   {name:{en:'Côte de Trough of Bowland'},km:98.5,len:1.9,grad:5.2,cat:null},
+   {name:{en:'Côte de Waddington Fell'},km:112,len:3.4,grad:6.4,cat:null},
+   {name:{en:'Côte de Belmont'},km:152.5,len:2,grad:4,cat:null},
+   {name:{en:'Côte de Parbold'},km:183,len:1.8,grad:5.6,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Etappi alkaa Lake Districtin kansallispuistosta ja on etapin 3 ohella tämän Grand Départin pisin (223 km). Lancasterin (km 75) jälkeen maasto muuttuu kumpuilevaksi ja raskaammaksi aina Liverpoolin laitamille asti. Viisi luokiteltua nousua tekevät etapista oivan tilaisuuden karkureille.</p><p>Kestävät sprintterit voivat silti päästä peliin lopussa, joka on melko tasainen ja kulkee enimmäkseen taajama-alueella. Suurten yleisömassojen keskellä ajajien on oltava tarkkana etenkin alamäessä ennen viimeistä kilometriä.</p>`,
+  en:`<p>The stage opens in the Lake District National Park and, at 223 km, shares the title of longest day of this Grand Départ. Beyond Lancaster (km 75) the terrain turns rolling and tougher all the way to the outskirts of Liverpool. Five categorised climbs make it an ideal day for the breakaway.</p><p>Resilient sprinters could still come back into play in a fairly flat finale that runs mostly through built-up areas. In front of what are sure to be huge crowds, the riders will need to stay alert, especially on the descent before the final kilometre.</p>`,
+  fr:`<p>L’étape s’élance dans le parc national du Lake District et compte, avec 223 km, parmi les plus longues de ce Grand Départ. Après Lancaster (km 75), le terrain devient vallonné et plus exigeant jusqu’aux abords de Liverpool. Cinq côtes répertoriées en font un terrain idéal pour les baroudeurs.</p><p>Les sprinteurs les plus résistants pourraient toutefois revenir dans le jeu dans un final assez plat, tracé surtout en agglomération. Devant un public sans doute très nombreux, il faudra rester vigilant, notamment dans la descente qui précède la flamme rouge.</p>`
+ }},
+
+{n:3, dateIso:'2027-07-04', start:'Welshpool', finish:'Cardiff', km:223, type:'hilly', gain:3000,
+ profile:[[0,27],[15.5,32],[59.5,49],[72,36],[81.8,41],[85.5,90],[107,47],[114.9,50],[121.5,88],[138.5,48],[140.9,52],[145.5,96],[154.5,43],[159.2,41],[160.5,62],[163,52],[167.5,61],[169,83],[174,49],[188.5,38],[191.6,44],[193,55],[196.8,35],[197.5,47],[206,29],[208.5,29],[210.5,56],[223,17]],
+ climbs:[
+   {name:{en:'Côte d’Epynt'},km:85.5,len:3.7,grad:7.9,cat:null},
+   {name:{en:'Côte de Bannau Brycheiniog'},km:121.5,len:6.6,grad:3.5,cat:null},
+   {name:{en:'Côte de Rhigos'},km:145.5,len:4.6,grad:5.8,cat:null},
+   {name:{en:'Côte de Penrhys'},km:160.5,len:1.3,grad:10.1,cat:null},
+   {name:{en:'Côte de Maerdy'},km:169,len:1.5,grad:8.7,cat:null},
+   {name:{en:'Côte de Gelligaer'},km:193,len:1.4,grad:4.9,cat:null},
+   {name:{en:'Côte de Hengoed'},km:197.5,len:0.7,grad:11,cat:null},
+   {name:{en:'Côte de Caerffili'},km:210.5,len:2,grad:8.1,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Kokonaan Walesissa ajettava etappi on raskas ja sen loppu räjähtävä — kokonaiskilpailun kärkinimet ja puncheurit joutuvat näyttämään kuntonsa. Ensimmäiset noin 80 kilometriä ovat helppoja, minkä jälkeen seuraa pitkiä ja välillä vaikeita nousuja, kuten Epynt (3,7 km, 7,9 %).</p><p>Noin 125 kilometrin jälkeen reitti tulee vanhalle kaivosalueelle, jossa mäet lyhenevät ja jyrkkenevät (Penrhys 10,1 %, Hengoed 11 %). Côte de Caerffili (2 km, 8,1 %) noin 12 km ennen maalia voi sytyttää kovan taistelun, johon suosikitkin joutuvat mukaan. Nopea loppu Cardiffin halki ohittaa 1000-luvun linnan ja Principality Stadiumin.</p>`,
+  en:`<p>Raced entirely in Wales, this stage is both gruelling and explosive at the end, putting team leaders and punchier riders to the test. The first 80 or so kilometres are straightforward — a chance to warm the legs — before a run of long and sometimes difficult climbs such as the Epynt (3.7 km at 7.9%).</p><p>After about kilometre 125 the race enters the old coal-mining valleys, where the climbs get shorter and steeper (Penrhys at 10.1%, Hengoed at 11%). The Côte de Caerffili (2 km at 8.1%), some 12 km from the line, could spark a fierce fight that the favourites will struggle to stay out of. A very fast run through Cardiff passes close to the 11th-century castle and the Principality Stadium.</p>`,
+  fr:`<p>Cette étape 100 % galloise s’annonce éprouvante, avec un final explosif qui mettra les leaders et les puncheurs à l’épreuve. Les quelque 80 premiers kilomètres, plutôt tranquilles, servent de mise en jambes avant une série de côtes longues et parfois difficiles, comme celle d’Epynt (3,7 km à 7,9 %).</p><p>À partir du km 125 environ, la course entre dans l’ancien bassin minier, où les ascensions deviennent plus courtes et plus raides (Penrhys à 10,1 %, Hengoed à 11 %). La côte de Caerffili (2 km à 8,1 %), à une douzaine de kilomètres de l’arrivée, pourrait déclencher une belle bagarre à laquelle les favoris auront du mal à échapper. La traversée très rapide de Cardiff passe près du château du XIe siècle et du Principality Stadium.</p>`
+ }}
+];
+
+/* Start/finish town coordinates [lon, lat]. No GPX tracks are published yet,
+   so the map draws a dashed straight line between them. */
+const STAGE_COORDS = {
+  1:[[-3.19,55.95],[-2.93,54.89]],
+  2:[[-3.13,54.60],[-2.99,53.41]],
+  3:[[-3.15,52.66],[-3.18,51.48]]
+};
+
+/* ---------- ELEVATION PROFILE ----------
+   Illustrative SVG built from stage.profile keypoints — monochrome ink
+   line/fill with accent-shade climb bands and a dashed accent sprint flag,
+   per the Modernist system (climb category colour is the only colour that
+   changes; the stage-type colouring the old theme used is gone). */
+function renderProfile(stage){
+  const W=900, H=250, padL=30, padR=16, padT=22, padB=30;
+  const {d, plotH} = buildPath(stage.profile, stage.km, W,H,padL,padR,padT,padB);
+  const baseY = padT+plotH;
+
+  let svg = `<svg class="profile" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${t('profileAria')(stage.n)}">`;
+
+  for(let g=0; g<=4; g++){
+    const gy = padT + plotH*g/4;
+    svg += `<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="var(--color-neutral-300)" stroke-width="1"/>`;
+  }
+  const step = stage.km > 150 ? 50 : (stage.km > 60 ? 20 : 5);
+  for(let k=0; k<=stage.km+0.01; k+=step){
+    const kx = xForKm(k, stage.km, W, padL, padR);
+    svg += `<line x1="${kx}" y1="${padT}" x2="${kx}" y2="${baseY}" stroke="var(--color-neutral-200)" stroke-width="1"/>`;
+    svg += `<text x="${kx}" y="${H-10}" font-family="Archivo, sans-serif" font-size="11" font-weight="600" fill="var(--color-neutral-600)" text-anchor="middle">${Math.round(k)}</text>`;
+  }
+
+  (stage.climbs||[]).forEach(c=>{
+    const x1 = xForKm(Math.max(0, c.km-c.len), stage.km, W, padL, padR);
+    const x2 = xForKm(c.km, stage.km, W, padL, padR);
+    const col = CAT_COLOR[c.cat] || CAT_COLOR.C1;
+    svg += `<rect x="${x1}" y="${padT}" width="${Math.max(2,x2-x1)}" height="${plotH}" fill="${col}" opacity="0.18"/>`;
+    svg += `<line x1="${x2}" y1="${padT}" x2="${x2}" y2="${baseY}" stroke="${col}" stroke-width="2"/>`;
+    svg += `<rect x="${x2-4}" y="${padT-12}" width="8" height="8" fill="${col}"/>`;
+  });
+
+  svg += `<path d="${d} L ${xForKm(stage.km,stage.km,W,padL,padR)},${baseY} L ${padL},${baseY} Z" fill="var(--color-text)" opacity="0.1"/>`;
+  svg += `<path d="${d}" fill="none" stroke="var(--color-text)" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  (stage.sprints||[]).forEach(s=>{
+    const sx = xForKm(s.km, stage.km, W, padL, padR);
+    const top = padT + plotH*0.28;
+    svg += `<line x1="${sx}" y1="${top}" x2="${sx}" y2="${baseY}" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    svg += `<path d="M ${sx} ${top} L ${sx+14} ${top+5} L ${sx} ${top+10} Z" fill="var(--color-accent)"/>`;
+  });
+
+  svg += `<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="var(--color-text)" stroke-width="2"/>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+let routesData = null, routesPromise = null;
+let stageMap = null, stageMapFitBounds = null;
+let mapExpanded = false; // persists across stage switches; renderPanel reflects it
+
+function initStageMap(stage){
+  initStageMapCommon(stage, STAGE_COORDS);
+}
+
+/* ---------- RENDER STAGE LIST ---------- */
+const listEl = document.getElementById('stageList');
+let activeIdx = 0;
+const raceStages = stages.filter(s=>s.n!=='lepo');
+
+function renderStageList(){
+  const stagelayout = document.querySelector('.stagelayout');
+  const panel = document.getElementById('panel');
+  if(panel && stagelayout && listEl.contains(panel)) stagelayout.appendChild(panel);
+  listEl.innerHTML = '';
+  stages.forEach((s, idx)=>{
+    const li = document.createElement('li');
+    li.className='stage-item';
+    if(s.n==='lepo'){
+      const div = document.createElement('div');
+      div.className='rest-row';
+      const restNum = s.labelKey==='rest1' ? 1 : 2;
+      div.textContent = `${fmtDate(s.dateIso)} · ${t('restDayLabel')} ${restNum}`;
+      li.appendChild(div);
+      listEl.appendChild(li);
+      return;
+    }
+    const btn = document.createElement('button');
+    btn.className='stage-btn';
+    btn.dataset.idx = idx;
+    if(idx===activeIdx) btn.classList.add('active');
+    const listWx = wxFor(s.n);
+    btn.innerHTML = `
+      <span class="num">${String(s.n).padStart(2,'0')}</span>
+      <span class="btn-text">
+        <span class="btn-route">${s.start} → ${s.finish}</span>
+        <span class="btn-meta">${fmtDate(s.dateIso)} · ${fmtKm(s.km)} · ${t('typeLabels')[s.type]}</span>
+      </span>
+      <span class="btn-wx">${listWx ? `${listWx.start.temp}° → ${listWx.finish.temp}°` : ''}</span>`;
+    btn.addEventListener('click', ()=>selectStage(idx));
+    li.appendChild(btn);
+    listEl.appendChild(li);
+  });
+  positionPanel();
+}
+
+/* Keeps the stage-rail column exactly as tall as the detail panel next to
+   it, copied straight from the panel's rendered height (see index.html's
+   sibling comment in the previous version of this file for why this is
+   done in JS rather than pure CSS). Skipped below the 980px breakpoint,
+   where the layout drops to a single column. */
+function syncStageListHeight(){
+  const list = document.querySelector('.stagerail');
+  const panel = document.getElementById('panel');
+  const stagesView = document.getElementById('view-etapit');
+  if(!list || !panel || !stagesView) return;
+  if(window.innerWidth<=980 || !stagesView.classList.contains('active')){
+    list.style.height = '';
+    return;
+  }
+  list.style.height = panel.offsetHeight + 'px';
+}
+window.addEventListener('resize', ()=>{ syncStageListHeight(); positionPanel(); });
+
+/* Below the 980px breakpoint the detail panel has no side column to live in,
+   so it's moved into the stage list right after the selected stage's row —
+   otherwise it renders below the entire list, far from the row that opened
+   it. Above the breakpoint it moves back into its own grid column. */
+
+function selectStage(idx){
+  activeIdx = idx;
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.toggle('active', +b.dataset.idx===idx));
+  const activeBtn = document.querySelector(`.stage-btn[data-idx="${idx}"]`);
+  if(activeBtn) activeBtn.scrollIntoView({block:'nearest'});
+  renderPanel(stages[idx]);
+  positionPanel();
+  syncStageListHeight();
+}
+
+/* ---------- WEATHER ----------
+   Actual race-day weather loaded from data/tdf2027-weather.json, fetched by
+   scripts/fetch_weather.py (Open-Meteo's historical archive): the stage's
+   start/finish-town daily high/low, not a specific-time reading, since that
+   is what a historical archive actually gives you. Missing file/stage
+   leaves the "no data" note. */
+let WEATHER = null;
+
+/* ---------- RENDER MAIN PANEL ---------- */
+function renderPanel(stage){
+  const panel = document.getElementById('panel');
+  // Tear down any live map before its container is replaced by innerHTML.
+  destroyStageMap();
+
+  let climbRows = '';
+  if(stage.climbs && stage.climbs.length){
+    climbRows = stage.climbs.map(c=>`
+      <tr>
+        <td><span class="climbname"><span class="sq" style="background:${CAT_COLOR[c.cat]||CAT_COLOR.C1}"></span>${c.name[lang]||c.name.en}</span></td>
+        <td class="num cat">${c.cat ? catLabel(c.cat) : '—'}</td>
+        <td class="num">${fmtKm(c.len)}</td>
+        <td class="num">${c.grad ? c.grad+' %' : '—'}</td>
+        <td class="loc">km ${c.km}</td>
+      </tr>`).join('');
+  }
+
+  let sprintRows = '';
+  if(stage.sprints && stage.sprints.length){
+    sprintRows = stage.sprints.map((s,i)=>`
+      <tr>
+        <td>${t('sprintChip')}${stage.sprints.length>1?' '+(i+1):''}</td>
+        <td class="num">km ${s.km}</td>
+        <td class="num">${s.pts} ${t('sprintPtsSuffix')}</td>
+      </tr>`).join('');
+  }
+
+  const isTT = stage.type==='itt' || stage.type==='ttt';
+  const startLocal = fmtStartLocal(stage);
+
+  panel.innerHTML = `
+    <div class="panelhead">
+      <div>
+        <span class="kicker">${t('stagePrefix')} ${stage.n} · ${fmtDate(stage.dateIso)}</span>
+        <h2>${stage.start} → ${stage.finish}</h2>
+      </div>
+      <span class="typechip">${t('typeLabels')[stage.type]}</span>
+    </div>
+
+    <div class="factrow">
+      ${startLocal ? `<div class="factcell"><span class="label">${t('factStart')}</span><span class="value">${startLocal}</span></div>` : ''}
+      <div class="factcell"><span class="label">${t('factDistance')}</span><span class="value">${fmtKm(stage.km)}</span></div>
+      <div class="factcell"><span class="label">${t('factGain')}</span><span class="value">${stage.gain ? fmtGain(stage.gain) : '—'}</span></div>
+      <div class="factcell"><span class="label">${t('factClimbs')}</span><span class="value">${(stage.climbs||[]).length}</span></div>
+      <div class="factcell"><span class="label">${t('factSprints')}</span><span class="value">${(stage.sprints||[]).length || '—'}</span></div>
+    </div>
+    ${startLocal ? `<div class="startnote">${t('startNote')}</div>` : ''}
+
+    ${wxSectionHTML(stage)}
+
+    ${mapExpanded ? bigMapBoxHTML(stage) : ''}
+
+    <div class="detailgrid${mapExpanded ? ' big' : ''}">
+      ${mapExpanded ? '' : `<div class="mapcell">${mapCellHTML(stage)}</div>`}
+      <div class="profilecell">
+        <span class="label">${profileLabel()}</span>
+        ${renderProfile(stage)}
+        <div class="legend">
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR.C1}"></span>${t('legendClimb')}</span>
+        </div>
+        <span class="chart-caption">${t('chartCaption')}</span>
+      </div>
+    </div>
+
+    <div class="detailbody">
+      <div>
+        <h3>${t('descHeader')}</h3>
+        <div class="prose">${stage.desc[lang]||stage.desc.en}</div>
+      </div>
+      <div>
+        <h3>${t('climbsHeader')}</h3>
+        ${climbRows
+          ? `<table class="dtable"><thead><tr><th>${t('climbTableHead')[0]}</th><th>${t('climbTableHead')[1]}</th><th>${t('climbTableHead')[2]}</th><th>${t('climbTableHead')[3]}</th><th>${t('climbTableHead')[4]}</th></tr></thead><tbody>${climbRows}</tbody></table>`
+          : `<p class="empty-note">${t('noClimbs')}</p>`}
+      </div>
+      <div>
+        <h3>${t('sprintsHeader')}</h3>
+        ${sprintRows
+          ? `<table class="dtable sprints"><thead><tr><th>${t('sprintTableHead')[0]}</th><th>${t('sprintTableHead')[1]}</th><th>${t('sprintTableHead')[2]}</th></tr></thead><tbody>${sprintRows}</tbody></table>`
+          : `<p class="empty-note">${isTT ? t('noSprintTT') : t('noSprint')}</p>`}
+      </div>
+    </div>
+  `;
+
+  bindMapControls(stage);
+  initStageMap(stage);
+}
+
+/* ---------- TOP STATS ---------- */
+function renderTopStats(){
+  document.getElementById('topstats').innerHTML = `
+    <div class="statcell"><span class="label">${t('statDistance')}</span><span class="value">${t('statDistanceVal')}</span></div>
+    <div class="statcell"><span class="label">${t('statGain')}</span><span class="value">${t('statGainVal')}</span></div>
+    <div class="statcell"><span class="label">${t('statStages')}</span><span class="value">${t('statStagesVal')}</span></div>
+    <div class="statcell"><span class="label">${t('statRestDays')}</span><span class="value">${t('statRestDaysVal')}</span></div>
+    <div class="statcell"><span class="label">${t('statMountainFinish')}</span><span class="value">${t('statMountainFinishVal')}</span></div>
+  `;
+}
+const RESULTS = {
+  updated: null, // e.g. 'Updated after stage 1, 2 Jul 2027'
+  afterStage: 0, // how many stages the standings are after
+
+  gc:       {rows: []}, // Yellow jersey — general classification (time)
+  points:   {rows: []}, // Green jersey — points classification
+  mountains:{rows: []}, // Polka-dot jersey — mountains classification
+  youth:    {rows: []}, // White jersey — young rider classification (time)
+  teams:    {rows: []}, // Team classification (time)
+
+  // Per-stage results: { "1": {rows:[...], points:[...], mountains:[...],
+  // youth:[...], teams:[...], combative:{rider,team,nat}|null,
+  // withdrawals:[{bib,rider,team,reason}]}, ... }.
+  // rows = finishing order (time + gap to the winner); points/mountains =
+  // points won on the stage; youth/teams = the stage result for those
+  // classifications; combative = the stage's combativity award; withdrawals =
+  // riders who left the race on the stage (reason DNS/DNF/OTL). Populated
+  // automatically by fetch_results.py; empty before the race.
+  stageResults: {},
+
+  stageWinners: [
+    {n:1, route:'Edinburgh → Carlisle', winner:''},
+    {n:2, route:'Keswick → Liverpool', winner:''},
+    {n:3, route:'Welshpool → Cardiff', winner:''}
+  ]
+};
+
+const expandState = {}; // key -> bool
+let rankView = 'general'; // 'general' or the selected stage number
+const STAGE_STAT_KEYS = ['points','mountains','youth','teams'];
+
+/* HTML for a single result row (shared by classifications and stage results).
+   The design's classification tables have no header row — the card head
+   (name + swatch) carries that context, so only the rows are markup here. */
+function resultRowHTML(r){
+  return `
+    <tr class="${r.pos<=3?'podium':''}">
+      <td class="pos">${r.pos}</td>
+      <td class="rider"><span class="rname">${r.rider}</span>${r.team?`<span class="rteam">${r.team}${r.nat?' · '+r.nat:''}</span>`:''}</td>
+      <td class="val">${r.gap!==undefined && r.pos>1 ? r.gap : r.val}</td>
+    </tr>`;
+}
+
+/* Stages selectable in the dropdown: those with result rows or a known winner */
+
+function renderRankSelect(){
+  const sel = document.getElementById('rankStageSelect');
+  const ridden = riddenStages();
+  const valid = rankView==='general' || ridden.some(s=>String(s.n)===String(rankView));
+  if(!valid) rankView = 'general';
+
+  let opts = `<option value="general">${t('rankGeneral')}</option>`;
+  ridden.forEach(s=>{
+    opts += `<option value="${s.n}">${t('rankStageOpt')(s.n, s.route)}</option>`;
+  });
+  sel.innerHTML = opts;
+  sel.value = String(rankView);
+}
+
+function renderResults(){
+  renderRankSelect();
+  document.getElementById('resultsStatusLine').textContent = RESULTS.updated ? fmtUpdated(RESULTS.updated) : '';
+  if(rankView==='general') renderGeneralRankings();
+  else renderStageResult(rankView);
+}
+
+/* General standings: five jerseys + stage winners + race-wide withdrawals */
+/* Per-card divider borders in a 2-col grid: right rule on the left card of
+   each pair, bottom rule on every row but the last. Matches the design's
+   own cardStyle formula (grid cells carry structure, not the cards
+   themselves — see the Modernist system note on 2px divider rules). */
+
+function renderGeneralRankings(){
+  const grid = document.getElementById('resultsGrid');
+  const anyData = CLASS_KEYS.some(k=>RESULTS[k].rows.length>0);
+  let statusHTML = '';
+
+  if(!anyData){
+    statusHTML = `<div class="status-card">${t('resultsEmpty')}</div>`;
+  } else if(RESULTS.updated){
+    statusHTML = `<div class="status-card">${t('resultsStatus')(RESULTS.updated, RESULTS.afterStage)}</div>`;
+  }
+
+  let cardsHTML = '';
+  CLASS_KEYS.forEach((key,i)=>{
+    const c = t('classifications')[key];
+    const rows = RESULTS[key].rows;
+    const expanded = !!expandState[key];
+    const shown = expanded ? rows : rows.slice(0,10);
+
+    let body;
+    if(!rows.length){
+      body = `<p class="empty-cls">${t('classEmpty')}</p>`;
+    } else {
+      body = `<table class="results"><tbody>${shown.map(resultRowHTML).join('')}</tbody></table>`;
+      if(rows.length>10){
+        body += `<button class="expander" data-cls="${key}">${expanded ? t('expandLess') : t('expandMore')(rows.length)}</button>`;
+      }
+    }
+
+    cardsHTML += `<div class="cls-card" style="${cardBorderStyle(i, CLASS_KEYS.length)}">
+      <div class="cls-head">
+        <span class="names"><span class="name">${c.name}</span><span class="fr">${c.fr}</span></span>
+        <span class="swatch" style="background:${JERSEY[key]}"></span>
+      </div>
+      <div class="cls-body">${body}</div>
+    </div>`;
+  });
+
+  const ridden = RESULTS.stageWinners.filter(s=>s.winner);
+  const winnersHTML = `<div class="stagewins-block">
+    <span style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
+      <h3>${t('stageWinnersTitle')}</h3>
+      <span class="stagewins-meta">${t('stageWinnersFr')(ridden.length)}</span>
+    </span>
+    <table class="winners"><tbody>${RESULTS.stageWinners.map(s=>{
+      const spd = stageAvgSpeed(s.n);
+      return `<tr>
+        <td class="n">${s.n}</td>
+        <td class="route">${s.route}</td>
+        <td class="winner">${s.winner || '—'}</td>
+        <td class="speed">${spd ? fmtSpeed(spd) : '—'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>
+  </div>`;
+
+  const allWd = [];
+  RESULTS.stageWinners.forEach(s=>{
+    const sr = RESULTS.stageResults[s.n];
+    (sr && Array.isArray(sr.withdrawals) ? sr.withdrawals : []).forEach(w=>allWd.push(Object.assign({stage:s.n}, w)));
+  });
+  const wdBody = !allWd.length
+    ? `<p class="empty-cls">${t('noWithdrawalsRace')}</p>`
+    : `<table class="results"><tbody>${allWd.map(w=>`
+        <tr>
+          <td class="pos">${w.stage}</td>
+          <td class="rider"><span class="rname">${w.rider}</span>${w.team?`<span class="rteam">${w.team}</span>`:''}</td>
+          <td class="val">${t('withdrawalReasons')[w.reason] || w.reason}</td>
+        </tr>`).join('')}</tbody></table>`;
+  const withdrawalsHTML = `<div class="stagewins-block">
+    <span style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
+      <h3>${t('allWithdrawalsTitle')}</h3>
+      <span class="stagewins-meta">${t('allWithdrawalsFr')(allWd.length)}</span>
+    </span>
+    ${wdBody}
+  </div>`;
+
+  grid.innerHTML = statusHTML + `<div class="clsgrid">${cardsHTML}</div>` + winnersHTML + withdrawalsHTML;
+  bindExpanders(grid);
+}
+
+/* A single stage: finishing order + the stage's other statistics
+   (points and KOM points won, youth and team stage results, combativity) */
+function renderStageResult(n){
+  const grid = document.getElementById('resultsGrid');
+  const sr = RESULTS.stageResults[n] || {};
+  const rows = Array.isArray(sr.rows) ? sr.rows : [];
+  const meta = RESULTS.stageWinners.find(s=>String(s.n)===String(n));
+  const route = meta ? meta.route : '';
+
+  const mainBody = rows.length ? stageStatTable(rows, '__stage') : `<p class="empty-cls">${t('stageResultEmpty')}</p>`;
+  const spd = stageAvgSpeed(n);
+  const sub = route + (spd ? ` · ${t('avgSpeed')(fmtSpeed(spd))}` : '');
+  const mainHTML = `<div class="cls-card" style="border-bottom:2px solid var(--color-divider)">
+    <div class="cls-head">
+      <span class="names"><span class="name">${t('stageResultTitle')(n)}</span><span class="fr">${sub}</span></span>
+      <span class="swatch" style="background:${AUX_SWATCH.winners}"></span>
+    </div>
+    <div class="cls-body">${mainBody}</div>
+  </div>`;
+
+  let cardsHTML = '';
+  if(rows.length){
+    const cards = [];
+    STAGE_STAT_KEYS.forEach(key=>{
+      const c = t('stageStats')[key];
+      const data = Array.isArray(sr[key]) ? sr[key] : [];
+      let body;
+      if(key==='points' || key==='mountains'){
+        body = !data.length
+          ? `<p class="empty-cls">${t('stageStatEmpty')}</p>`
+          : data.map((sec,i)=>
+              (sec.label?`<div class="sec-label">${sec.label}</div>`:'') +
+              stageStatTable(sec.rows||[], `__stage_${key}_${i}`)
+            ).join('');
+      } else {
+        body = stageStatTable(data, '__stage_'+key);
+      }
+      cards.push({name:c.name, fr:c.fr, swatch:JERSEY[key], body});
+    });
+
+    const cc = t('stageStats').combative;
+    const comb = sr.combative;
+    const combBody = comb && comb.rider
+      ? `<table class="results"><tbody>${resultRowHTML({pos:1, rider:comb.rider, team:comb.team, nat:comb.nat, val:''})}</tbody></table>`
+      : `<p class="empty-cls">${t('stageStatEmpty')}</p>`;
+    cards.push({name:cc.name, fr:cc.fr, swatch:AUX_SWATCH.combative, body:combBody});
+
+    const wt = t('stageStats').withdrawals;
+    const wd = Array.isArray(sr.withdrawals) ? sr.withdrawals : [];
+    const wBody = !wd.length
+      ? `<p class="empty-cls">${t('noWithdrawals')}</p>`
+      : `<table class="results"><tbody>${wd.map(w=>`
+          <tr>
+            <td class="pos">${w.bib}</td>
+            <td class="rider"><span class="rname">${w.rider}</span>${w.team?`<span class="rteam">${w.team}</span>`:''}</td>
+            <td class="val">${t('withdrawalReasons')[w.reason] || w.reason}</td>
+          </tr>`).join('')}</tbody></table>`;
+    cards.push({name:wt.name, fr:wt.fr, swatch:AUX_SWATCH.withdrawals, body:wBody});
+
+    cardsHTML = cards.map((c,i)=>`<div class="cls-card" style="${cardBorderStyle(i, cards.length)}">
+      <div class="cls-head">
+        <span class="names"><span class="name">${c.name}</span><span class="fr">${c.fr}</span></span>
+        <span class="swatch" style="background:${c.swatch}"></span>
+      </div>
+      <div class="cls-body">${c.body}</div>
+    </div>`).join('');
+  }
+
+  grid.innerHTML = mainHTML + (cardsHTML ? `<div class="clsgrid">${cardsHTML}</div>` : '');
+  bindExpanders(grid);
+}
+
+/* ---------- TEAMS & RIDERS ----------
+   The start list (23 teams x 8 riders) with every rider's final GC placing,
+   from data/<TOUR>-riders.json — see scripts/fetch_riders.py. Teams are
+   already stored in team-classification order, riders in bib order. */
+let RIDERS = null;
+
+function renderRiders(){
+  const grid = document.getElementById('teamsGrid');
+  if(!RIDERS || !Array.isArray(RIDERS.teams) || !RIDERS.teams.length){
+    grid.innerHTML = `<div class="status-card">${t('teamsEmpty')}</div>`;
+    return;
+  }
+
+  const out = RIDERS.riderCount - RIDERS.finishers;
+  const statusHTML = `<div class="teamsstatus">${t('teamsStatus')(RIDERS.riderCount, RIDERS.teamCount, RIDERS.finishers, out)}</div>`;
+
+  const cardsHTML = RIDERS.teams.map((team,i)=>{
+    const nameHTML = team.url
+      ? `<a class="team-link" href="${team.url}" target="_blank" rel="noopener">${team.name}</a>`
+      : `<span class="team-link">${team.name}</span>`;
+    const sub = team.gcPos
+      ? t('teamClsLine')(team.gcPos, team.gcGap || team.gcVal)
+      : t('teamClsNone');
+    return `<div class="team-card" style="${cardBorderStyle(i, RIDERS.teams.length)}">
+      <div class="team-head">
+        <span class="team-rank${team.gcPos===1?' first':''}">${team.gcPos || '–'}</span>
+        <span class="team-meta">${nameHTML}<span class="team-clsline">${sub}</span></span>
+      </div>
+      <table class="riders">
+        <thead><tr>
+          <th>${t('colBib')}</th><th>${t('colRider')}</th>
+          <th>${t('colGcPos')}</th><th>${t('colGcTime')}</th>
+        </tr></thead>
+        <tbody>${team.riders.map(riderRowHTML).join('')}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+
+  grid.innerHTML = statusHTML + `<div class="clsgrid">${cardsHTML}</div>`;
+}
+
+/* ---------- STATIC TEXT (header/tabs/footer) ---------- */
+function applyStaticText(){
+  document.getElementById('backLinkText').textContent = t('backToTours');
+  document.getElementById('eyebrow').textContent = t('eyebrow');
+  document.getElementById('subDesc').textContent = t('subDesc');
+  document.getElementById('tabStages').textContent = t('tabStages');
+  document.getElementById('tabResults').textContent = t('tabResults');
+  document.getElementById('tabTeams').textContent = t('tabTeams');
+  document.getElementById('rankSelectLabel').textContent = t('rankShowLabel');
+  document.getElementById('stageListHeader').textContent = t('stageListHeader');
+  document.getElementById('disclaimerLabel').textContent = t('disclaimerLabel');
+  document.getElementById('disclaimerText').textContent = t('disclaimer');
+  document.getElementById('sourcesTitle').textContent = t('sourcesTitle');
+  document.getElementById('sourcesBody').innerHTML = t('sourcesBody');
+  document.getElementById('footerNote').textContent = t('footerNote');
+}
+
+/* ---------- LANGUAGE SWITCHER ---------- */
+
+function setLang(newLang){
+  if(newLang!=='fi' && newLang!=='en' && newLang!=='fr') return;
+  lang = newLang;
+  localStorage.setItem(LANG_KEY, lang);
+  document.documentElement.lang = lang;
+  renderAll();
+}
+
+function renderAll(){
+  applyStaticText();
+  updateLangButtons();
+  renderTopStats();
+  renderStageList();
+  renderPanel(stages[activeIdx]);
+  renderResults();
+  renderRiders();
+  syncStageListHeight();
+}
+
+document.querySelectorAll('#langSel button').forEach(btn=>{
+  btn.addEventListener('click', ()=>setLang(btn.dataset.lang));
+});
+
+/* ---------- RANKINGS STAGE SELECTOR ---------- */
+document.getElementById('rankStageSelect').addEventListener('change', e=>{
+  rankView = e.target.value==='general' ? 'general' : Number(e.target.value);
+  Object.keys(expandState).forEach(k=>{ if(k.startsWith('__stage')) delete expandState[k]; });
+  renderResults();
+});
+
+/* ---------- TAB SWITCHING (WAI-ARIA tabs pattern) ---------- */
+const tabButtons = Array.from(document.querySelectorAll('.tabbtn'));
+setupTabs(tabButtons);
+
+/* ---------- AUTOMATIC DATA LOADING ----------
+   The page tries to fetch fresh results from data/<TOUR>-results.json (in
+   the same directory). If the file is missing (e.g. the page was opened
+   directly from disk via the file:// protocol), the RESULTS object above
+   is used as-is. A GitHub Actions workflow updates the results file
+   automatically — see the README. */
+async function loadResults(){
+  try{
+    const resp = await fetch(RESULTS_URL, {cache:'no-store'});
+    if(!resp.ok) throw new Error('not found');
+    const data = await resp.json();
+    ['gc','points','mountains','youth','teams'].forEach(k=>{
+      if(data[k] && Array.isArray(data[k].rows)) RESULTS[k].rows = data[k].rows;
+    });
+    if(data.stageResults && typeof data.stageResults==='object'){
+      RESULTS.stageResults = data.stageResults;
+    }
+    if(Array.isArray(data.stageWinners)){
+      data.stageWinners.forEach(w=>{
+        const row = RESULTS.stageWinners.find(s=>s.n===w.n);
+        if(row && w.winner) row.winner = w.winner;
+      });
+    }
+    if(data.updated) RESULTS.updated = data.updated;
+    if(data.afterStage) RESULTS.afterStage = data.afterStage;
+    renderResults();
+  }catch(e){
+    /* No automatic data available — show the built-in state. */
+  }
+}
+
+/* Start list for the "Teams & riders" tab. Missing file (e.g. the page was
+   opened over file://) leaves the placeholder note in place. */
+async function loadRiders(){
+  try{
+    const resp = await fetch(RIDERS_URL, {cache:'no-store'});
+    if(!resp.ok) throw new Error('not found');
+    const data = await resp.json();
+    if(data && Array.isArray(data.teams)) RIDERS = data;
+    renderRiders();
+  }catch(e){
+    /* No start list available — the view keeps showing t('teamsEmpty'). */
+  }
+}
+
+/* Illustrative race-day weather (see the WEATHER block above). Missing
+   file/stage leaves the "no data" note in the panel. */
+async function loadWeather(){
+  try{
+    const resp = await fetch(WEATHER_URL, {cache:'no-store'});
+    if(!resp.ok) throw new Error('not found');
+    const data = await resp.json();
+    if(data && data.stages) WEATHER = data;
+    renderStageList();
+    renderPanel(stages[activeIdx]);
+  }catch(e){
+    /* No weather data available — the panel keeps showing t('wxNoData'). */
+  }
+}
+const STAGE_DATES = {
+  '2027-07-02':1,'2027-07-03':2,'2027-07-04':3
+};
+function todayStageIndex(){
+  const d = new Date();
+  const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  let n;
+  if(key in STAGE_DATES) n = STAGE_DATES[key];
+  else if(key < '2027-07-02') n = 1;
+  else n = 3;
+  const idx = stages.findIndex(s=>s.n===n);
+  return idx >= 0 ? idx : 0;
+}
+
+/* init */
+document.documentElement.lang = lang;
+activeIdx = todayStageIndex();
+renderAll();
+loadResults();
+loadRiders();
+loadWeather();
+</script>
+<script data-goatcounter="https://grandtours.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -224,7 +224,13 @@ describe('riderRowHTML', () => {
 });
 
 describe('HTML page scripts initialization', () => {
-  const pages = ['2026/tdf.html', '2026/giro.html', '2026/femmes.html', '2026/vuelta.html'];
+  const pages = [
+    '2026/tdf.html',
+    '2026/giro.html',
+    '2026/femmes.html',
+    '2026/vuelta.html',
+    '2027/tdf.html',
+  ];
 
   pages.forEach((page) => {
     it(`executes ${page} without syntax or runtime initialization errors`, () => {
