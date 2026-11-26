@@ -606,11 +606,10 @@ function renderPanel(st){
   bindMapControls(st);
   initStageMap(st);
 }
-/* Jersey swatch colours: the site's own established maglia hexes (theme.css
-   --rosa/--ciclamino/--azzurra/--bianca), not Modernist tokens — the system
-   has one accent, so real jersey colours are content, same treatment as the
-   hub's flag stripes. Teams uses a neutral token instead of --grey (which
-   equals --bianca in theme.css) so it reads as a distinct swatch. */
+/* Jersey swatch colours: the site's established maglia hexes, not Modernist
+   tokens — the system has one accent, so real jersey colours are content, same
+   treatment as the hub's flag stripes. Teams uses a neutral token instead of
+   the grey #8B8F84 (the youth swatch) so it reads as a distinct swatch. */
 const CLASSES = [
   {key:'gc',        nameKey:'gcName',     jerseyKey:'gcJersey',     colour:'#D6497F',                cols:'time'},
   {key:'points',    nameKey:'pointsName', jerseyKey:'pointsJersey', colour:'#8E4BB0',                cols:'pts'},

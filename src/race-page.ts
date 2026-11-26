@@ -582,9 +582,9 @@ function riderRowHTML(r: any): string {
   const val = out ? '' : r.gcGap || r.gcVal || '';
   return `
     <tr class="${out ? 'out' : r.gcPos && r.gcPos <= 3 ? 'podium' : ''}">
-      <td class="bib">${r.bib != null ? r.bib : '–'}</td>
-      <td class="rider"><span class="rname">${r.name}</span>${sub ? `<span class="rsub">${sub}</span>` : ''}</td>
-      <td class="gcpos">${gcPos}</td>
-      <td class="val">${val}</td>
+      <td class="bib">${r.bib != null ? esc(r.bib) : '–'}</td>
+      <td class="rider"><span class="rname">${esc(r.name)}</span>${sub ? `<span class="rsub">${esc(sub)}</span>` : ''}</td>
+      <td class="gcpos">${esc(gcPos)}</td>
+      <td class="val">${esc(val)}</td>
     </tr>`;
 }

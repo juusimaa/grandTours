@@ -922,7 +922,7 @@ function renderRiders(){
 
   const cardsHTML = RIDERS.teams.map((team,i)=>{
     const nameHTML = team.url
-      ? `<a class="team-link" href="${team.url}" target="_blank" rel="noopener">${esc(team.name)}</a>`
+      ? `<a class="team-link" href="${esc(team.url)}" target="_blank" rel="noopener">${esc(team.name)}</a>`
       : `<span class="team-link">${esc(team.name)}</span>`;
     const sub = team.gcPos
       ? t('teamClsLine')(team.gcPos, team.gcGap || team.gcVal)

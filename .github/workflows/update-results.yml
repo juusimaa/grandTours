@@ -160,6 +160,13 @@ jobs:
           npm test
           rm -rf node_modules
 
+      # Scraper tests (no network). Like npm test above, a failure stops the
+      # deploy. -B: no __pycache__ in the Pages artifact (path: .).
+      - name: Run scraper tests
+        run: |
+          python -B scripts/test_fetch_results.py
+          python -B scripts/test_fetch_riders.py
+
       - uses: actions/configure-pages@v6
 
       # Package the whole site (index.html + data/) as a Pages artifact.

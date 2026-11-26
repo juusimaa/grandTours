@@ -24,7 +24,6 @@ test/riders.test.ts                   # landing-page link and rider-search inter
 test/landing.test.ts                  # landing-page year picker tests
 race-page.css                         # shared component styles for all four race pages, layered on modernist.css
 modernist.css                         # shared design tokens (colour, type, spacing) used by every page
-theme.css                             # earlier colour theme — no longer linked from any page, kept for reference
 
 data/<tour>-results.json              # classifications + stage winners — static (all races are finished)
 data/<tour>-riders.json               # start list: teams, riders, each rider's GC position/gap — static, final GC

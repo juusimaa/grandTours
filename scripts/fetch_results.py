@@ -267,7 +267,7 @@ def fetch_stage_data(base: str, stage_no: int):
         try:
             html = fetch(base + url)
         except Exception:
-            return []
+            return None  # failed fetch: caller omits the key so the stage is refetched
         if sectioned:
             return parse_sections(html, team_only=team_only, kind=kind)
         return parse_table(html, team_only=team_only, kind=kind)
@@ -287,14 +287,16 @@ def fetch_stage_data(base: str, stage_no: int):
 
     data = {"rows": rows}
     for key, cfg in STAGE_CLASS_CONFIG.items():
-        data[key] = table(cfg["code"], cfg["team_only"], cfg["kind"], cfg["sectioned"])
+        tbl = table(cfg["code"], cfg["team_only"], cfg["kind"], cfg["sectioned"])
+        if tbl is not None:
+            data[key] = tbl
 
     combative = None
     if stage_dict.get("ice"):
         try:
             combative = parse_combative(fetch(base + stage_dict["ice"]))
         except Exception:
-            combative = None
+            return data  # omit the key on a fetch error; no URL / no row stays None
     data["combative"] = combative
     return data
 
@@ -353,6 +355,7 @@ def fetch_letour(tour_id: str, base: str, out: Path) -> int:
                 rows = parse_table(table_html, cfg["team_only"], cfg["kind"])
             except Exception as e:
                 print(f"  warning: fetching {key} failed: {e}")
+                rows = prev.get(key, {}).get("rows", [])  # keep known-good data
         data[key] = {"rows": rows}
 
     # letour.fr flips the "latest stage" pointer on /en/rankings already when
@@ -389,7 +392,7 @@ def fetch_letour(tour_id: str, base: str, out: Path) -> int:
             entry = prev_stage_results.get(key) or {}
             if n == stage_no or not stage_entry_complete(entry):
                 try:
-                    entry = fetch_stage_data(base, n) or entry
+                    entry = {**entry, **fetch_stage_data(base, n)}
                 except Exception as e:
                     print(f"  stage {n} results: {e}")
         if entry.get("rows"):
@@ -461,9 +464,14 @@ def main() -> int:
     if unknown:
         print(f"Unknown tour(s): {', '.join(unknown)}. Known: {', '.join(TOURS)}")
         return 1
+    failed = False
     for tour_id in requested:
-        fetch_tour(tour_id, TOURS[tour_id])
-    return 0
+        try:
+            fetch_tour(tour_id, TOURS[tour_id])
+        except Exception as e:
+            print(f"[{tour_id}] failed: {e}")
+            failed = True
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
