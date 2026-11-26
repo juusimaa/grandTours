@@ -16,7 +16,7 @@ from pathlib import Path
 import requests
 from selectolax.parser import HTMLParser
 
-RESULTS = Path(__file__).resolve().parent.parent / "data/giro2026-results.json"
+RESULTS = Path(__file__).resolve().parent.parent / "data/2026/giro2026-results.json"
 BASE = "https://www.giroditalia.it/en/classifiche"
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept-Language": "en-US,en;q=0.9"}
 CLASSIFICATIONS = {

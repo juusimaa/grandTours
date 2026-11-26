@@ -3,7 +3,7 @@
 Grand tour results fetch — self-updating standings.
 
 Fetches the standings in all categories after the most recently raced
-stage and writes them to data/<tour>-results.json, which index.html reads
+stage and writes them to data/<year>/<tour>-results.json, which index.html reads
 automatically.
 
 This scaffolding is tour-aware so the site can cover all three grand tours.
@@ -41,7 +41,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 #   "tdf2027": {
 #       "source": "letour",
 #       "base": "https://www.letour.fr",
-#       "out": "tdf2027-results.json",
+#       "out": "2027/tdf2027-results.json",
 #   },
 TOURS = {}
 

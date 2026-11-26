@@ -117,9 +117,9 @@
 <script src="../dist/race-page.js"></script>
 <script>
 /* ---------- TOUR ---------- */
-const DATA_URL = '../data/giro2026-results.json';
-const ROUTES_URL = '../data/giro2026-routes.json';
-const RIDERS_URL = '../data/giro2026-riders.json';
+const DATA_URL = '../data/2026/giro2026-results.json';
+const ROUTES_URL = '../data/2026/giro2026-routes.json';
+const RIDERS_URL = '../data/2026/giro2026-riders.json';
 const LANG_KEY = 'tdf2026-lang';
 const STRINGS = {
   fi: {
@@ -167,7 +167,7 @@ const STRINGS = {
     colPos: '#', colRider: 'Ajaja', colTime: 'Aika', colGap: 'Ero', colPts: 'Pisteet',
     teamsHeading: 'Joukkueet & ajajat',
     teamsStatus: (riders, teams, fin, out) => `Lähtijät: ${teams} joukkuetta ja ${riders} ajajaa — ${fin} ajajaa maalissa Roomassa, ${out} jäi pois kilpailusta. Sija ja ero ovat lopullisesta kokonaiskilpailusta.`,
-    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta data/giro2026-riders.json, jonka scripts/fetch_riders.py kokoaa giroditalia.it:n joukkuesivuista. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
+    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta data/2026/giro2026-riders.json, jonka scripts/fetch_riders.py kokoaa giroditalia.it:n joukkuesivuista. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
     teamClsLine: (pos, val) => `Joukkuekilpailu #${pos} · ${val}`,
     teamClsNone: 'Ei sijoitusta joukkuekilpailussa',
     colBib: 'Nro', colGcPos: 'Sija', colGcTime: 'Aika / ero',
@@ -226,7 +226,7 @@ const STRINGS = {
     colPos: '#', colRider: 'Rider', colTime: 'Time', colGap: 'Gap', colPts: 'Points',
     teamsHeading: 'Teams & riders',
     teamsStatus: (riders, teams, fin, out) => `Start list: ${teams} teams and ${riders} riders — ${fin} finished in Rome, ${out} left the race. Position and gap are from the final general classification.`,
-    teamsEmpty: 'The rider list could not be loaded. It is read from data/giro2026-riders.json, which scripts/fetch_riders.py builds from the giroditalia.it team pages. If you opened this page straight from disk (file://), the browser cannot read that file.',
+    teamsEmpty: 'The rider list could not be loaded. It is read from data/2026/giro2026-riders.json, which scripts/fetch_riders.py builds from the giroditalia.it team pages. If you opened this page straight from disk (file://), the browser cannot read that file.',
     teamClsLine: (pos, val) => `Team classification #${pos} · ${val}`,
     teamClsNone: 'Not placed in the team classification',
     colBib: 'No.', colGcPos: 'GC', colGcTime: 'Time / gap',
@@ -285,7 +285,7 @@ const STRINGS = {
     colPos: '#', colRider: 'Coureur', colTime: 'Temps', colGap: 'Écart', colPts: 'Points',
     teamsHeading: 'Équipes et coureurs',
     teamsStatus: (riders, teams, fin, out) => `Liste des partants : ${teams} équipes et ${riders} coureurs — ${fin} à l’arrivée à Rome, ${out} hors course. La place et l’écart proviennent du classement général final.`,
-    teamsEmpty: 'La liste des coureurs n’a pas pu être chargée. Elle provient de data/giro2026-riders.json, généré par scripts/fetch_riders.py à partir des pages d’équipes de giroditalia.it. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
+    teamsEmpty: 'La liste des coureurs n’a pas pu être chargée. Elle provient de data/2026/giro2026-riders.json, généré par scripts/fetch_riders.py à partir des pages d’équipes de giroditalia.it. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
     teamClsLine: (pos, val) => `Classement par équipes #${pos} · ${val}`,
     teamClsNone: 'Non classée au classement par équipes',
     colBib: 'Dossard', colGcPos: 'Clt', colGcTime: 'Temps / écart',
@@ -717,7 +717,7 @@ function renderResults(){
 
 /* ---------- TEAMS & RIDERS ----------
    Start list (23 teams x 8 riders) with each rider's final GC place, from
-   data/giro2026-riders.json. giroditalia.it publishes no reason codes beyond
+   data/2026/giro2026-riders.json. giroditalia.it publishes no reason codes beyond
    DNF, so the sub line always reads "Abandoned (DNF)" for a rider who left —
    folded under the name rather than a separate badge, matching tdf2026.html. */
 function teamCard(team, i, n){

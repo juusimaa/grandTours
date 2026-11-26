@@ -141,9 +141,9 @@
    final start list with each rider's final GC placing (RIDERS, further
    down) -- see scripts/fetch_riders.py. */
 const LANG_KEY = 'tdf2026-lang';
-const ROUTES_URL = '../data/femmes2026-routes.json';
-const RESULTS_URL = '../data/femmes2026-results.json';
-const RIDERS_URL = '../data/femmes2026-riders.json';
+const ROUTES_URL = '../data/2026/femmes2026-routes.json';
+const RESULTS_URL = '../data/2026/femmes2026-results.json';
+const RIDERS_URL = '../data/2026/femmes2026-riders.json';
 
 const STRINGS = {
   fi: {
@@ -195,7 +195,7 @@ const STRINGS = {
     colRider: 'Ajaja', colTeam: 'Joukkue',
     withdrawalReasons: {DNS:'Ei startannut (DNS)', DNF:'Keskeytti (DNF)', OTL:'Aikaraja ylittyi (OTL)'},
     teamsStatus: (riders, teams, fin, out) => `Lähtijät: ${teams} joukkuetta ja ${riders} ajajaa — ${fin} ajajaa maalissa Nizzassa, ${out} jäi pois kilpailusta.`,
-    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta <code>data/femmes2026-riders.json</code>, jonka <code>scripts/fetch_riders.py</code> kokoaa letourfemmes.fr:n lähtölistasta. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
+    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta <code>data/2026/femmes2026-riders.json</code>, jonka <code>scripts/fetch_riders.py</code> kokoaa letourfemmes.fr:n lähtölistasta. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
     teamClsLine: (pos, val) => `Joukkuekilpailu #${pos} · ${val}`,
     teamClsNone: 'Ei sijoitusta joukkuekilpailussa',
     colBib: 'Nro', colGcPos: 'Sija', colGcTime: 'Aika / ero',
@@ -262,7 +262,7 @@ const STRINGS = {
     colRider: 'Rider', colTeam: 'Team',
     withdrawalReasons: {DNS:'Did not start (DNS)', DNF:'Abandoned (DNF)', OTL:'Outside the time limit (OTL)'},
     teamsStatus: (riders, teams, fin, out) => `Start list: ${teams} teams and ${riders} riders — ${fin} finished in Nice, ${out} left the race.`,
-    teamsEmpty: 'The rider list could not be loaded. It is read from <code>data/femmes2026-riders.json</code>, which <code>scripts/fetch_riders.py</code> builds from the letourfemmes.fr start list. If you opened this page straight from disk (file://), the browser cannot read that file.',
+    teamsEmpty: 'The rider list could not be loaded. It is read from <code>data/2026/femmes2026-riders.json</code>, which <code>scripts/fetch_riders.py</code> builds from the letourfemmes.fr start list. If you opened this page straight from disk (file://), the browser cannot read that file.',
     teamClsLine: (pos, val) => `Team classification #${pos} · ${val}`,
     teamClsNone: 'Not placed in the team classification',
     colBib: 'No.', colGcPos: 'GC', colGcTime: 'Time / gap',
@@ -329,7 +329,7 @@ const STRINGS = {
     colRider: 'Coureuse', colTeam: 'Équipe',
     withdrawalReasons: {DNS:'Non-partante (DNS)', DNF:'Abandon (DNF)', OTL:'Hors délai (OTL)'},
     teamsStatus: (riders, teams, fin, out) => `Liste des partantes : ${teams} équipes et ${riders} coureuses — ${fin} à l’arrivée à Nice, ${out} hors course.`,
-    teamsEmpty: 'La liste des coureuses n’a pas pu être chargée. Elle provient de <code>data/femmes2026-riders.json</code>, généré par <code>scripts/fetch_riders.py</code> à partir de la liste des partantes de letourfemmes.fr. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
+    teamsEmpty: 'La liste des coureuses n’a pas pu être chargée. Elle provient de <code>data/2026/femmes2026-riders.json</code>, généré par <code>scripts/fetch_riders.py</code> à partir de la liste des partantes de letourfemmes.fr. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
     teamClsLine: (pos, val) => `Classement par équipes #${pos} · ${val}`,
     teamClsNone: 'Non classée au classement par équipes',
     colBib: 'Dossard', colGcPos: 'Clt', colGcTime: 'Temps / écart',
@@ -371,7 +371,7 @@ const CLASS_KEYS = ['gc','points','mountains','youth'];
    spellings of real people's names.
 
    This object holds only the top ~15 per table as a same-page fallback
-   (so the page still shows something if data/femmes2026-results.json can't
+   (so the page still shows something if data/2026/femmes2026-results.json can't
    be fetched, e.g. opened via file://). The real, full field (up to 145
    riders per table) lives in that JSON file and overwrites these arrays at
    load time via loadResults() below -- see RESULTS_URL. */
@@ -1462,7 +1462,7 @@ function renderResults(){
 }
 /* ---------- TEAMS & RIDERS ----------
    The final start list (21 teams x 7 riders) with every rider's final GC
-   placing, from data/femmes2026-riders.json -- see scripts/fetch_riders.py.
+   placing, from data/2026/femmes2026-riders.json -- see scripts/fetch_riders.py.
    Teams are stored in team-classification order, riders in bib order. */
 let RIDERS = null;
 
@@ -1553,7 +1553,7 @@ setupTabs(tabButtons);
 /* ---------- FULL RESULTS DATA ----------
    The page renders immediately with the built-in top-~15 fallback above,
    then tries to fetch the full field (up to 145 riders per table) from
-   data/femmes2026-results.json and re-render. If the fetch fails (e.g. the
+   data/2026/femmes2026-results.json and re-render. If the fetch fails (e.g. the
    page was opened directly from disk via file://), the fallback stays. */
 async function loadResults(){
   try{

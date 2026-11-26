@@ -4,9 +4,9 @@ import { JSDOM } from 'jsdom';
 import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
-const results = JSON.parse(readFileSync(resolve(root, 'data/giro2026-results.json'), 'utf8'));
-const routes = JSON.parse(readFileSync(resolve(root, 'data/giro2026-routes.json'), 'utf8'));
-const riders = JSON.parse(readFileSync(resolve(root, 'data/giro2026-riders.json'), 'utf8'));
+const results = JSON.parse(readFileSync(resolve(root, 'data/2026/giro2026-results.json'), 'utf8'));
+const routes = JSON.parse(readFileSync(resolve(root, 'data/2026/giro2026-routes.json'), 'utf8'));
+const riders = JSON.parse(readFileSync(resolve(root, 'data/2026/giro2026-riders.json'), 'utf8'));
 
 async function waitFor(check: () => boolean): Promise<void> {
   for (let attempt = 0; attempt < 100; attempt++) {
@@ -25,9 +25,9 @@ function openPage(stageResults = results.stageResults): JSDOM {
     `<script>${shared}</script>`,
   );
   const fixtures = new Map([
-    ['../data/giro2026-results.json', { ...results, stageResults }],
-    ['../data/giro2026-routes.json', routes],
-    ['../data/giro2026-riders.json', riders],
+    ['../data/2026/giro2026-results.json', { ...results, stageResults }],
+    ['../data/2026/giro2026-routes.json', routes],
+    ['../data/2026/giro2026-riders.json', riders],
   ]);
   return new JSDOM(html, {
     url: 'https://example.test/2026/giro.html',
