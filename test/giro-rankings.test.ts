@@ -51,6 +51,11 @@ describe('Giro Rankings tab', () => {
       expect(document.getElementById('tabResults')?.textContent).toBe('Rankings');
       expect(document.getElementById('rankSelectLabel')?.textContent).toBe('Show');
       expect(select.value).toBe('general');
+      const stats = [...document.querySelectorAll('#topstats .statcell .value')].map(
+        (el) => el.textContent,
+      );
+      expect(stats).toEqual(['3,459.2 km', '48,700 m', '21', '3', '6']);
+      expect(document.getElementById('finalTag')).toBeNull();
       expect(document.querySelector('#view-results .clsgrid')).not.toBeNull();
       expect(document.querySelector('#view-results .stagewins-block')).not.toBeNull();
 
