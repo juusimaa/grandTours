@@ -38,6 +38,10 @@ describe('Giro 2027 page (route only)', () => {
       await waitFor(() => document.querySelectorAll('#stageList .stage-btn').length === 21);
       await waitFor(() => !!document.querySelector('#teamsGrid .status-card'));
       expect(document.getElementById('panel')?.textContent).toContain('Trieste');
+      const stats = [...document.querySelectorAll('#topstats .statcell .value')].map(
+        (el) => el.textContent,
+      );
+      expect(stats).toEqual(['3,418.9 km', '50,250 m', '21', '2', '6']);
       expect(document.querySelector('#teamsGrid .status-card')?.textContent).toContain(
         'start list has not been published',
       );
