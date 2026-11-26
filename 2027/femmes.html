@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f3f2f2">
+<title>Tour de France Femmes 2027 — etapit & reitti</title>
+<meta name="description" content="Tour de France Femmes 2027 (30.7.–7.8.2027) — kaikki 9 etappia, reitit ja havainnolliset korkeusprofiilit. Kilpailu starttaa Leedsistä. Tulokset ilmestyvät kilpailun alettua. · All 9 stages, routes and illustrative profiles of the 2027 Tour de France Femmes; results follow once the race starts.">
+<link rel="canonical" href="https://juusimaa.github.io/Tdf2026/2027/femmes.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Grand Tours 2027">
+<meta property="og:title" content="Tour de France Femmes 2027 — stages & route">
+<meta property="og:description" content="All 9 stages, routes and illustrative profiles of the 2027 Tour de France Femmes.">
+<meta property="og:url" content="https://juusimaa.github.io/Tdf2026/2027/femmes.html">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231E2A22'/%3E%3Cpath d='M4 23 L11 12 L16 17 L22 7 L28 23 Z' fill='%23C99A2E'/%3E%3Ccircle cx='22' cy='7' r='2.6' fill='%23B23B32'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Leaflet (real interactive route map, restyled to the Modernist chrome).
+     Loaded from unpkg with Subresource Integrity so a tampered CDN response
+     is rejected. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<!-- Modernist design tokens (shared with index.html / tdf2026.html). -->
+<link rel="stylesheet" href="../modernist.css">
+<link rel="stylesheet" href="../race-page.css">
+<style>
+
+  /* ---------- results tab ---------- */
+  .sectionhead{padding:var(--space-4) clamp(20px,4vw,48px);border-bottom:2px solid var(--color-divider);font-family:var(--font-heading);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;}
+  table.winners tr.pink td.winner{color:var(--color-accent-700);}
+</style>
+</head>
+<body>
+<noscript>
+  <div class="noscript-note">
+    <b>JavaScript pois käytöstä</b><br>
+    Tämä sivu rakentaa etapit, profiilit ja tulokset selaimessa JavaScriptillä.
+    Ota JavaScript käyttöön nähdäksesi sisällön. Viralliset tulokset: letourfemmes.fr, procyclingstats.com.
+    <hr style="border:none;border-top:1px solid var(--color-divider);margin:10px 0;">
+    <b>JavaScript is disabled</b><br>
+    This page builds the stages, profiles and results in your browser with JavaScript.
+    Please enable JavaScript to view the content. Official results: letourfemmes.fr, procyclingstats.com.
+  </div>
+</noscript>
+
+<header class="tdf-header">
+  <div class="left">
+    <a class="backlink" id="backLink" href="../index.html">← <span id="backLinkText"></span></a>
+    <span class="wordmark">Tour de France Femmes 2027</span>
+  </div>
+  <div class="tdf-langs" id="langSel" role="group" aria-label="Kieli / Language">
+    <button class="langbtn" data-lang="fi" aria-label="Suomeksi" aria-pressed="false">FI</button>
+    <button class="langbtn" data-lang="fr" aria-label="En français" aria-pressed="false">FR</button>
+    <button class="langbtn" data-lang="en" aria-label="In English" aria-pressed="false">EN</button>
+  </div>
+</header>
+
+<section class="tdf-hero">
+  <span class="eyebrow" id="eyebrow"></span>
+  <h1>Tour de France Femmes 2027</h1>
+  <div class="stripe"><span style="background:#0055a4"></span><span style="background:#ffffff"></span><span style="background:#ef4135"></span></div>
+  <p class="lede" id="subDesc"></p>
+</section>
+
+<div class="statrow" id="topstats"></div>
+
+<nav class="tabs" role="tablist" aria-label="Näkymät / Views">
+  <button class="tabbtn active" data-view="stages" role="tab" id="tabStages"
+          aria-controls="view-stages" aria-selected="true" tabindex="0"></button>
+  <button class="tabbtn" data-view="results" role="tab" id="tabResults"
+          aria-controls="view-results" aria-selected="false" tabindex="-1"></button>
+  <button class="tabbtn" data-view="teams" role="tab" id="tabTeams"
+          aria-controls="view-teams" aria-selected="false" tabindex="-1"></button>
+</nav>
+
+<section class="view active" id="view-stages" role="tabpanel" aria-labelledby="tabStages" tabindex="0">
+  <div class="stagelayout">
+    <nav class="stagerail">
+      <div class="railhead" id="stageListHeader"></div>
+      <ul class="stagerail-list" id="stageList"></ul>
+    </nav>
+    <main class="panel" id="panel"></main>
+  </div>
+</section>
+
+<section class="view" id="view-results" role="tabpanel" aria-labelledby="tabResults" tabindex="0">
+  <div class="toolbar">
+    <label class="rlabel" id="rankSelectLabel" for="rankStageSelect"></label>
+    <select class="rankselect" id="rankStageSelect"></select>
+    <span class="statusline" id="resultsStatusLine"></span>
+  </div>
+  <div id="resultsGrid"></div>
+</section>
+
+<section class="view" id="view-teams" role="tabpanel" aria-labelledby="tabTeams" tabindex="0">
+  <div id="teamsGrid"></div>
+</section>
+
+<footer class="tdf-footer">
+  <span class="disclabel" id="disclaimerLabel"></span>
+  <p class="discbody" id="disclaimerText"></p>
+  <p class="discbody" id="profileDisclaimer"></p>
+  <span class="sourcestitle" id="sourcesLabel"></span>
+  <p class="sourcesbody" id="sourcesText"></p>
+  <span class="disclabel" id="footerNote"></span>
+</footer>
+
+<script src="../dist/race-page.js"></script>
+<script>
+/* ---------- TOUR ---------- */
+const DATA_URL = '../data/2027/femmes2027-results.json';
+const ROUTES_URL = '../data/2027/femmes2027-routes.json';
+const RIDERS_URL = '../data/2027/femmes2027-riders.json';
+const LANG_KEY = 'tdf2026-lang';
+const STRINGS = {
+  fi: {
+    backToTours: 'Grand Tourit',
+    eyebrow: 'Reitti · 6. Tour de France Femmes · 30.7.–7.8.2027',
+    subDesc: 'Tour de France Femmes starttaa Leedsistä Englannista perjantaina 30. heinäkuuta 2027. Yhdeksän päivän kisa ilman lepopäivää ajaa Lontoon joukkueaika-ajon kautta Ranskaan ja päättyy Puy de Dômen huipulle. Tulokset ilmestyvät kilpailun alettua.',
+    statDistance: 'Kokonaismatka', statGain: 'Nousumetrit', statStages: 'Etapit', statRestDays: 'Lepopäivät', statSummits: 'Mäkimaalit',
+    tabStages: 'Etapit & profiilit', tabResults: 'Sijoitukset', tabTeams: 'Joukkueet & ajajat',
+    stageListHeader: '9 etappia',
+    classHeading: 'Luokitukset',
+    stagesHeading: 'Etappivoittajat',
+    rankShowLabel: 'Näytä', rankGeneral: 'Kokonaistilanne — kaikki paidat',
+    rankStageOpt: (n,route) => `Etappi ${n} · ${route}`,
+    stageResultTitle: n => `Etapin ${n} tulos`,
+    stageResultEmpty: 'Tämän etapin tuloksia ei ole saatavilla.',
+    stageClassHeading: n => `Luokitukset etapin ${n} jälkeen`,
+    stageClassEmpty: 'Tämän etapin luokituksia ei ole saatavilla.',
+    expandLess: '▲ Näytä vain top 10', expandMore: n => `▼ Näytä kaikki (${n})`,
+    restDay: 'Lepopäivä',
+    stagePrefix: 'Etappi',
+    factDistance: 'Matka', factGain: 'Nousumetrit', factType: 'Tyyppi', factWinner: 'Etappivoitto',
+    descHeader: 'Etapin kuvaus', climbsHeader: 'Mäkipisteet (KOM)',
+    climbHead: ['Nousu', 'Lk.', 'Pituus', 'Kaltevuus', 'Kohta'],
+    noClimbs: 'Ei luokiteltuja nousuja.',
+    sprintsHeader: 'Kirisprintit', sprintHead: ['Sprintti', 'Kohta'],
+    sprintChip: 'Kirisprintti', noSprints: 'Ei kirisprinttejä.', atKm: 'km',
+    legCat: 'Lk.', legUncat: 'Luokittelematon', legSprint: 'Kirisprintti',
+    chartCaption: 'Havainnollistava profiili — nousut on merkitty todelliseen kilometrikohtaan, kun se tunnetaan; korkeuskäyrä ei ole mitattua GPS-dataa.',
+    profileAria: n => `Etapin ${n} havainnollistava korkeusprofiili`,
+    minimapAria: n => `Etapin ${n} likimääräinen sijainti kartalla`,
+    minimapExpand: 'Suurenna kartta',
+    minimapCollapse: 'Pienennä kartta',
+    minimapRecenter: 'Keskitä kartta reittiin',
+    minimapCaption: 'Etapin oikea reitti OpenStreetMap-kartalla. Kulta = lähtö, punainen = maali. Sulje oikean yläkulman painikkeesta.',
+    minimapCaptionApprox: 'Reittidataa ei vielä saatavilla — näytetään suora viiva lähdöstä maaliin. Sulje oikean yläkulman painikkeesta.',
+    summitNote: name => `Maalinousu: ${name}.`,
+    winnerNote: w => `Etappivoitto: ${w}.`,
+    typeLabels: {flat:'Tasainen', hilly:'Kukkulainen / mäkinen', mountain:'Vuoristoetappi', itt:'Joukkueaika-ajo'},
+    typeDesc: {flat:'Tasainen etappi', hilly:'Mäkinen etappi', mountain:'Vuoristoetappi', itt:'Joukkueaika-ajo'},
+    gcName: 'Kokonaiskilpailu', gcJersey: 'Maillot jaune — keltainen paita',
+    pointsName: 'Pistekilpailu', pointsJersey: 'Maillot vert — vihreä paita',
+    momName: 'Mäkikilpailu', momJersey: 'Maillot à pois — pallopaita',
+    youthName: 'Nuorten kilpailu', youthJersey: 'Maillot blanc — valkoinen paita (alle 26 v)',
+    colPos: '#', colRider: 'Ajaja', colTime: 'Aika', colGap: 'Ero', colPts: 'Pisteet',
+    teamsHeading: 'Joukkueet & ajajat',
+    teamsStatus: (riders, teams, fin, out) => `Lähtijät: ${teams} joukkuetta ja ${riders} ajajaa — ${fin} ajajaa maalissa, ${out} jäi pois kilpailusta. Sija ja ero päivittyvät kilpailun aikana.`,
+    teamsEmpty: 'Lähtölistaa ei ole vielä julkaistu. Kilpailu starttaa Leedsistä pe 30.7.2027; joukkueet ja ajajat ilmestyvät tähän, kun lista on saatavilla (data/2027/femmes2027-riders.json).',
+    teamClsLine: (pos, val) => `Joukkuekilpailu #${pos} · ${val}`,
+    teamClsNone: 'Ei sijoitusta joukkuekilpailussa',
+    colBib: 'Nro', colGcPos: 'Sija', colGcTime: 'Aika / ero',
+    riderOutOnStage: n => `Etapilla ${n}`,
+    riderOutUnknown: 'Ei maalissa',
+    dnfTitle: 'Keskeytti (DNF)',
+    colStage: 'Etappi', colRoute: 'Reitti', colWinner: 'Voittaja',
+    profileDisclaimer: 'Korkeusprofiilit ovat havainnollistavia: käyrän muoto on rakennettu nousujen sijainneista, mutta se ei ole GPS-mitattua korkeusdataa. Vain ne nousut, joiden kilometrikohta tunnetaan, on merkitty profiiliin (osa likimääräisiä). Nousujen luokat näytetään vasta, kun järjestäjä on ne julkaissut — muutoin "—". Matkat ovat ennen homologointia. Nousujen pituudet ja kaltevuudet: cyclingnews.com. Etappivoittajat: Tulokset-välilehti.',
+    disclaimerLabel: 'Ei-virallinen fanisivusto.',
+    disclaimerText: 'Tämä on epävirallinen, ei-kaupallinen fanisivusto, joka ei liity A.S.O.:hon tai Tour de France Femmesiin. Tulokset ovat oikeudenomistajiensa omaisuutta.',
+    sourcesLabel: 'Lähteet:', sourcesText: 'Reitti, etapit ja matkat: letourfemmes.fr (kokonaisreitti esitelty 22.10.2026), cyclingnews.com ja procyclinguk.com. Nousujen tiedot: cyclingnews.com. Reittijäljet (GPX) eivät ole vielä saatavilla, joten kartalla näkyy suora viiva lähdöstä maaliin. Etappien tyypit on päätelty viralliskuvauksista. Tulokset, joukkueet ja ajajat lisätään kilpailun alettua.',
+    footerNote: '© 2027 Jouni Uusimaa · Sivun ulkoasu ja koodi (MIT-lisenssi). Epävirallinen, ei-kaupallinen fanisivusto. Ei liity A.S.O.:hon tai Tour de France Femmesiin. Tulokset ovat oikeudenomistajiensa omaisuutta.',
+  },
+  en: {
+    backToTours: 'Grand Tours',
+    eyebrow: 'Route · 6th Tour de France Femmes · 30 Jul–7 Aug 2027',
+    subDesc: 'The Tour de France Femmes starts in Leeds, England, on Friday 30 July 2027. Nine days without a rest day take the race through a London team time trial into France and up to the summit of the Puy de Dôme. Results appear once the race starts.',
+    statDistance: 'Total distance', statGain: 'Elevation gain', statStages: 'Stages', statRestDays: 'Rest days', statSummits: 'Summit finishes',
+    tabStages: 'Stages & profiles', tabResults: 'Rankings', tabTeams: 'Teams & riders',
+    stageListHeader: '9 stages',
+    classHeading: 'Classifications',
+    stagesHeading: 'Stage winners',
+    rankShowLabel: 'Show', rankGeneral: 'General rankings — all jerseys',
+    rankStageOpt: (n,route) => `Stage ${n} · ${route}`,
+    stageResultTitle: n => `Stage ${n} result`,
+    stageResultEmpty: 'Results for this stage are not available.',
+    stageClassHeading: n => `Rankings after stage ${n}`,
+    stageClassEmpty: 'Rankings after this stage are not available.',
+    expandLess: '▲ Show top 10 only', expandMore: n => `▼ Show all (${n})`,
+    restDay: 'Rest day',
+    stagePrefix: 'Stage',
+    factDistance: 'Distance', factGain: 'Elevation gain', factType: 'Type', factWinner: 'Stage winner',
+    descHeader: 'Stage description', climbsHeader: 'Climb points (KOM)',
+    climbHead: ['Climb', 'Cat', 'Length', 'Gradient', 'At'],
+    noClimbs: 'No categorized climbs.',
+    sprintsHeader: 'Intermediate sprints', sprintHead: ['Sprint', 'At'],
+    sprintChip: 'Intermediate sprint', noSprints: 'No intermediate sprints.', atKm: 'km',
+    legCat: 'Cat', legUncat: 'Uncategorized', legSprint: 'Intermediate sprint',
+    chartCaption: 'Illustrative profile — climbs are marked at their real kilometre point where known; the elevation curve is not GPS-measured data.',
+    profileAria: n => `Illustrative elevation profile of stage ${n}`,
+    minimapAria: n => `Approximate location of stage ${n} on the map`,
+    minimapExpand: 'Enlarge map',
+    minimapCollapse: 'Shrink map',
+    minimapRecenter: 'Center map on route',
+    minimapCaption: 'Actual stage route on OpenStreetMap. Gold = start, red = finish. Close with the button in the top-right corner.',
+    minimapCaptionApprox: 'Route data not available yet — showing a straight line from start to finish. Close with the button in the top-right corner.',
+    summitNote: name => `Summit finish at ${name}.`,
+    winnerNote: w => `Stage won by ${w}.`,
+    typeLabels: {flat:'Flat', hilly:'Hilly', mountain:'Mountain', itt:'Team time trial'},
+    typeDesc: {flat:'Flat stage', hilly:'Hilly stage', mountain:'Mountain stage', itt:'Team time trial'},
+    gcName: 'General classification', gcJersey: 'Maillot jaune — yellow jersey',
+    pointsName: 'Points classification', pointsJersey: 'Maillot vert — green jersey',
+    momName: 'Mountains classification', momJersey: 'Maillot à pois — polka dot jersey',
+    youthName: 'Young rider classification', youthJersey: 'Maillot blanc — white jersey (under 26)',
+    colPos: '#', colRider: 'Rider', colTime: 'Time', colGap: 'Gap', colPts: 'Points',
+    teamsHeading: 'Teams & riders',
+    teamsStatus: (riders, teams, fin, out) => `Start list: ${teams} teams and ${riders} riders — ${fin} finished, ${out} left the race. Position and gap update during the race.`,
+    teamsEmpty: 'The start list has not been published yet. The race starts in Leeds on Fri 30 July 2027; teams and riders will appear here once the list is available (data/2027/femmes2027-riders.json).',
+    teamClsLine: (pos, val) => `Team classification #${pos} · ${val}`,
+    teamClsNone: 'Not placed in the team classification',
+    colBib: 'No.', colGcPos: 'GC', colGcTime: 'Time / gap',
+    riderOutOnStage: n => `On stage ${n}`,
+    riderOutUnknown: 'Did not finish',
+    dnfTitle: 'Abandoned (DNF)',
+    colStage: 'Stage', colRoute: 'Route', colWinner: 'Winner',
+    profileDisclaimer: 'The elevation profiles are illustrative: the curve is built from the climb positions and is not GPS-measured data. Only climbs with a known kilometre point are marked on the profile (some approximate). Climb categories are shown only once the organiser has published them — otherwise "—". Distances are pre-homologation. Climb lengths and average gradients: cyclingnews.com. Stage winners: the Results tab.',
+    disclaimerLabel: 'Unofficial fan project.',
+    disclaimerText: 'This is an unofficial, non-commercial fan project, not affiliated with A.S.O. or the Tour de France Femmes. Results remain the property of their respective owners.',
+    sourcesLabel: 'Sources:', sourcesText: 'Route, stages and distances: letourfemmes.fr (overall route presented on 22 Oct 2026), cyclingnews.com and procyclinguk.com. Climb data: cyclingnews.com. Route tracks (GPX) are not published yet, so the map shows a straight line from start to finish. Stage types are inferred from the official stage descriptions. Results, teams and riders are added once the race starts.',
+    footerNote: '© 2027 Jouni Uusimaa · Page design & code under the MIT licence. An unofficial, non-commercial fan project. Not affiliated with A.S.O. or the Tour de France Femmes. Results remain the property of their respective owners.',
+  },
+  fr: {
+    backToTours: 'Grands Tours',
+    eyebrow: 'Parcours · 6e Tour de France Femmes · 30 juil.–7 août 2027',
+    subDesc: 'Le Tour de France Femmes part de Leeds, en Angleterre, le vendredi 30 juillet 2027. Neuf jours sans jour de repos, avec un contre-la-montre par équipes à Londres, puis la France et une arrivée au sommet du Puy de Dôme. Les classements apparaîtront dès le départ de la course.',
+    statDistance: 'Distance totale', statGain: 'Dénivelé positif', statStages: 'Étapes', statRestDays: 'Jours de repos', statSummits: 'Arrivées au sommet',
+    tabStages: 'Étapes et profils', tabResults: 'Classements', tabTeams: 'Équipes et coureuses',
+    stageListHeader: '9 étapes',
+    classHeading: 'Classements',
+    stagesHeading: 'Vainqueurs d’étape',
+    rankShowLabel: 'Afficher', rankGeneral: 'Classement général — tous les maillots',
+    rankStageOpt: (n,route) => `Étape ${n} · ${route}`,
+    stageResultTitle: n => `Résultat de l’étape ${n}`,
+    stageResultEmpty: 'Les résultats de cette étape ne sont pas disponibles.',
+    stageClassHeading: n => `Classements après l’étape ${n}`,
+    stageClassEmpty: 'Les classements après cette étape ne sont pas disponibles.',
+    expandLess: '▲ Afficher seulement le top 10', expandMore: n => `▼ Tout afficher (${n})`,
+    restDay: 'Jour de repos',
+    stagePrefix: 'Étape',
+    factDistance: 'Distance', factGain: 'Dénivelé', factType: 'Type', factWinner: 'Vainqueur',
+    descHeader: 'Description de l’étape', climbsHeader: 'Cols classés (KOM)',
+    climbHead: ['Ascension', 'Cat.', 'Longueur', 'Pente', 'Au'],
+    noClimbs: 'Aucune ascension catégorisée.',
+    sprintsHeader: 'Sprints intermédiaires', sprintHead: ['Sprint', 'Au'],
+    sprintChip: 'Sprint intermédiaire', noSprints: 'Pas de sprint intermédiaire.', atKm: 'km',
+    legCat: 'Cat.', legUncat: 'Non catégorisée', legSprint: 'Sprint intermédiaire',
+    chartCaption: 'Profil illustratif — ascensions placées à leur kilomètre réel lorsqu’il est connu ; la courbe d’altitude n’est pas mesurée au GPS.',
+    profileAria: n => `Profil d’altitude illustratif de l’étape ${n}`,
+    minimapAria: n => `Situation approximative de l’étape ${n} sur la carte`,
+    minimapExpand: 'Agrandir la carte',
+    minimapCollapse: 'Réduire la carte',
+    minimapRecenter: 'Centrer la carte sur le parcours',
+    minimapCaption: 'Parcours réel de l’étape sur OpenStreetMap. Or = départ, rouge = arrivée. Fermer avec le bouton en haut à droite.',
+    minimapCaptionApprox: 'Données du parcours indisponibles — ligne droite du départ à l’arrivée. Fermer avec le bouton en haut à droite.',
+    summitNote: name => `Arrivée au sommet à ${name}.`,
+    winnerNote: w => `Étape remportée par ${w}.`,
+    typeLabels: {flat:'Plat', hilly:'Vallonné', mountain:'Montagne', itt:'Contre-la-montre par équipes'},
+    typeDesc: {flat:'Étape de plaine', hilly:'Étape vallonnée', mountain:'Étape de montagne', itt:'Contre-la-montre par équipes'},
+    gcName: 'Classement général', gcJersey: 'Maillot jaune',
+    pointsName: 'Classement par points', pointsJersey: 'Maillot vert',
+    momName: 'Classement de la montagne', momJersey: 'Maillot à pois',
+    youthName: 'Classement du meilleur jeune', youthJersey: 'Maillot blanc (moins de 26 ans)',
+    colPos: '#', colRider: 'Coureuse', colTime: 'Temps', colGap: 'Écart', colPts: 'Points',
+    teamsHeading: 'Équipes et coureuses',
+    teamsStatus: (riders, teams, fin, out) => `Liste des partantes : ${teams} équipes et ${riders} coureuses — ${fin} à l’arrivée, ${out} hors course. La place et l’écart sont mis à jour pendant la course.`,
+    teamsEmpty: 'La liste des partantes n’a pas encore été publiée. La course part de Leeds le vendredi 30 juillet 2027 ; les équipes et les coureuses apparaîtront ici dès que la liste sera disponible (data/2027/femmes2027-riders.json).',
+    teamClsLine: (pos, val) => `Classement par équipes #${pos} · ${val}`,
+    teamClsNone: 'Non classée au classement par équipes',
+    colBib: 'Dossard', colGcPos: 'Clt', colGcTime: 'Temps / écart',
+    riderOutOnStage: n => `Étape ${n}`,
+    riderOutUnknown: 'Non classée',
+    dnfTitle: 'Abandon (DNF)',
+    colStage: 'Étape', colRoute: 'Parcours', colWinner: 'Vainqueur',
+    profileDisclaimer: 'Les profils sont illustratifs : la courbe est construite à partir de la position des ascensions et n’est pas mesurée au GPS. Seules les ascensions dont le kilomètre est connu sont placées sur le profil (certaines approximatives). Les catégories ne sont indiquées que lorsqu’elles ont été publiées par l’organisateur — sinon « — ». Distances avant homologation. Longueurs et pentes moyennes : cyclingnews.com. Vainqueurs d’étape : onglet Classements.',
+    disclaimerLabel: 'Projet de fans non officiel.',
+    disclaimerText: 'Projet de fans non officiel et non commercial, sans lien avec l’A.S.O. ni le Tour de France Femmes. Les résultats restent la propriété de leurs ayants droit.',
+    sourcesLabel: 'Sources :', sourcesText: 'Parcours, étapes et distances : letourfemmes.fr (parcours global présenté le 22 octobre 2026), cyclingnews.com et procyclinguk.com. Données des ascensions : cyclingnews.com. Les tracés (GPX) ne sont pas encore publiés ; la carte montre donc une ligne droite du départ à l’arrivée. Les types d’étape sont déduits des descriptions officielles. Classements, équipes et coureuses seront ajoutés dès le départ de la course.',
+    footerNote: '© 2027 Jouni Uusimaa · Design et code de la page sous licence MIT. Projet de fans non officiel et non commercial. Sans lien avec l’A.S.O. ni le Tour de France Femmes. Les résultats restent la propriété de leurs détenteurs.',
+  },
+};
+
+let lang = detectLang();
+
+let RESULTS = null;
+let RIDERS = null;
+let rankView = 'general'; // 'general' or a selected stage number
+const expandState = {}; // The shared stage-table expander reads this state.
+
+/* Climb category colours: categories are not published yet (cat is null → "—"). */
+const CAT_COLOR = {1:'var(--color-accent-600)', 2:'var(--color-accent-500)', 3:'var(--color-accent-400)', 4:'var(--color-accent-300)'};
+const UNCAT_COLOR = 'var(--color-neutral-400)';
+const stages = [
+  {n:1, date:'2027-07-30', start:'Leeds', finish:'Manchester', km:86, type:'flat',
+   climbs:[{name:'Côte de Kirkheaton',len:1.7,grad:7.5},{name:'Côte de Meltham',len:3.2,grad:8.4},{name:'Côte de Delph',len:2.1,grad:6.3}], sprints:[]},
+  {n:2, date:'2027-07-31', start:'Manchester', finish:'Sheffield', km:154, type:'hilly', gain:2800,
+   climbs:[{name:'Côte de Calton',len:1.6,grad:6.3},{name:'Winnats Pass',len:1.4,grad:12.3},{name:'Côte de Chunal',len:1.4,grad:7.1},{name:'Snake Pass',len:5.4,grad:4.6},{name:'Côte de Bradfield',len:1,grad:8.8},{name:'Côte d’Oughtibridge',len:1.5,grad:9.1},{name:'Côte de Jenkin Road',km:148,len:0.8,grad:10.8}], sprints:[]},
+  {n:3, date:'2027-08-01', start:'London', finish:'London', km:18, type:'itt',
+   climbs:[], sprints:[]},
+  {n:4, date:'2027-08-02', start:'Le Touquet-Paris-Plage', finish:'Calais', km:123, type:'flat',
+   climbs:[{name:'Côte de Harlettes',len:1.1,grad:6.9},{name:'Côte du Ventus',len:1.1,grad:6.8},{name:'Côte de Bazinghen',len:0.9,grad:7.5},{name:'Côte du Cap Blanc-Nez',km:111,len:0.9,grad:7.7}], sprints:[]},
+  {n:5, date:'2027-08-03', start:'Neufchâtel-en-Bray', finish:'Magnanville', km:161, type:'flat',
+   climbs:[{name:'Côte d’Osmoy',len:1.6,grad:5.2},{name:'Côte d’Eawy',len:1.8,grad:4.5},{name:'Côte de Molincourt',len:1.6,grad:4.4},{name:'Côte de Dampsmesnil',len:1.5,grad:6},{name:'Côte de Valcorbon',len:1.3,grad:5.8},{name:'Côte de Baudemont',len:1,grad:10.2},{name:'Côte d’Amenucourt',len:1,grad:10},{name:'Côte de Follainville',len:1.1,grad:6}], sprints:[]},
+  {n:6, date:'2027-08-04', start:'Orléans', finish:'Bourges', km:138, type:'flat',
+   climbs:[], sprints:[]},
+  {n:7, date:'2027-08-05', start:'Nevers', finish:'La Loge des Gardes', km:155, type:'hilly', summit:'La Loge des Gardes', gain:2200,
+   climbs:[{name:'Côte du Point du Jour',km:136,len:2.1,grad:8.6},{name:'La Loge des Gardes',km:155,len:6.7,grad:7.1}], sprints:[]},
+  {n:8, date:'2027-08-06', start:'La Bourboule', finish:'Clermont-Ferrand', km:151, type:'mountain', gain:3000,
+   climbs:[{name:'Côte de la Stèle',len:5.4,grad:5},{name:'Col de la Croix Saint-Robert',len:5.2,grad:6.4},{name:'Col de la Croix Morand',len:6.8,grad:5},{name:'Côte de Murol',len:3.3,grad:5.3},{name:'Côte de Rouillas',len:2.3,grad:6.1},{name:'Côte de Charade',len:6,grad:5.9}], sprints:[]},
+  {n:9, date:'2027-08-07', start:'Clermont-Ferrand', finish:'Puy de Dôme', km:170, type:'mountain', summit:'Puy de Dôme', gain:3840,
+   climbs:[{name:'Côte de Ternant',len:5.1,grad:6.3},{name:'Côte de l’Étang des Ouches',len:4.7,grad:5.1},{name:'Côte des Fades',len:4.2,grad:4.6},{name:'Côte du Bouchet',len:1.9,grad:7},{name:'Côte de Boisse',len:1.3,grad:7.3},{name:'Côte de Saint-Jacques-d’Ambur',len:2.6,grad:5.9},{name:'Côte de La Mouteyre',len:5.3,grad:6.2},{name:'Puy de Dôme',km:170,len:11.3,grad:7.8}], sprints:[]},
+];
+const REST_AFTER = {}; // 9 consecutive days, no rest day
+/* Straight start→finish fallback lines until the organiser publishes GPX
+   (data/2027/femmes2027-routes.json); [lon,lat] per stage. */
+const STAGE_COORDS = {1:[[-1.548,53.801],[-2.244,53.483]],2:[[-2.244,53.483],[-1.470,53.381]],3:[[-0.141,51.501],[-0.141,51.501]],4:[[1.590,50.524],[1.857,50.948]],5:[[1.438,49.731],[1.686,48.968]],6:[[1.909,47.903],[2.396,47.081]],7:[[3.159,46.990],[3.808,46.036]],8:[[2.748,45.587],[3.087,45.777]],9:[[3.087,45.777],[2.964,45.772]]};
+function winnerFor(n){
+  if(!RESULTS || !Array.isArray(RESULTS.stageWinners)) return '';
+  const w=RESULTS.stageWinners.find(x=>x.n===n);
+  return w ? (w.winner||'') : '';
+}
+const DESC = {
+  1: {
+    fi: ['Lyhyt, virallisesti tasainen avausetappi Leedsistä Manchesteriin sisältää kuitenkin kolme Penniinien nousua. Avoimet tiet voivat repiä pelotonin, mutta sprinttijoukkueet todennäköisesti tuovat kisan kasaan.'],
+    en: ['A short, officially flat opener from Leeds to Manchester that still includes three Pennine climbs. Exposed roads could split the bunch, but the sprint teams are likely to bring it back together.'],
+    fr: ['Une étape d’ouverture courte et officiellement plate, de Leeds à Manchester, qui comprend pourtant trois côtes des Pennines. Les routes exposées peuvent fractionner le peloton, mais les équipes de sprinteuses devraient le ramener.'],
+  },
+  2: {
+    fi: ['Ensimmäinen todellinen koetus: noin 2 800 nousumetriä Peak Districtin halki, mukana Winnats Pass ja Snake Pass.', 'Jyrkkä Jenkin Road noin 6 km ennen maalia Sheffieldissä voi ratkaista etapin.'],
+    en: ['The first real test: around 2,800 m of climbing through the Peak District, including Winnats Pass and Snake Pass.', 'The steep Jenkin Road, about 6 km from the finish in Sheffield, could decide the stage.'],
+    fr: ['Première vraie épreuve : environ 2 800 m de dénivelé à travers le Peak District, avec le Winnats Pass et le Snake Pass.', 'La pentue Jenkin Road, à environ 6 km de l’arrivée à Sheffield, peut faire la décision.'],
+  },
+  3: {
+    fi: ['Kilpailun historian ensimmäinen joukkueaika-ajo: 18 km Lontoon keskustassa. Reitillä on paljon käännöksiä ja vähän nousua.'],
+    en: ['The first team time trial in the race’s history: 18 km around central London, with many corners and little climbing.'],
+    fr: ['Le premier contre-la-montre par équipes de l’histoire de la course : 18 km dans le centre de Londres, avec de nombreux virages et peu de dénivelé.'],
+  },
+  4: {
+    fi: ['Ensimmäinen Ranskan etappi seuraa Opaalirannikkoa. Lyhyet nousut ja sivutuuli tekevät etapista arvaamattoman; Cap Blanc-Nez noin 12 km ennen maalia voi sotkea sprinttijunat.'],
+    en: ['The first French stage follows the Opal Coast. Short climbs and the risk of crosswinds make it unpredictable; Cap Blanc-Nez, about 12 km from the finish, could disrupt the sprint trains.'],
+    fr: ['La première étape française longe la Côte d’Opale. Côtes courtes et risque de bordures la rendent incertaine ; le Cap Blanc-Nez, à environ 12 km de l’arrivée, peut perturber les trains de sprint.'],
+  },
+  5: {
+    fi: ['Virallisesti tasainen, mutta kahdeksan lyhyttä ja tiukkaa nousua, joista kuusi viimeisten 50 km:n aikana. Päivä sopii pikkumäkien ajajille tai pakoryhmälle.'],
+    en: ['Officially flat, but with eight short, punchy climbs, six of them in the last 50 km. A day for puncheurs or a breakaway.'],
+    fr: ['Officiellement plate, mais avec huit côtes courtes et nerveuses, dont six dans les 50 derniers kilomètres. Une journée pour les puncheuses ou une échappée.'],
+  },
+  6: {
+    fi: ['Sprinttereiden päivä Solognen ja Berryn halki, ilman luokiteltuja nousuja. Maali nousee loivasti viimeisen 900 metrin ajan.'],
+    en: ['A sprinters’ day across Sologne and Berry, with no categorised climbs. The finish rises gently over the last 900 m.'],
+    fr: ['Un jour pour les sprinteuses à travers la Sologne et le Berry, sans côte classée. L’arrivée monte légèrement sur les 900 derniers mètres.'],
+  },
+  7: {
+    fi: ['Ensimmäinen mäkimaali La Loge des Gardesilla Point du Jour -nousun jälkeen. Kokonaiskilpailun taistelu alkaa.'],
+    en: ['The first summit finish, on La Loge des Gardes after the Côte du Point du Jour. The fight for the general classification begins.'],
+    fr: ['La première arrivée au sommet, à La Loge des Gardes, après la côte du Point du Jour. La bataille pour le général commence.'],
+  },
+  8: {
+    fi: ['Auvergnen tulivuorimaisemissa noin 3 000 nousumetriä ja kuusi nousua. Korkein kohta on Croix Saint-Robert, ja etappi päättyy laskuun Clermont-Ferrandiin.'],
+    en: ['Around 3,000 m of climbing and six climbs through the volcanoes of the Auvergne. The highest point is the Croix Saint-Robert, and the stage ends with a descent into Clermont-Ferrand.'],
+    fr: ['Environ 3 000 m de dénivelé et six ascensions dans les volcans d’Auvergne. Le point culminant est la Croix Saint-Robert, et l’étape se termine par une descente vers Clermont-Ferrand.'],
+  },
+  9: {
+    fi: ['Kilpailun pisin ja raskain etappi: noin 3 840 nousumetriä ja kahdeksan nousua. Maali on 11,3 km pitkän Puy de Dômen huipulla, ja etappi ratkaisee koko kilpailun.'],
+    en: ['The longest and hardest stage of the race: around 3,840 m of climbing and eight climbs. It finishes on the 11.3 km Puy de Dôme and decides the race.'],
+    fr: ['L’étape la plus longue et la plus dure de la course : environ 3 840 m de dénivelé et huit ascensions. Elle se termine au sommet du Puy de Dôme (11,3 km) et décide de la course.'],
+  },
+};
+function genDesc(st){
+  const sep = lang==='fr' ? ' : ' : ': ';
+  const parts=[`${t('typeDesc')[st.type]}${sep}${esc(st.start)} → ${esc(st.finish)}, ${fmtKm(st.km)}.`];
+  if(st.summit) parts.push(esc(t('summitNote')(st.summit)));
+  const w=winnerFor(st.n);
+  if(w) parts.push(esc(t('winnerNote')(w)));
+  return '<p>'+parts.join(' ')+'</p>' + DESC[st.n][lang].map(p=>'<p>'+esc(p)+'</p>').join('');
+}
+
+/* ---------- ELEVATION PROFILE ----------
+   Built from genProfile(st) (illustrative shape from climb positions/type —
+   see the profile-generation helpers above), styled per the Modernist
+   system: monochrome ink line/fill, accent-shade climb bands, dashed accent
+   sprint flag. Only climbs with a known summit km get a marker, matching
+   the original site's behaviour (see climbsWithKm). */
+function renderProfile(st){
+  const W=900, H=250, padL=30, padR=16, padT=22, padB=30;
+  const {d, plotH} = buildPath(genProfile(st), st.km, W,H,padL,padR,padT,padB);
+  const baseY = padT+plotH;
+
+  let svg = `<svg class="profile" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(t('profileAria')(st.n))}">`;
+
+  for(let g=0; g<=4; g++){
+    const gy = padT + plotH*g/4;
+    svg += `<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="var(--color-neutral-300)" stroke-width="1"/>`;
+  }
+  const step = st.km > 150 ? 50 : (st.km > 60 ? 20 : 10);
+  for(let k=0; k<=st.km+0.01; k+=step){
+    const kx = xForKm(k, st.km, W, padL, padR);
+    svg += `<line x1="${kx}" y1="${padT}" x2="${kx}" y2="${baseY}" stroke="var(--color-neutral-200)" stroke-width="1"/>`;
+    svg += `<text x="${kx}" y="${H-10}" font-family="Archivo, sans-serif" font-size="11" font-weight="600" fill="var(--color-neutral-600)" text-anchor="middle">${Math.round(k)}</text>`;
+  }
+
+  climbsWithKm(st).forEach(c=>{
+    const cx = xForKm(c.km, st.km, W, padL, padR);
+    const foot = xForKm(Math.max(0, c.km-(c.len||4)), st.km, W, padL, padR);
+    const col = CAT_COLOR[c.cat] || UNCAT_COLOR;
+    svg += `<rect x="${foot}" y="${padT}" width="${Math.max(2,cx-foot)}" height="${plotH}" fill="${col}" opacity="0.18"/>`;
+    svg += `<line x1="${cx}" y1="${padT}" x2="${cx}" y2="${baseY}" stroke="${col}" stroke-width="2"/>`;
+    svg += `<rect x="${cx-4}" y="${padT-12}" width="8" height="8" fill="${col}"/>`;
+  });
+
+  svg += `<path d="${d} L ${xForKm(st.km,st.km,W,padL,padR)},${baseY} L ${padL},${baseY} Z" fill="var(--color-text)" opacity="0.1"/>`;
+  svg += `<path d="${d}" fill="none" stroke="var(--color-text)" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  (st.sprints||[]).forEach(s=>{
+    const sx = xForKm(s.km, st.km, W, padL, padR);
+    const top = padT + plotH*0.28;
+    svg += `<line x1="${sx}" y1="${top}" x2="${sx}" y2="${baseY}" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    svg += `<path d="M ${sx} ${top} L ${sx+14} ${top+5} L ${sx} ${top+10} Z" fill="var(--color-accent)"/>`;
+  });
+
+  svg += `<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="var(--color-text)" stroke-width="2"/>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+let routesData = null, routesPromise = null;
+let stageMap = null, stageMapFitBounds = null;
+let mapExpanded = false; // persists across stage switches; renderPanel reflects it
+
+function initStageMap(st){
+  initStageMapCommon(st, STAGE_COORDS);
+}
+
+/* ---------- STAGE LIST ---------- */
+let activeIdx = 0;
+function renderStageList(){
+  const listEl = document.getElementById('stageList');
+  const stagelayout = document.querySelector('.stagelayout');
+  const panel = document.getElementById('panel');
+  if(panel && stagelayout && listEl.contains(panel)) stagelayout.appendChild(panel);
+  listEl.innerHTML = '';
+  stages.forEach((s, idx)=>{
+    const li = document.createElement('li');
+    li.className = 'stage-item';
+    const btn = document.createElement('button');
+    btn.className = 'stage-btn' + (idx===activeIdx ? ' active' : '');
+    btn.dataset.idx = idx;
+    btn.innerHTML = `
+      <span class="num">${String(s.n).padStart(2,'0')}</span>
+      <span class="btn-text">
+        <span class="btn-route">${esc(s.start)} → ${esc(s.finish)}</span>
+        <span class="btn-meta">${fmtDate(s.date)} · ${fmtKm(s.km)} · ${t('typeLabels')[s.type]}</span>
+      </span>`;
+    btn.addEventListener('click', ()=>selectStage(idx));
+    li.appendChild(btn);
+    listEl.appendChild(li);
+    if(REST_AFTER[s.n]){
+      const rli = document.createElement('li');
+      rli.className = 'stage-item';
+      const div = document.createElement('div');
+      div.className = 'rest-row';
+      div.textContent = `${fmtDate(REST_AFTER[s.n])} · ${t('restDay')}`;
+      rli.appendChild(div);
+      listEl.appendChild(rli);
+    }
+  });
+  positionPanel();
+}
+
+/* Keeps the stage-rail column exactly as tall as the detail panel next to
+   it — see the equivalent comment in tdf2026.html. Skipped below 980px. */
+function syncStageListHeight(){
+  const list = document.querySelector('.stagerail');
+  const panel = document.getElementById('panel');
+  const stagesView = document.getElementById('view-stages');
+  if(!list || !panel || !stagesView) return;
+  if(window.innerWidth<=980 || !stagesView.classList.contains('active')){
+    list.style.height = '';
+    return;
+  }
+  list.style.height = panel.offsetHeight + 'px';
+}
+window.addEventListener('resize', ()=>{ syncStageListHeight(); positionPanel(); });
+
+/* Below the 980px breakpoint the detail panel has no side column to live in,
+   so it's moved into the stage list right after the selected stage's row —
+   otherwise it renders below the entire list, far from the row that opened
+   it. Above the breakpoint it moves back into its own grid column. */
+
+function selectStage(idx){
+  activeIdx = idx;
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.toggle('active', +b.dataset.idx===idx));
+  const b = document.querySelector(`.stage-btn[data-idx="${idx}"]`);
+  if(b) b.scrollIntoView({block:'nearest'});
+  renderPanel(stages[idx]);
+  positionPanel();
+  syncStageListHeight();
+}
+
+/* ---------- RENDER MAIN PANEL ---------- */
+function renderPanel(st){
+  const panel = document.getElementById('panel');
+  destroyStageMap();
+
+  const climbs = st.climbs || [];
+  let climbRows = '';
+  if(climbs.length){
+    climbRows = climbs.map(c=>`
+      <tr>
+        <td><span class="climbname"><span class="sq" style="background:${CAT_COLOR[c.cat]||UNCAT_COLOR}"></span>${esc(c.name)}</span></td>
+        <td class="num cat">${catChip(c.cat)}</td>
+        <td class="num">${c.len ? fmtKm(c.len) : '—'}</td>
+        <td class="num">${c.grad ? esc(c.grad)+' %' : '—'}</td>
+        <td class="loc">${c.km!=null ? '~ '+t('atKm')+' '+Math.round(c.km) : '—'}</td>
+      </tr>`).join('');
+  }
+
+  const sprints = st.sprints || [];
+  let sprintRows = '';
+  if(sprints.length){
+    sprintRows = sprints.map((s,i)=>`
+      <tr>
+        <td>${t('sprintChip')}${sprints.length>1?' '+(i+1):''}</td>
+        <td class="num">~ ${t('atKm')} ${Math.round(s.km)}</td>
+      </tr>`).join('');
+  }
+
+  const w = winnerFor(st.n);
+
+  panel.innerHTML = `
+    <div class="panelhead">
+      <div>
+        <span class="kicker">${t('stagePrefix')} ${st.n} · ${fmtDate(st.date)}</span>
+        <h2>${esc(st.start)} → ${esc(st.finish)}</h2>
+      </div>
+      <span class="typechip">${t('typeLabels')[st.type]}</span>
+    </div>
+
+    <div class="factrow">
+      <div class="factcell"><span class="label">${t('factDistance')}</span><span class="value">${fmtKm(st.km)}</span></div>
+      <div class="factcell"><span class="label">${t('factType')}</span><span class="value">${t('typeLabels')[st.type]}</span></div>
+      <div class="factcell"><span class="label">${t('factGain')}</span><span class="value">${st.gain ? fmtGain(st.gain) : '—'}</span></div>
+      <div class="factcell"><span class="label">${t('factWinner')}</span><span class="value" style="color:var(--color-accent-700)">${w ? esc(w) : '—'}</span></div>
+    </div>
+
+    ${mapExpanded ? bigMapBoxHTML(st) : ''}
+
+    <div class="detailgrid${mapExpanded ? ' big' : ''}">
+      ${mapExpanded ? '' : `<div class="mapcell">${mapCellHTML(st)}</div>`}
+      <div class="profilecell">
+        <span class="label">${profileLabel()}</span>
+        ${renderProfile(st)}
+        <div class="legend">
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[1]}"></span>${t('legCat')} 1</span>
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[2]}"></span>2</span>
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[3]}"></span>3</span>
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[4]}"></span>4</span>
+          <span class="legenditem"><span class="legswatch" style="background:${UNCAT_COLOR}"></span>${t('legUncat')}</span>
+          <span class="legenditem"><span class="legswatch" style="background:var(--color-accent)"></span>${t('legSprint')}</span>
+        </div>
+        <span class="chart-caption">${t('chartCaption')}</span>
+      </div>
+    </div>
+
+    <div class="detailbody">
+      <div>
+        <h3>${t('descHeader')}</h3>
+        <div class="prose">${genDesc(st)}</div>
+      </div>
+      <div>
+        <h3>${t('climbsHeader')}</h3>
+        ${climbRows
+          ? `<table class="dtable"><thead><tr><th>${t('climbHead')[0]}</th><th>${t('climbHead')[1]}</th><th>${t('climbHead')[2]}</th><th>${t('climbHead')[3]}</th><th>${t('climbHead')[4]}</th></tr></thead><tbody>${climbRows}</tbody></table>`
+          : `<p class="empty-note">${t('noClimbs')}</p>`}
+      </div>
+      <div>
+        <h3>${t('sprintsHeader')}</h3>
+        ${sprintRows
+          ? `<table class="dtable sprints"><thead><tr><th>${t('sprintHead')[0]}</th><th>${t('sprintHead')[1]}</th></tr></thead><tbody>${sprintRows}</tbody></table>`
+          : `<p class="empty-note">${t('noSprints')}</p>`}
+      </div>
+    </div>
+  `;
+
+  bindMapControls(st);
+  initStageMap(st);
+}
+/* Jersey swatch colours: same as 2026/femmes.html (yellow, green, polka-dot accent,
+   white); real jersey colours are content, like the hub's flag stripes. */
+const CLASSES = [
+  {key:'gc',        nameKey:'gcName',     jerseyKey:'gcJersey',     colour:'#f5d33f',                cols:'time'},
+  {key:'points',    nameKey:'pointsName', jerseyKey:'pointsJersey', colour:'#3e9b4f',                cols:'pts'},
+  {key:'mountains', nameKey:'momName',    jerseyKey:'momJersey',    colour:'var(--color-accent)',    cols:'pts'},
+  {key:'youth',     nameKey:'youthName',  jerseyKey:'youthJersey',  colour:'var(--color-neutral-100)', cols:'time'},
+];
+
+/* Per-card divider borders in a 2-col grid: right rule on the left card of
+   each pair, bottom rule on every row but the last (same formula as the
+   design's own cardStyle — see tdf2026.html). */
+
+function riderCell(row, teamOnly){
+  if(teamOnly) return `<span class="rname">${esc(row.rider)}</span>`;
+  return `<span class="rname">${esc(row.rider)}</span>${row.team?`<span class="rteam">${esc(row.team)}${row.nat?' · '+esc(row.nat):''}</span>`:''}`;
+}
+
+/* Leader's row shows the absolute time/points value; every other row shows
+   the gap to the leader where one exists (points classifications have no
+   gap field, so this naturally falls back to the points value for them). */
+function classRowHTML(r, teamOnly){
+  const val = r.gap!==undefined && r.pos>1 ? r.gap : r.val;
+  return `<tr class="${r.pos<=3?'podium':''}">
+    <td class="pos">${esc(r.pos)}</td>
+    <td class="rider">${riderCell(r, teamOnly)}</td>
+    <td class="val">${esc(val)}</td>
+  </tr>`;
+}
+
+/* The shared stageStatTable helper uses this renderer for stage rows. */
+function resultRowHTML(r){ return classRowHTML(r, false); }
+
+function classCard(cfg, i, n, source, expandKey){
+  const rows = (source && source[cfg.key] && source[cfg.key].rows) || [];
+  const body = expandKey
+    ? (rows.length ? stageStatTable(rows, expandKey) : `<p class="empty-cls">${esc(t('stageClassEmpty'))}</p>`)
+    : `<table class="results"><tbody>${rows.map(r=>classRowHTML(r, cfg.team)).join('')}</tbody></table>`;
+  return `<div class="cls-card" style="${cardBorderStyle(i, n)}">
+    <div class="cls-head">
+      <span class="names"><span class="name">${esc(t(cfg.nameKey))}</span><span class="fr">${esc(t(cfg.jerseyKey))}</span></span>
+      <span class="swatch" style="background:${cfg.colour}"></span>
+    </div>
+    <div class="cls-body">${body}</div>
+  </div>`;
+}
+
+/* Match the TdF Rankings selector while keeping the current stage on rerender. */
+function renderRankSelect(){
+  const select = document.getElementById('rankStageSelect');
+  const winners = (RESULTS && RESULTS.stageWinners) || [];
+  if(rankView!=='general' && !winners.some(w=>String(w.n)===String(rankView))) rankView = 'general';
+  select.innerHTML = `<option value="general">${esc(t('rankGeneral'))}</option>`
+    + winners.map(w=>`<option value="${w.n}">${esc(t('rankStageOpt')(w.n, w.route||''))}</option>`).join('');
+  select.value = String(rankView);
+}
+
+/* Preserve the existing final standings and stage-winner list as the default view. */
+function renderGeneralRankings(){
+  const winners = (RESULTS && RESULTS.stageWinners) || [];
+  const gcWinner = (RESULTS && RESULTS.gc && RESULTS.gc.rows[0] && RESULTS.gc.rows[0].rider) || '';
+  const winnerRows = winners.map(w=>{
+    const pink = w.winner && w.winner===gcWinner;
+    return `<tr class="${pink?'pink':''}">
+      <td class="n">${esc(w.n)}</td>
+      <td class="route">${esc(w.route||'')}</td>
+      <td class="winner">${esc(w.winner||'')}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('resultsGrid').innerHTML = `
+    <div class="sectionhead">${esc(t('classHeading'))}</div>
+    <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length, RESULTS)).join('')}</div>
+    <div class="stagewins-block">
+      <h3>${esc(t('stagesHeading'))}</h3>
+      <table class="winners"><tbody>${winnerRows}</tbody></table>
+    </div>`;
+}
+
+/* Show the individual finish and all five published standings after this stage. */
+function renderStageResult(n){
+  const stage = RESULTS && RESULTS.stageResults && RESULTS.stageResults[n];
+  const rows = stage && Array.isArray(stage.rows) ? stage.rows : [];
+  const winner = RESULTS && RESULTS.stageWinners && RESULTS.stageWinners.find(w=>String(w.n)===String(n));
+  const body = rows.length ? stageStatTable(rows, '__stage') : `<p class="empty-cls">${esc(t('stageResultEmpty'))}</p>`;
+  const classifications = stage && stage.classifications;
+  const classCards = classifications
+    ? `<div class="sectionhead">${esc(t('stageClassHeading')(n))}</div>
+       <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length, classifications, `__stage_${cfg.key}`)).join('')}</div>`
+    : `<div class="status-card">${esc(t('stageClassEmpty'))}</div>`;
+  document.getElementById('resultsGrid').innerHTML = `<div class="cls-card" style="border-bottom:2px solid var(--color-divider)">
+    <div class="cls-head">
+      <span class="names"><span class="name">${esc(t('stageResultTitle')(n))}</span><span class="fr">${esc(winner?.route||'')}</span></span>
+      <span class="swatch" style="background:var(--color-accent)"></span>
+    </div>
+    <div class="cls-body">${body}</div>
+  </div>${classCards}`;
+  bindExpanders(document.getElementById('resultsGrid'));
+}
+
+function renderResults(){
+  renderRankSelect();
+  document.getElementById('resultsStatusLine').textContent = RESULTS?.updated ? fmtUpdated(RESULTS.updated) : '';
+  if(rankView==='general') renderGeneralRankings();
+  else renderStageResult(rankView);
+}
+
+/* ---------- TEAMS & RIDERS ----------
+   Start list (teams x riders) with each rider's GC place, from
+   data/2027/femmes2027-riders.json. letourfemmes.fr publishes no reason codes beyond
+   DNF, so the sub line always reads "Abandoned (DNF)" for a rider who left —
+   folded under the name rather than a separate badge, matching tdf2026.html. */
+function teamCard(team, i, n){
+  const nameHTML = team.url
+    ? `<a class="team-link" href="${esc(team.url)}" target="_blank" rel="noopener">${esc(team.name)}</a>`
+    : `<span class="team-link">${esc(team.name)}</span>`;
+  const subParts = [
+    team.gcPos ? t('teamClsLine')(team.gcPos, team.gcGap||team.gcVal) : t('teamClsNone'),
+    team.nat || ''
+  ].filter(Boolean);
+  return `<div class="team-card" style="${cardBorderStyle(i, n)}">
+    <div class="team-head">
+      <span class="team-rank${team.gcPos===1?' first':''}">${esc(team.gcPos||'–')}</span>
+      <span class="team-meta">${nameHTML}<span class="team-clsline">${esc(subParts.join(' · '))}</span></span>
+    </div>
+    <table class="riders">
+      <thead><tr>
+        <th>${t('colBib')}</th><th>${t('colRider')}</th>
+        <th>${t('colGcPos')}</th><th>${t('colGcTime')}</th>
+      </tr></thead>
+      <tbody>${team.riders.map(riderRowHTML).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+function renderTeams(){
+  const grid = document.getElementById('teamsGrid');
+  if(!RIDERS || !Array.isArray(RIDERS.teams) || !RIDERS.teams.length){
+    grid.innerHTML = `<div class="status-card">${esc(t('teamsEmpty'))}</div>`;
+    return;
+  }
+  const out = RIDERS.riderCount - RIDERS.finishers;
+  const statusHTML = `<div class="teamsstatus">${esc(t('teamsStatus')(RIDERS.riderCount, RIDERS.teamCount, RIDERS.finishers, out))}</div>`;
+  const cardsHTML = RIDERS.teams.map((team,i)=>teamCard(team, i, RIDERS.teams.length)).join('');
+  grid.innerHTML = statusHTML + `<div class="clsgrid">${cardsHTML}</div>`;
+}
+
+/* ---------- TOP STATS ----------
+   Derived from the stages above, except elevation gain: the announced
+   route gives the race total only (17,665 m). */
+const TOTAL_GAIN = 17665;
+function renderTopStats(){
+  const km = stages.reduce((sum, st)=>sum + st.km, 0);
+  const cells = [
+    [t('statDistance'), (Math.round(km*10)/10).toLocaleString(localeTag()) + ' km'],
+    [t('statGain'), fmtGain(TOTAL_GAIN)],
+    [t('statStages'), String(stages.length)],
+    [t('statRestDays'), String(Object.keys(REST_AFTER).length)],
+    [t('statSummits'), String(stages.filter(st=>st.summit).length)],
+  ];
+  document.getElementById('topstats').innerHTML = cells.map(([label, value])=>
+    `<div class="statcell"><span class="label">${esc(label)}</span><span class="value">${esc(value)}</span></div>`).join('');
+}
+
+/* ---------- STATIC TEXT + FULL RENDER ---------- */
+function render(){
+  document.getElementById('backLinkText').textContent = t('backToTours');
+  document.getElementById('eyebrow').textContent = t('eyebrow');
+  document.getElementById('subDesc').textContent = t('subDesc');
+  renderTopStats();
+  document.getElementById('tabStages').textContent = t('tabStages');
+  document.getElementById('tabResults').textContent = t('tabResults');
+  document.getElementById('tabTeams').textContent = t('tabTeams');
+  document.getElementById('rankSelectLabel').textContent = t('rankShowLabel');
+  document.getElementById('stageListHeader').textContent = t('stageListHeader');
+  document.getElementById('disclaimerLabel').textContent = t('disclaimerLabel');
+  document.getElementById('disclaimerText').textContent = t('disclaimerText');
+  document.getElementById('profileDisclaimer').textContent = t('profileDisclaimer');
+  document.getElementById('sourcesLabel').textContent = t('sourcesLabel');
+  document.getElementById('sourcesText').textContent = t('sourcesText');
+  document.getElementById('footerNote').textContent = t('footerNote');
+
+  renderStageList();
+  renderPanel(stages[activeIdx]);
+  renderResults();
+  renderTeams();
+
+  document.querySelectorAll('#langSel button').forEach(b=>{
+    const active = b.dataset.lang===lang;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  document.documentElement.lang = lang;
+  syncStageListHeight();
+}
+
+document.querySelectorAll('#langSel button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    lang = btn.dataset.lang;
+    localStorage.setItem(LANG_KEY, lang);
+    render();
+  });
+});
+
+document.getElementById('rankStageSelect').addEventListener('change', event=>{
+  rankView = event.target.value==='general' ? 'general' : Number(event.target.value);
+  Object.keys(expandState).forEach(key=>{ if(key.startsWith('__stage')) delete expandState[key]; });
+  renderResults();
+});
+
+/* ---------- TAB SWITCHING (WAI-ARIA tabs pattern) ---------- */
+const tabButtons = Array.from(document.querySelectorAll('.tabbtn'));
+setupTabs(tabButtons);
+
+/* ---------- DATA LOADING ---------- */
+async function load(){
+  try{
+    const resp = await fetch(DATA_URL, {cache:'no-store'});
+    if(resp.ok) RESULTS = await resp.json();
+  }catch(e){ /* file:// or offline — winners/standings simply blank */ }
+  try{
+    const resp = await fetch(RIDERS_URL, {cache:'no-store'});
+    if(resp.ok){
+      const data = await resp.json();
+      if(data && Array.isArray(data.teams)) RIDERS = data;
+    }
+  }catch(e){ /* file:// or offline — the teams view shows its note */ }
+  render();
+}
+load();
+</script>
+<script data-goatcounter="https://grandtours.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

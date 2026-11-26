@@ -183,7 +183,17 @@ function renderProfile(stage) {
     padR = 16,
     padT = 22,
     padB = 30;
-  const { d, plotH } = buildPath(stage.profile, stage.km, W, H, padL, padR, padT, padB);
+  const { d, plotH } = buildPath(
+    // No traced profile (stages 4+ of 2027): illustrative shape from climb positions, else by stage type.
+    stage.profile || (climbsWithKm(stage).length ? genProfile(stage) : genericProfile(stage)),
+    stage.km,
+    W,
+    H,
+    padL,
+    padR,
+    padT,
+    padB,
+  );
   const baseY = padT + plotH;
 
   let svg = `<svg class="profile" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${t('profileAria')(stage.n)}">`;
@@ -199,7 +209,7 @@ function renderProfile(stage) {
     svg += `<text x="${kx}" y="${H - 10}" font-family="Archivo, sans-serif" font-size="11" font-weight="600" fill="var(--color-neutral-600)" text-anchor="middle">${Math.round(k)}</text>`;
   }
 
-  (stage.climbs || []).forEach((c) => {
+  climbsWithKm(stage).forEach((c) => {
     const x1 = xForKm(Math.max(0, c.km - c.len), stage.km, W, padL, padR);
     const x2 = xForKm(c.km, stage.km, W, padL, padR);
     const col = CAT_COLOR[c.cat] || CAT_COLOR.C1;
@@ -294,7 +304,7 @@ function renderStageList() {
     if (s.n === 'lepo') {
       const div = document.createElement('div');
       div.className = 'rest-row';
-      const restNum = s.labelKey === 'rest1' ? 1 : 2;
+      const restNum = Number(String(s.labelKey).replace('rest', '')) || 1;
       div.textContent = `${fmtDate(s.dateIso)} · ${t('restDayLabel')} ${restNum}`;
       li.appendChild(div);
       listEl.appendChild(li);

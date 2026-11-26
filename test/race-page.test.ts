@@ -230,6 +230,7 @@ describe('HTML page scripts initialization', () => {
     '2026/femmes.html',
     '2026/vuelta.html',
     '2027/tdf.html',
+    '2027/femmes.html',
   ];
 
   pages.forEach((page) => {

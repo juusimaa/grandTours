@@ -6,20 +6,20 @@
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#f3f2f2">
 <title>Tour de France 2027 — reitit & profiilit</title>
-<meta name="description" content="Tour de France 2027 -roadbook: Grand Départ Isossa-Britanniassa — etapit 1–3 Edinburghista Cardiffiin, reitit, korkeusprofiilit ja nousut. 2.–25.7.2027. · Roadbook for the 2027 Tour de France Grand Départ in Great Britain.">
+<meta name="description" content="Tour de France 2027 -roadbook: kaikki 21 etappia Edinburghista Pariisiin, reitit, korkeusprofiilit ja nousut. 2.–25.7.2027. · Roadbook for the 2027 Tour de France: all 21 stages from Edinburgh to Paris.">
 <link rel="canonical" href="https://juusimaa.github.io/Tdf2026/2027/tdf.html">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tour de France 2027">
 <meta property="og:title" content="Tour de France 2027 — reitit & profiilit">
-<meta property="og:description" content="Grand Départ Isossa-Britanniassa: etapit 1–3, korkeusprofiilit ja nousut. 2.–25.7.2027.">
+<meta property="og:description" content="Kaikki 21 etappia Edinburghista Pariisiin: reitit, korkeusprofiilit ja nousut. 2.–25.7.2027.">
 <meta property="og:url" content="https://juusimaa.github.io/Tdf2026/2027/tdf.html">
 <meta property="og:locale" content="fi_FI">
 <meta property="og:locale:alternate" content="en_GB">
 <meta property="og:locale:alternate" content="fr_FR">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Tour de France 2027 — reitit & profiilit">
-<meta name="twitter:description" content="Grand Départ Isossa-Britanniassa: etapit 1–3, korkeusprofiilit ja nousut.">
+<meta name="twitter:description" content="Kaikki 21 etappia Edinburghista Pariisiin: reitit, korkeusprofiilit ja nousut.">
 
 <!-- Favicon: on-theme emblem (gold elevation profile + red KOM dot). -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231E2A22'/%3E%3Cpath d='M4 23 L11 12 L16 17 L22 7 L28 23 Z' fill='%23C99A2E'/%3E%3Ccircle cx='22' cy='7' r='2.6' fill='%23B23B32'/%3E%3C/svg%3E">
@@ -120,10 +120,11 @@
 /* ---------- TOUR ----------
    The site is being extended to cover all three grand tours; each tour has
    its own results file at data/<year>/<TOUR>-results.json. This page shows the
-   2027 Tour de France — only the three Grand Départ stages are published so
-   far (official press kit, see sourcesBody). Only data/<year>/<TOUR>-routes.json
-   exists, and it is a reconstruction (see scripts/fetch_routes.py); results,
-   start list and weather fall back to their empty states. */
+   2027 Tour de France — the full 21-stage route. Stages 1–3 (Grand Départ) come
+   from the official press kit, stages 4–21 from the route presentation (see
+   sourcesBody). data/<year>/<TOUR>-routes.json is a reconstruction (see
+   scripts/fetch_routes.py); results, start list and weather fall back to their
+   empty states. */
 const TOUR = 'tdf2027';
 const RESULTS_URL = `../data/${TOUR.slice(-4)}/${TOUR}-results.json`;
 const ROUTES_URL = `../data/${TOUR.slice(-4)}/${TOUR}-routes.json`;
@@ -134,16 +135,16 @@ const STRINGS = {
   fi: {
     backToTours: 'Grand Tourit',
     eyebrow: 'Roadbook · 114. Tour de France · 2.–25.7.2027',
-    subDesc: 'Grand Départ Isossa-Britanniassa: kolme avausetappia Skotlannissa, Englannissa ja Walesissa — reitit, korkeusprofiilit ja nousut virallisen lehdistöaineiston pohjalta. Loput 18 etappia lisätään, kun koko reitti on julkaistu. Kilpailu alkaa Edinburghista pe 2.7. ja päättyy Pariisiin su 25.7.2027.',
+    subDesc: 'Grand Départ Isossa-Britanniassa: kolme avausetappia Skotlannissa, Englannissa ja Walesissa, sen jälkeen 18 etappia Ranskassa — reitit, korkeusprofiilit ja nousut. Koko reitti on julkaistu: etapit 4–21 Ranskassa Cherbourgista Pariisiin. Kilpailu alkaa Edinburghista pe 2.7. ja päättyy Pariisiin su 25.7.2027.',
     tabStages: 'Etapit & profiilit',
     tabResults: 'Sijoitukset',
     tabTeams: 'Joukkueet & ajajat',
-    stageListHeader: 'Etapit 1–3 / 21',
-    statDistance: 'Matka, etapit 1–3', statDistanceVal: '630 km',
-    statGain: 'Nousumetrit, etapit 1–3', statGainVal: '7 800 m',
-    statStages: 'Etappeja julkaistu', statStagesVal: '3 / 21',
-    statRestDays: 'Grand Départ', statRestDaysVal: 'Edinburgh 2.7.',
-    statMountainFinish: 'Loppumaali', statMountainFinishVal: 'Pariisi 25.7.',
+    stageListHeader: '21 etappia',
+    statDistance: 'Kokonaismatka', statDistanceVal: '3 479 km',
+    statGain: 'Nousumetrit yhteensä', statGainVal: '53 450 m',
+    statStages: 'Etappeja', statStagesVal: '21',
+    statRestDays: 'Lepopäiviä', statRestDaysVal: '3',
+    statMountainFinish: 'Vuoristomaalia', statMountainFinishVal: '3',
     stagePrefix: 'Etappi',
     profileAria: n => `Etapin ${n} korkeusprofiili`,
     minimapAria: n => `Etapin ${n} likimääräinen sijainti kartalla`,
@@ -208,10 +209,10 @@ const STRINGS = {
     riderOutOnStage: n => `Etapilla ${n}`,
     riderOutUnknown: 'Ei maalissa',
     disclaimerLabel: 'Huom korkeusprofiileista:',
-    disclaimer: 'SVG-käyrät on piirretty virallisen lehdistöaineiston etappiprofiilien välipisteiden (paikkakunta, kilometri, korkeus) ja nousujen (pituus, keskikaltevuus) pohjalta — ne eivät ole GPS-mitattua korkeusdataa. Nousujen luokat, kirisprintit ja lähtöajat julkaistaan myöhemmin.',
+    disclaimer: 'Etapeilla 1–3 SVG-käyrät on piirretty virallisen lehdistöaineiston profiilien välipisteiden ja nousujen pohjalta. Etapeilla 4–21 profiilit ovat havainnollistavia: ne muodostetaan etapin tyypistä ja tunnetuista nousuista. Kumpikaan ei ole GPS-mitattua korkeusdataa. Nousujen luokat, kirisprintit ja lähtöajat julkaistaan myöhemmin.',
     footerNote: '© 2026 Jouni Uusimaa · Sivun ulkoasu ja koodi (MIT-lisenssi). Epävirallinen, ei-kaupallinen fanisivusto. Ei liity A.S.O.:hon tai Tour de Franceen. Tulokset ovat oikeudenomistajiensa omaisuutta. Tulokset: letour.fr, procyclingstats.com.',
     sourcesTitle: 'Lähteet:',
-    sourcesBody: 'Etapit 1–3 (päivämäärät, matkat, nousumetrit, profiilit, nousut): Tour de France 2027 Grand Départ Grande-Bretagne -lehdistöaineisto (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Kilpailun päivämäärät: letour.fr.<br>Reittikartta: rekonstruoitu reitti lehdistöaineiston etappikarttojen paikkakuntien kautta — paikannus Nominatim (OpenStreetMap), reititys OSRM. Korvataan virallisella GPX:llä, kun se julkaistaan.',
+    sourcesBody: 'Etapit 1–3 (päivämäärät, matkat, nousumetrit, profiilit, nousut): Tour de France 2027 Grand Départ Grande-Bretagne -lehdistöaineisto (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Kilpailun päivämäärät: letour.fr.<br>Etapit 4–21: virallinen reittiesittely 22.10.2026, kuten raportoineet procyclinguk.com ja cyclingstage.com.<br>Reittikartta etapeille 1–3: rekonstruoitu reitti lehdistöaineiston etappikarttojen paikkakuntien kautta — paikannus Nominatim (OpenStreetMap), reititys OSRM. Etapeilla 4–21 kartta näyttää suoran viivan lähdöstä maaliin, kunnes GPX julkaistaan; profiilit ovat havainnollistavia.',
     typeLabels: {flat:'Tasainen', hilly:'Kukkulainen / mäkinen', mountain:'Vuoristoetappi', ttt:'Joukkueaika-ajo', itt:'Yksilöaika-ajo'},
     catLabels: {HC:'HC', C1:'1. lk', C2:'2. lk', C3:'3. lk', C4:'4. lk'},
     classifications: {
@@ -225,16 +226,16 @@ const STRINGS = {
   en: {
     backToTours: 'Grand Tours',
     eyebrow: 'Roadbook · 114th Tour de France · 2–25 Jul 2027',
-    subDesc: 'Grand Départ in Great Britain: the three opening stages through Scotland, England and Wales — routes, elevation profiles and climbs from the official press kit. The remaining 18 stages will be added once the full route is published. The race starts in Edinburgh on Fri 2 Jul and finishes in Paris on Sun 25 Jul 2027.',
+    subDesc: 'Grand Départ in Great Britain: three opening stages through Scotland, England and Wales, followed by 18 stages in France — routes, elevation profiles and climbs. The full route is out: stages 4–21 run through France from Cherbourg to Paris. The race starts in Edinburgh on Fri 2 Jul and finishes in Paris on Sun 25 Jul 2027.',
     tabStages: 'Stages & profiles',
     tabResults: 'Rankings',
     tabTeams: 'Teams & riders',
-    stageListHeader: 'Stages 1–3 of 21',
-    statDistance: 'Distance, stages 1–3', statDistanceVal: '630 km',
-    statGain: 'Elevation gain, stages 1–3', statGainVal: '7,800 m',
-    statStages: 'Stages published', statStagesVal: '3 / 21',
-    statRestDays: 'Grand Départ', statRestDaysVal: 'Edinburgh, 2 Jul',
-    statMountainFinish: 'Final finish', statMountainFinishVal: 'Paris, 25 Jul',
+    stageListHeader: '21 stages',
+    statDistance: 'Total distance', statDistanceVal: '3,479 km',
+    statGain: 'Total elevation gain', statGainVal: '53,450 m',
+    statStages: 'Stages', statStagesVal: '21',
+    statRestDays: 'Rest days', statRestDaysVal: '3',
+    statMountainFinish: 'Mountain finishes', statMountainFinishVal: '3',
     stagePrefix: 'Stage',
     profileAria: n => `Stage ${n} elevation profile`,
     minimapAria: n => `Approximate location of stage ${n} on the map`,
@@ -299,10 +300,10 @@ const STRINGS = {
     riderOutOnStage: n => `On stage ${n}`,
     riderOutUnknown: 'Did not finish',
     disclaimerLabel: 'Note on elevation profiles:',
-    disclaimer: 'The SVG curves are drawn from the waypoints (town, kilometre, altitude) and climbs (length, average gradient) on the stage profiles in the official press kit — they are not GPS-measured elevation data. Climb categories, intermediate sprints and start times will be published later.',
+    disclaimer: 'For stages 1–3 the SVG curves are drawn from the waypoints and climbs on the stage profiles in the official press kit. For stages 4–21 the profiles are illustrative, built from the stage type and the known climbs. Neither is GPS-measured elevation data. Climb categories, intermediate sprints and start times will be published later.',
     footerNote: '© 2026 Jouni Uusimaa · Page & design; code under the MIT licence. An unofficial, non-commercial fan project. Not affiliated with A.S.O. or the Tour de France. Results remain the property of their respective owners. Results: letour.fr, procyclingstats.com.',
     sourcesTitle: 'Sources:',
-    sourcesBody: 'Stages 1–3 (dates, distances, elevation gain, profiles, climbs): Tour de France 2027 Grand Départ Grande-Bretagne press kit (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Race dates: letour.fr.<br>Route map: reconstructed through the towns on the press-kit stage maps — geocoded with Nominatim (OpenStreetMap), routed with OSRM. To be replaced by the official GPX once published.',
+    sourcesBody: 'Stages 1–3 (dates, distances, elevation gain, profiles, climbs): Tour de France 2027 Grand Départ Grande-Bretagne press kit (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Race dates: letour.fr.<br>Stages 4–21: official route presentation of 22 Oct 2026, as reported by procyclinguk.com and cyclingstage.com.<br>Route map for stages 1–3: reconstructed through the towns on the press-kit stage maps — geocoded with Nominatim (OpenStreetMap), routed with OSRM. For stages 4–21 the map shows a straight start–finish line until the GPX is published; profiles are illustrative.',
     typeLabels: {flat:'Flat', hilly:'Hilly', mountain:'Mountain stage', ttt:'Team time trial', itt:'Individual time trial'},
     catLabels: {HC:'HC', C1:'Cat 1', C2:'Cat 2', C3:'Cat 3', C4:'Cat 4'},
     classifications: {
@@ -316,16 +317,16 @@ const STRINGS = {
   fr: {
     backToTours: 'Grands Tours',
     eyebrow: 'Roadbook · 114e Tour de France · 2–25 juil. 2027',
-    subDesc: 'Grand Départ en Grande-Bretagne : les trois premières étapes à travers l’Écosse, l’Angleterre et le pays de Galles — parcours, profils et ascensions d’après le dossier de presse officiel. Les 18 autres étapes seront ajoutées dès la publication du parcours complet. La course part d’Édimbourg le vendredi 2 juillet et arrive à Paris le dimanche 25 juillet 2027.',
+    subDesc: 'Grand Départ en Grande-Bretagne : trois premières étapes à travers l’Écosse, l’Angleterre et le pays de Galles, puis 18 étapes en France — parcours, profils et ascensions. Le parcours complet est dévoilé : les étapes 4 à 21 traversent la France de Cherbourg à Paris. La course part d’Édimbourg le vendredi 2 juillet et arrive à Paris le dimanche 25 juillet 2027.',
     tabStages: 'Étapes et profils',
     tabResults: 'Classements',
     tabTeams: 'Équipes et coureurs',
-    stageListHeader: 'Étapes 1–3 sur 21',
-    statDistance: 'Distance, étapes 1–3', statDistanceVal: '630 km',
-    statGain: 'Dénivelé, étapes 1–3', statGainVal: '7 800 m',
-    statStages: 'Étapes publiées', statStagesVal: '3 / 21',
-    statRestDays: 'Grand Départ', statRestDaysVal: 'Édimbourg, 2 juil.',
-    statMountainFinish: 'Arrivée finale', statMountainFinishVal: 'Paris, 25 juil.',
+    stageListHeader: '21 étapes',
+    statDistance: 'Distance totale', statDistanceVal: '3 479 km',
+    statGain: 'Dénivelé total', statGainVal: '53 450 m',
+    statStages: 'Étapes', statStagesVal: '21',
+    statRestDays: 'Jours de repos', statRestDaysVal: '3',
+    statMountainFinish: 'Arrivées en altitude', statMountainFinishVal: '3',
     stagePrefix: 'Étape',
     profileAria: n => `Profil d’altitude de l’étape ${n}`,
     minimapAria: n => `Emplacement approximatif de l’étape ${n} sur la carte`,
@@ -390,10 +391,10 @@ const STRINGS = {
     riderOutOnStage: n => `Étape ${n}`,
     riderOutUnknown: 'Non-partant / abandon',
     disclaimerLabel: 'Remarque sur les profils d’altitude :',
-    disclaimer: 'Les courbes SVG sont tracées à partir des points de passage (localité, kilomètre, altitude) et des ascensions (longueur, pente moyenne) des profils du dossier de presse officiel — il ne s’agit pas de données d’altitude mesurées par GPS. Les catégories des ascensions, les sprints intermédiaires et les horaires de départ seront publiés plus tard.',
+    disclaimer: 'Pour les étapes 1 à 3, les courbes SVG sont tracées à partir des points de passage et des ascensions des profils du dossier de presse officiel. Pour les étapes 4 à 21, les profils sont illustratifs, construits d’après le type d’étape et les ascensions connues. Aucun ne provient de données d’altitude mesurées par GPS. Les catégories des ascensions, les sprints intermédiaires et les horaires de départ seront publiés plus tard.',
     footerNote: '© 2026 Jouni Uusimaa · Page et design ; code sous licence MIT. Projet de fans non officiel et non commercial. Sans lien avec A.S.O. ni le Tour de France. Les résultats restent la propriété de leurs détenteurs. Résultats : letour.fr, procyclingstats.com.',
     sourcesTitle: 'Sources :',
-    sourcesBody: 'Étapes 1–3 (dates, distances, dénivelé, profils, ascensions) : dossier de presse du Grand Départ Grande-Bretagne du Tour de France 2027 (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Dates de la course : letour.fr.<br>Carte du parcours : reconstituée via les localités des cartes d’étape du dossier de presse — géocodage Nominatim (OpenStreetMap), itinéraire OSRM. Sera remplacée par le GPX officiel dès sa publication.',
+    sourcesBody: 'Étapes 1–3 (dates, distances, dénivelé, profils, ascensions) : dossier de presse du Grand Départ Grande-Bretagne du Tour de France 2027 (A.S.O., indd.adobe.com/view/882a60d5-f518-4395-a2a0-f0d81bacb4e4). Dates de la course : letour.fr.<br>Étapes 4 à 21 : présentation officielle du parcours le 22 octobre 2026, d’après procyclinguk.com et cyclingstage.com.<br>Carte des étapes 1 à 3 : reconstituée via les localités des cartes d’étape du dossier de presse — géocodage Nominatim (OpenStreetMap), itinéraire OSRM. Pour les étapes 4 à 21, la carte montre une ligne droite départ–arrivée jusqu’à la publication du GPX ; les profils sont illustratifs.',
     typeLabels: {flat:'Plat', hilly:'Vallonné / accidenté', mountain:'Étape de montagne', ttt:'Contre-la-montre par équipes', itt:'Contre-la-montre individuel'},
     catLabels: {HC:'HC', C1:'1re cat.', C2:'2e cat.', C3:'3e cat.', C4:'4e cat.'},
     classifications: {
@@ -462,6 +463,216 @@ const stages = [
   fi:`<p>Kokonaan Walesissa ajettava etappi on raskas ja sen loppu räjähtävä — kokonaiskilpailun kärkinimet ja puncheurit joutuvat näyttämään kuntonsa. Ensimmäiset noin 80 kilometriä ovat helppoja, minkä jälkeen seuraa pitkiä ja välillä vaikeita nousuja, kuten Epynt (3,7 km, 7,9 %).</p><p>Noin 125 kilometrin jälkeen reitti tulee vanhalle kaivosalueelle, jossa mäet lyhenevät ja jyrkkenevät (Penrhys 10,1 %, Hengoed 11 %). Côte de Caerffili (2 km, 8,1 %) noin 12 km ennen maalia voi sytyttää kovan taistelun, johon suosikitkin joutuvat mukaan. Nopea loppu Cardiffin halki ohittaa 1000-luvun linnan ja Principality Stadiumin.</p>`,
   en:`<p>Raced entirely in Wales, this stage is both gruelling and explosive at the end, putting team leaders and punchier riders to the test. The first 80 or so kilometres are straightforward — a chance to warm the legs — before a run of long and sometimes difficult climbs such as the Epynt (3.7 km at 7.9%).</p><p>After about kilometre 125 the race enters the old coal-mining valleys, where the climbs get shorter and steeper (Penrhys at 10.1%, Hengoed at 11%). The Côte de Caerffili (2 km at 8.1%), some 12 km from the line, could spark a fierce fight that the favourites will struggle to stay out of. A very fast run through Cardiff passes close to the 11th-century castle and the Principality Stadium.</p>`,
   fr:`<p>Cette étape 100 % galloise s’annonce éprouvante, avec un final explosif qui mettra les leaders et les puncheurs à l’épreuve. Les quelque 80 premiers kilomètres, plutôt tranquilles, servent de mise en jambes avant une série de côtes longues et parfois difficiles, comme celle d’Epynt (3,7 km à 7,9 %).</p><p>À partir du km 125 environ, la course entre dans l’ancien bassin minier, où les ascensions deviennent plus courtes et plus raides (Penrhys à 10,1 %, Hengoed à 11 %). La côte de Caerffili (2 km à 8,1 %), à une douzaine de kilomètres de l’arrivée, pourrait déclencher une belle bagarre à laquelle les favoris auront du mal à échapper. La traversée très rapide de Cardiff passe près du château du XIe siècle et du Principality Stadium.</p>`
+ }},
+
+{n:'lepo', dateIso:'2027-07-05', labelKey:'rest1'},
+
+{n:4, dateIso:'2027-07-06', start:'Cherbourg-en-Cotentin', finish:'Cherbourg-en-Cotentin', km:171, type:'hilly',
+ climbs:[
+   {name:{en:'Côte du Becquet'},km:null,len:null,grad:null,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Ensimmäisen lepopäivän jälkeen etappi kiertää Cherbourgin ympäristön rannikkomaisemia ja päättyy samaan kaupunkiin, josta se lähti. Merituuli tuo mukanaan sivutuuliriskin, joka voi pilkkoa kentän, jos joukkueet päättävät painaa kaasua.</p><p>Noin 10 km ennen maalia on lyhyt ja jyrkkä Côte du Becquet (noin 1 km). Se sopii puncheureille, mutta myös vahvat sprintterit voivat selvitä sen yli ja ratkaista etapin joukkokiriin.</p>`,
+  en:`<p>After the first rest day the stage loops around the coast near Cherbourg and finishes in the town where it started. The sea breeze brings a crosswind risk that could split the bunch if the teams decide to push the pace.</p><p>About 10 km from the line comes the short, steep Côte du Becquet (roughly 1 km). It suits the puncheurs, but strong sprinters can get over it too and turn the day into a bunch finish.</p>`,
+  fr:`<p>Après la première journée de repos, l’étape décrit une boucle le long de la côte autour de Cherbourg et s’achève dans la ville du départ. Le vent marin fait planer un risque de bordures, qui peut fractionner le peloton si les équipes accélèrent.</p><p>À environ 10 km de l’arrivée se dresse la côte du Becquet, courte et raide (environ 1 km). Elle convient aux puncheurs, mais les sprinteurs costauds peuvent aussi la franchir et transformer la journée en arrivée groupée.</p>`
+ }},
+
+{n:5, dateIso:'2027-07-07', start:'Pontorson', finish:'Plumelec', km:178, type:'hilly',
+ climbs:[
+   {name:{en:'Côte de Cadoudal'},km:178,len:1.7,grad:6.2,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Etappi ylittää Bretagnen rajan ja päättyy Plumelecin kukkuloille, missä loppukierros sisältää Côte de Cadoudalin (1,7 km, 6,2 %) kahdesti — toisen kerran maaliviivalle asti. Toistuva nousu karsii kentän, ja päivä kuuluu puncheureille.</p>`,
+  en:`<p>The stage crosses into Brittany and ends in the hills around Plumelec, where the finishing circuit includes the Côte de Cadoudal (1.7 km at 6.2%) twice, the second time all the way to the line. The repeated climb wears the field down and the day belongs to the puncheurs.</p>`,
+  fr:`<p>L’étape pénètre en Bretagne et se conclut sur les collines de Plumelec, où le circuit final comprend deux fois la côte de Cadoudal (1,7 km à 6,2 %), la seconde jusqu’à la ligne. Cette ascension répétée use le peloton et la journée appartient aux puncheurs.</p>`
+ }},
+
+{n:6, dateIso:'2027-07-08', start:'Vannes', finish:'Angers', km:193, type:'flat',
+ climbs:[],
+ sprints:[],
+ desc:{
+  fi:`<p>Tasainen etappi Bretagnesta Loiren laaksoon on selvä sprinttipäivä. Maali Angersissa nousee loppusuoralla hieman, joten pelkkä nopeus ei riitä, vaan sprintterin on jaksettava myös loppuun asti.</p>`,
+  en:`<p>A flat run from Brittany to the Loire valley, this is a clear sprinters’ day. The finish in Angers rises slightly on the home straight, so raw speed is not enough and the winner will also need to last to the line.</p>`,
+  fr:`<p>Étape plate entre la Bretagne et la vallée de la Loire, cette journée est clairement celle des sprinteurs. L’arrivée à Angers monte légèrement sur la ligne droite : la vitesse pure ne suffira pas, il faudra aussi tenir jusqu’au bout.</p>`
+ }},
+
+{n:7, dateIso:'2027-07-09', start:'Blois', finish:'Chambord', km:38, type:'itt',
+ climbs:[],
+ sprints:[],
+ desc:{
+  fi:`<p>Loiren laakson yksilöaika-ajo on 38 km pitkä ja maastoltaan aaltoileva. Se päättyy Chambordin linnan pihaan, ja ensimmäiset suuret aikaerot kokonaiskilpailussa syntyvät todennäköisesti täällä.</p>`,
+  en:`<p>The Loire Valley individual time trial is 38 km long over undulating terrain. It ends at the Château de Chambord, and the first big gaps in the general classification are likely to open up here.</p>`,
+  fr:`<p>Le contre-la-montre individuel de la vallée de la Loire mesure 38 km sur un terrain ondulé. Il s’achève au château de Chambord, et les premiers gros écarts du classement général devraient se creuser ici.</p>`
+ }},
+
+{n:8, dateIso:'2027-07-10', start:'Bourges', finish:'Le Creusot', km:224, type:'hilly',
+ climbs:[
+   {name:{en:'Signal d’Uchon'},km:null,len:5.7,grad:5.7,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Kisan pisin etappi, 224 km, kulkee Morvanin kukkuloiden halki. Signal d’Uchon (5,7 km, 5,7 %) sijaitsee lähellä maalia, joten päivä sopii karkulaisille, jotka pystyvät pysymään ryhmän edellä.</p>`,
+  en:`<p>The longest stage of the race, at 224 km, runs through the hills of the Morvan. The Signal d’Uchon (5.7 km at 5.7%) comes near the finish, which makes it a good day for a breakaway that can stay clear of the bunch.</p>`,
+  fr:`<p>Plus longue étape de la course, avec 224 km, elle traverse les collines du Morvan. Le Signal d’Uchon (5,7 km à 5,7 %) se situe près de l’arrivée : une belle journée pour une échappée capable de résister au peloton.</p>`
+ }},
+
+{n:9, dateIso:'2027-07-11', start:'Villars-les-Dombes', finish:'Grand Colombier', km:162, type:'mountain', gain:3750,
+ climbs:[
+   {name:{en:'Col du Berthiand'},km:null,len:6.3,grad:7.5,cat:null},
+   {name:{en:'Côte des Neyrolles'},km:null,len:3.6,grad:7.7,cat:null},
+   {name:{en:'Col de Bérentin'},km:null,len:4.2,grad:6.1,cat:null},
+   {name:{en:'Col de Richemond'},km:null,len:7.7,grad:6,cat:null},
+   {name:{en:'Grand Colombier (Culoz)'},km:162,len:17.4,grad:7.1,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Ensimmäinen vuoristoetappi ajetaan Juran ja Bugeyn mäillä, ja se päättyy Grand Colombierin huipulle. Matkalla on Berthiand (6,3 km, 7,5 %), Neyrolles (3,6 km, 7,7 %), Bérentin (4,2 km, 6,1 %), Richemond (7,7 km, 6 %), ja lopuksi nousu Culozista (17,4 km, 7,1 %). Kokonaiskilpailun suosikit joutuvat näyttämään kuntonsa heti.</p><p>Päivässä on noin 3 750 nousumetriä, ja se on viimeinen koetus ennen toista lepopäivää.</p>`,
+  en:`<p>The first mountain stage tackles the hills of the Jura and Bugey and ends on top of the Grand Colombier. On the way come the Berthiand (6.3 km at 7.5%), Neyrolles (3.6 km at 7.7%), Bérentin (4.2 km at 6.1%), Richemond (7.7 km at 6%) and finally the climb from Culoz (17.4 km at 7.1%). The general-classification favourites have to show their form straight away.</p><p>The day packs about 3,750 m of climbing and is the last test before the second rest day.</p>`,
+  fr:`<p>La première étape de montagne parcourt les reliefs du Jura et du Bugey et s’achève au sommet du Grand Colombier. Au programme : le Berthiand (6,3 km à 7,5 %), les Neyrolles (3,6 km à 7,7 %), le Bérentin (4,2 km à 6,1 %), Richemond (7,7 km à 6 %), puis la montée depuis Culoz (17,4 km à 7,1 %). Les favoris du général doivent se dévoiler d’emblée.</p><p>La journée compte environ 3 750 m de dénivelé et constitue le dernier test avant la deuxième journée de repos.</p>`
+ }},
+
+{n:'lepo', dateIso:'2027-07-12', labelKey:'rest2'},
+
+{n:10, dateIso:'2027-07-13', start:'Annecy', finish:'Sallanches', km:171, type:'mountain', gain:3750,
+ climbs:[
+   {name:{en:'Col du Plan du Salève'},km:null,len:null,grad:null,cat:null},
+   {name:{en:'Montée de Brison'},km:null,len:null,grad:null,cat:null},
+   {name:{en:'Côte de Domancy'},km:null,len:2.5,grad:9.4,cat:null},
+   {name:{en:'Côte de Domancy (2e passage)'},km:null,len:2.5,grad:9.4,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Haute-Savoien etappi kiertää Annecyn ja Sallanchesin välillä noin 3 750 nousumetrin verran. Côte de Domancy (2,5 km, 9,4 %) ajetaan kahdesti, toisen kerran lähellä maalia. Sallanches isännöi vuonna 2027 maantien MM-kilpailuja.</p>`,
+  en:`<p>This Haute-Savoie stage winds between Annecy and Sallanches with about 3,750 m of climbing. The Côte de Domancy (2.5 km at 9.4%) is climbed twice, the second time close to the finish. Sallanches hosts the road World Championships in 2027.</p>`,
+  fr:`<p>Cette étape de Haute-Savoie serpente entre Annecy et Sallanches avec environ 3 750 m de dénivelé. La côte de Domancy (2,5 km à 9,4 %) est gravie deux fois, la seconde près de l’arrivée. Sallanches accueillera les championnats du monde sur route en 2027.</p>`
+ }},
+
+{n:11, dateIso:'2027-07-14', start:'Cluses', finish:'Les Saisies', km:150, type:'mountain', gain:4750,
+ climbs:[
+   {name:{en:'Col de la Colombière'},km:null,len:15.9,grad:7,cat:null},
+   {name:{en:'Col de la Croix Fry'},km:40,len:7.2,grad:5.5,cat:null},
+   {name:{en:'Col de la Forclaz de Queige'},km:85,len:5.1,grad:8.2,cat:null},
+   {name:{en:'Col du Pré'},km:null,len:12.6,grad:7.8,cat:null},
+   {name:{en:'Col du Méraillet'},km:null,len:null,grad:null,cat:null},
+   {name:{en:'Montée de Bisanne'},km:146,len:12.4,grad:8.3,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Kansallispäivänä ajettava lyhyt mutta raaka alppietappi sisältää noin 4 750 nousumetriä 150 kilometrillä. Päivä alkaa heti Col de la Colombièrella (15,9 km, 7 %), ja jatkuu Croix Fryn, Forclaz de Queigen (5,1 km, 8,2 %), Col du Prén (12,6 km, 7,8 %) ja Méraillet’n kautta.</p><p>Montée de Bisanne (12,4 km, 8,3 %) päättyy noin 4 km ennen maalia, joten Les Saisiesin maali ei ole puhdas huippumaali. Tämä on yksi kisan ratkaisevista päivistä.</p>`,
+  en:`<p>Raced on Bastille Day, this short but brutal Alpine stage packs about 4,750 m of climbing into 150 km. It starts straight away with the Col de la Colombière (15.9 km at 7%) and goes on over the Croix Fry, the Forclaz de Queige (5.1 km at 8.2%), the Col du Pré (12.6 km at 7.8%) and the Méraillet.</p><p>The Montée de Bisanne (12.4 km at 8.3%) crests about 4 km from the finish, so Les Saisies is not a pure summit finish. This is one of the race’s decisive days.</p>`,
+  fr:`<p>Disputée le jour de la fête nationale, cette étape alpine courte mais brutale concentre environ 4 750 m de dénivelé en 150 km. Elle débute d’emblée par le col de la Colombière (15,9 km à 7 %), puis enchaîne la Croix Fry, la Forclaz de Queige (5,1 km à 8,2 %), le col du Pré (12,6 km à 7,8 %) et le Méraillet.</p><p>La montée de Bisanne (12,4 km à 8,3 %) bascule à environ 4 km de l’arrivée : Les Saisies n’est donc pas une arrivée au sommet pure. C’est l’une des journées décisives de la course.</p>`
+ }},
+
+{n:12, dateIso:'2027-07-15', start:'Chambéry', finish:'Valence', km:162, type:'flat',
+ climbs:[],
+ sprints:[],
+ desc:{
+  fi:`<p>Rhônen laaksoon laskeutuva tasainen etappi tarjoaa sprintterien joukkueille mahdollisuuden. Viimeisten noin 25 km:n aikana tuuli voi muodostua tekijäksi ja pilkkoa kentän.</p>`,
+  en:`<p>A flat stage dropping into the Rhône valley gives the sprinters’ teams their chance. Over the final 25 km or so the wind could become a factor and split the bunch.</p>`,
+  fr:`<p>Cette étape plate qui descend dans la vallée du Rhône donne leur chance aux équipes de sprinteurs. Sur les 25 derniers kilomètres environ, le vent peut jouer un rôle et fractionner le peloton.</p>`
+ }},
+
+{n:13, dateIso:'2027-07-16', start:'Aubenas', finish:'Montpellier', km:164, type:'flat',
+ climbs:[],
+ sprints:[],
+ desc:{
+  fi:`<p>Tasainen etappi Ardèchesta Montpellierin keskustaan päättyy sprinttiin. Tuuli voi olla mahdollinen tekijä, mutta pääosin kyseessä on sprinttereiden päivä.</p>`,
+  en:`<p>A flat stage from the Ardèche to the centre of Montpellier that should end in a sprint. Wind could play a part, but this is mainly a day for the fast men.</p>`,
+  fr:`<p>Étape plate de l’Ardèche jusqu’au centre de Montpellier, qui devrait se conclure au sprint. Le vent peut jouer un rôle, mais c’est avant tout une journée pour les sprinteurs.</p>`
+ }},
+
+{n:14, dateIso:'2027-07-17', start:'Montpellier', finish:'Mende', km:199, type:'mountain', gain:4300,
+ climbs:[
+   {name:{en:'Col du Vent'},km:null,len:null,grad:null,cat:null},
+   {name:{en:'Col de la Lusette'},km:null,len:null,grad:null,cat:null},
+   {name:{en:'Côte de la Croix Neuve'},km:199,len:null,grad:null,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Cévennien halki kulkeva etappi sisältää noin 4 300 nousumetriä ja ohittaa Cirque de Navacellesin. Maali on Côte de la Croix Neuven huipulla Menden lentokentällä — jyrkkä loppunousu, joka palkitsee hyökkääjiä.</p>`,
+  en:`<p>A stage through the Cévennes with about 4,300 m of climbing, passing the Cirque de Navacelles. It finishes at the top of the Côte de la Croix Neuve at the Mende altiport, a steep closing climb that rewards attackers.</p>`,
+  fr:`<p>Une étape à travers les Cévennes, avec environ 4 300 m de dénivelé, qui passe par le cirque de Navacelles. Elle s’achève au sommet de la côte de la Croix Neuve, à l’altiport de Mende : une montée finale raide qui récompense les attaquants.</p>`
+ }},
+
+{n:15, dateIso:'2027-07-18', start:'Rodez', finish:'Albi', km:169, type:'hilly',
+ climbs:[],
+ sprints:[],
+ desc:{
+  fi:`<p>Kahdeksan luokiteltua nousua tekevät etapista jatkuvaa ylös ja alas -ajoa. Viimeinen nousu on alle 25 km ennen maalia, joten hyökkääjillä on tilaa. Päivä päättyy ennen kolmatta lepopäivää.</p>`,
+  en:`<p>Eight categorised climbs make this a day of constant up and down. The last one comes less than 25 km from the finish, which leaves room for the attackers. The day comes just before the third rest day.</p>`,
+  fr:`<p>Huit côtes répertoriées font de cette étape un perpétuel yo-yo. La dernière se situe à moins de 25 km de l’arrivée, ce qui laisse de la place aux attaquants. La journée précède la troisième journée de repos.</p>`
+ }},
+
+{n:'lepo', dateIso:'2027-07-19', labelKey:'rest3'},
+
+{n:16, dateIso:'2027-07-20', start:'Toulouse', finish:'Toulouse', km:33, type:'itt',
+ climbs:[
+   {name:{en:'Côte de Pech-David'},km:null,len:0.8,grad:12.4,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Toulousessa ajettava 33 km:n yksilöaika-ajo on pääosin tasainen, mutta toisella puoliskolla on jyrkkä Côte de Pech-David (0,8 km, 12,4 %), jonka rampit nousevat noin 20 %:iin. Nousu voi muuttaa aikaeroja.</p>`,
+  en:`<p>The 33 km individual time trial in Toulouse is mostly flat, but the second half includes the steep Côte de Pech-David (0.8 km at 12.4%), with ramps of around 20%. The climb could shift the time gaps.</p>`,
+  fr:`<p>Le contre-la-montre individuel de 33 km à Toulouse est surtout plat, mais la seconde moitié comprend la raide côte de Pech-David (0,8 km à 12,4 %), aux rampes d’environ 20 %. Cette bosse peut modifier les écarts.</p>`
+ }},
+
+{n:17, dateIso:'2027-07-21', start:'Muret', finish:'Pau', km:186, type:'flat',
+ climbs:[],
+ sprints:[],
+ desc:{
+  fi:`<p>Tasainen etappi Muretista Pauhun on sprintterien tilaisuus ennen Pyreneitä. Kisan viimeiset vuoristoetapit odottavat heti perässä.</p>`,
+  en:`<p>A flat stage from Muret to Pau gives the sprinters one last chance before the Pyrenees. The race’s final mountain stages follow straight after.</p>`,
+  fr:`<p>Étape plate de Muret à Pau, dernière occasion pour les sprinteurs avant les Pyrénées. Les ultimes étapes de montagne de la course suivent aussitôt.</p>`
+ }},
+
+{n:18, dateIso:'2027-07-22', start:'Pau', finish:'Saint-Lary-Soulan (Col du Portet)', km:174, type:'mountain', gain:5400,
+ climbs:[
+   {name:{en:'Col du Soulor'},km:null,len:11.8,grad:7.3,cat:null},
+   {name:{en:'Col du Tourmalet (Luz-Saint-Sauveur)'},km:null,len:19,grad:7.4,cat:null},
+   {name:{en:'Hourquette d’Ancizan'},km:null,len:8.2,grad:5.1,cat:null},
+   {name:{en:'Col du Portet'},km:174,len:16,grad:8.7,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Kuninkaallinen etappi on kisan raskain, noin 5 400 nousumetriä: Soulor (11,8 km, 7,3 %), Tourmalet Luz-Saint-Sauveurin puolelta (19 km, 7,4 %), Hourquette d’Ancizan (8,2 km, 5,1 %) ja lopuksi Col du Portet (16 km, 8,7 %).</p><p>Portetin huippu, 2 215 m, on koko kisan korkein kohta ja samalla maali. Etapilla ratkeaa todennäköisesti kokonaiskilpailu.</p>`,
+  en:`<p>The queen stage is the hardest of the race, with about 5,400 m of climbing: the Soulor (11.8 km at 7.3%), the Tourmalet from Luz-Saint-Sauveur (19 km at 7.4%), the Hourquette d’Ancizan (8.2 km at 5.1%) and finally the Col du Portet (16 km at 8.7%).</p><p>The summit of the Portet, at 2,215 m, is the highest point of the entire race and the finish line. The general classification is likely to be decided here.</p>`,
+  fr:`<p>L’étape reine est la plus dure de la course, avec environ 5 400 m de dénivelé : le Soulor (11,8 km à 7,3 %), le Tourmalet depuis Luz-Saint-Sauveur (19 km à 7,4 %), la Hourquette d’Ancizan (8,2 km à 5,1 %) et enfin le col du Portet (16 km à 8,7 %).</p><p>Le sommet du Portet, à 2 215 m, est le point culminant de toute la course et la ligne d’arrivée. Le classement général pourrait s’y décider.</p>`
+ }},
+
+{n:19, dateIso:'2027-07-23', start:'Hasparren', finish:'Laruns', km:160, type:'mountain', gain:4300,
+ climbs:[
+   {name:{en:'Col de Burdincurutcheta'},km:null,len:8.7,grad:9.3,cat:null},
+   {name:{en:'Col de Bagargui'},km:null,len:4.8,grad:6.4,cat:null},
+   {name:{en:'Col de Soudet'},km:null,len:15.1,grad:7.2,cat:null},
+   {name:{en:'Col de Marie Blanque'},km:140,len:7.7,grad:8.6,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Länsipyreneillä ja Baskimaassa ajettava etappi sisältää neljä isoa nousua ja noin 4 300 nousumetriä: Burdincurutcheta (8,7 km, 9,3 %), Bagargui (4,8 km, 6,4 %), Soudet (15,1 km, 7,2 %) ja Marie Blanque (7,7 km, 8,6 %).</p><p>Marie Blanquen huipulta on maaliin noin 20 km, ja loppu Larunsiin on loivasti laskeva väli, jossa takaa-ajajilla on vielä mahdollisuus.</p>`,
+  en:`<p>Raced in the western Pyrenees and the Basque Country, this stage has four big climbs and about 4,300 m of climbing: the Burdincurutcheta (8.7 km at 9.3%), Bagargui (4.8 km at 6.4%), Soudet (15.1 km at 7.2%) and Marie Blanque (7.7 km at 8.6%).</p><p>The summit of Marie Blanque is about 20 km from the line, and the run-in to Laruns is a false-flat descent where chasers still have a chance.</p>`,
+  fr:`<p>Disputée dans les Pyrénées occidentales et au Pays basque, cette étape compte quatre grandes ascensions et environ 4 300 m de dénivelé : Burdincurutcheta (8,7 km à 9,3 %), Bagargui (4,8 km à 6,4 %), Soudet (15,1 km à 7,2 %) et Marie Blanque (7,7 km à 8,6 %).</p><p>Le sommet de Marie Blanque se trouve à environ 20 km de l’arrivée, et le final vers Laruns est un faux plat descendant où les poursuivants ont encore leur chance.</p>`
+ }},
+
+{n:20, dateIso:'2027-07-24', start:'Maubourguet', finish:'Libourne', km:198, type:'flat',
+ climbs:[],
+ sprints:[],
+ desc:{
+  fi:`<p>Aaltoileva etappi päättyy noin 6 km pitkään suoraan, mikä suosii sprintterejä. Kisan toiseksi viimeisenä päivänä ryhmäkiri on todennäköinen.</p>`,
+  en:`<p>A rolling stage that ends with a long, roughly 6 km straight finish, favouring the sprinters. On the penultimate day a bunch sprint is the likely outcome.</p>`,
+  fr:`<p>Étape vallonnée qui se termine par une longue ligne droite d’environ 6 km, favorable aux sprinteurs. À l’avant-dernier jour, un sprint massif est l’issue probable.</p>`
+ }},
+
+{n:21, dateIso:'2027-07-25', start:'Saint-Quentin-en-Yvelines', finish:'Paris (Champs-Élysées)', km:116, type:'flat',
+ climbs:[
+   {name:{en:'Montmartre (rue Lepic)'},km:null,len:null,grad:null,cat:null}
+ ],
+ sprints:[],
+ desc:{
+  fi:`<p>Perinteinen päätösetappi päättyy Champs-Élysées’lle. Ennen sitä kierrokselle sisältyy Montmartren nousu (rue Lepic), joka tuo ohjelmaan odottamatonta jännitystä ennen lopullista sprinttiä.</p>`,
+  en:`<p>The traditional finale ends on the Champs-Élysées. Before that, the finishing circuit includes the climb of Montmartre (rue Lepic), adding a twist before the final sprint.</p>`,
+  fr:`<p>Le final traditionnel s’achève sur les Champs-Élysées. Auparavant, le circuit final comprend la montée de Montmartre (rue Lepic), qui ajoute du suspense avant le sprint ultime.</p>`
  }}
 ];
 
@@ -471,7 +682,25 @@ const stages = [
 const STAGE_COORDS = {
   1:[[-3.173,55.952],[-2.942,54.897]],
   2:[[-3.135,54.601],[-2.993,53.405]],
-  3:[[-3.147,52.66],[-3.179,51.482]]
+  3:[[-3.147,52.66],[-3.179,51.482]],
+  4:[[-1.622,49.639],[-1.622,49.639]],
+  5:[[-1.512,48.553],[-2.637,47.836]],
+  6:[[-2.76,47.658],[-0.553,47.478]],
+  7:[[1.335,47.586],[1.517,47.616]],
+  8:[[2.397,47.081],[4.419,46.805]],
+  9:[[5.02,46.0],[5.762,45.903]],
+  10:[[6.129,45.899],[6.631,45.936]],
+  11:[[6.58,46.06],[6.457,45.755]],
+  12:[[5.918,45.566],[4.892,44.933]],
+  13:[[4.39,44.62],[3.877,43.611]],
+  14:[[3.877,43.611],[3.501,44.518]],
+  15:[[2.575,44.35],[2.148,43.929]],
+  16:[[1.444,43.604],[1.444,43.604]],
+  17:[[1.327,43.463],[-0.37,43.295]],
+  18:[[-0.37,43.295],[0.342,42.811]],
+  19:[[-1.304,43.38],[-0.423,42.988]],
+  20:[[0.036,43.469],[-0.243,44.915]],
+  21:[[1.995,48.788],[2.302,48.869]]
 };
 
 /* ---------- ELEVATION PROFILE ----------
@@ -521,9 +750,9 @@ function renderPanel(stage){
       <tr>
         <td><span class="climbname"><span class="sq" style="background:${CAT_COLOR[c.cat]||CAT_COLOR.C1}"></span>${c.name[lang]||c.name.en}</span></td>
         <td class="num cat">${c.cat ? catLabel(c.cat) : '—'}</td>
-        <td class="num">${fmtKm(c.len)}</td>
+        <td class="num">${c.len ? fmtKm(c.len) : '—'}</td>
         <td class="num">${c.grad ? c.grad+' %' : '—'}</td>
-        <td class="loc">km ${c.km}</td>
+        <td class="loc">${c.km!=null ? 'km '+c.km : '—'}</td>
       </tr>`).join('');
   }
 
@@ -621,7 +850,25 @@ const RESULTS = {
   stageWinners: [
     {n:1, route:'Edinburgh → Carlisle', winner:''},
     {n:2, route:'Keswick → Liverpool', winner:''},
-    {n:3, route:'Welshpool → Cardiff', winner:''}
+    {n:3, route:'Welshpool → Cardiff', winner:''},
+    {n:4, route:'Cherbourg-en-Cotentin → Cherbourg-en-Cotentin', winner:''},
+    {n:5, route:'Pontorson → Plumelec', winner:''},
+    {n:6, route:'Vannes → Angers', winner:''},
+    {n:7, route:'Blois → Chambord', winner:''},
+    {n:8, route:'Bourges → Le Creusot', winner:''},
+    {n:9, route:'Villars-les-Dombes → Grand Colombier', winner:''},
+    {n:10, route:'Annecy → Sallanches', winner:''},
+    {n:11, route:'Cluses → Les Saisies', winner:''},
+    {n:12, route:'Chambéry → Valence', winner:''},
+    {n:13, route:'Aubenas → Montpellier', winner:''},
+    {n:14, route:'Montpellier → Mende', winner:''},
+    {n:15, route:'Rodez → Albi', winner:''},
+    {n:16, route:'Toulouse → Toulouse', winner:''},
+    {n:17, route:'Muret → Pau', winner:''},
+    {n:18, route:'Pau → Saint-Lary-Soulan (Col du Portet)', winner:''},
+    {n:19, route:'Hasparren → Laruns', winner:''},
+    {n:20, route:'Maubourguet → Libourne', winner:''},
+    {n:21, route:'Saint-Quentin-en-Yvelines → Paris (Champs-Élysées)', winner:''}
   ]
 };
 
@@ -680,7 +927,9 @@ setupTabs(tabButtons);
 /* Illustrative race-day weather (see the WEATHER block above). Missing
    file/stage leaves the "no data" note in the panel. */
 const STAGE_DATES = {
-  '2027-07-02':1,'2027-07-03':2,'2027-07-04':3
+  '2027-07-02':1,'2027-07-03':2,'2027-07-04':3,'2027-07-06':4,'2027-07-07':5,'2027-07-08':6,'2027-07-09':7,'2027-07-10':8,'2027-07-11':9,
+  '2027-07-13':10,'2027-07-14':11,'2027-07-15':12,'2027-07-16':13,'2027-07-17':14,'2027-07-18':15,'2027-07-20':16,'2027-07-21':17,'2027-07-22':18,
+  '2027-07-23':19,'2027-07-24':20,'2027-07-25':21
 };
 function todayStageIndex(){
   const d = new Date();
@@ -688,7 +937,7 @@ function todayStageIndex(){
   let n;
   if(key in STAGE_DATES) n = STAGE_DATES[key];
   else if(key < '2027-07-02') n = 1;
-  else n = 3;
+  else n = 21;
   const idx = stages.findIndex(s=>s.n===n);
   return idx >= 0 ? idx : 0;
 }
