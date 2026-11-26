@@ -5,7 +5,7 @@ Grand tour start list — teams and riders with their final placing.
 Scrapes each race's own site for the full start list (23 teams x 8 riders) and
 joins every rider to the general classification, so each rider carries either a
 final GC position + gap to the winner, or the fact that they did not finish.
-The result is written to data/<tour>-riders.json, which the "Teams & riders"
+The result is written to data/<year>/<tour>-riders.json, which the "Teams & riders"
 tab of the tour page reads. Both handlers emit the same schema.
 
 Two sources, because the organisers' sites are unrelated:
@@ -48,17 +48,17 @@ TOURS = {
     "tdf2026": {
         "source": "letour",
         "base": "https://www.letour.fr",
-        "out": "tdf2026-riders.json",
+        "out": "2026/tdf2026-riders.json",
     },
     "giro2026": {
         "source": "giro",
         "base": "https://www.giroditalia.it",
-        "out": "giro2026-riders.json",
+        "out": "2026/giro2026-riders.json",
     },
     "femmes2026": {
         "source": "letour",
         "base": "https://www.letourfemmes.fr",
-        "out": "femmes2026-riders.json",
+        "out": "2026/femmes2026-riders.json",
     },
     # lavuelta.es is run by Unipublic/ASO on the same site template as
     # letour.fr (identical list--competitors / rankingTables markup and
@@ -66,7 +66,7 @@ TOURS = {
     "vuelta2026": {
         "source": "letour",
         "base": "https://www.lavuelta.es",
-        "out": "vuelta2026-riders.json",
+        "out": "2026/vuelta2026-riders.json",
     },
 }
 
@@ -282,7 +282,7 @@ def normalize_team(name: str) -> str:
 def write_riders(out: Path, teams: list, after_stage) -> int:
     """
     Sorts the teams into final team-classification order, wraps them with the
-    race totals and writes data/<tour>-riders.json. Shared by every source so
+    race totals and writes data/<year>/<tour>-riders.json. Shared by every source so
     the pages only ever see one schema.
     """
     # A team missing from the team classification (or a race with no results

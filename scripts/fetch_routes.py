@@ -287,7 +287,7 @@ def _write_payload(race, stages, ends, total, source_text):
         "source": source_text,
         "stages": stages,
     }
-    out = DATA_DIR / f"{race}-routes.json"
+    out = DATA_DIR / race[-4:] / f"{race}-routes.json"
     out.write_text(json.dumps(payload, separators=(",", ":")) + "\n")
     kb = out.stat().st_size / 1024
     print(f"wrote {out.relative_to(out.parent.parent)} "

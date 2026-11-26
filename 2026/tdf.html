@@ -119,13 +119,13 @@
 <script>
 /* ---------- TOUR ----------
    The site is being extended to cover all three grand tours; each tour has
-   its own results file at data/<TOUR>-results.json. This page currently
+   its own results file at data/<year>/<TOUR>-results.json. This page currently
    shows the 2026 Tour de France. */
 const TOUR = 'tdf2026';
-const RESULTS_URL = `../data/${TOUR}-results.json`;
-const ROUTES_URL = `../data/${TOUR}-routes.json`;
-const RIDERS_URL = `../data/${TOUR}-riders.json`;
-const WEATHER_URL = `../data/${TOUR}-weather.json`;
+const RESULTS_URL = `../data/${TOUR.slice(-4)}/${TOUR}-results.json`;
+const ROUTES_URL = `../data/${TOUR.slice(-4)}/${TOUR}-routes.json`;
+const RIDERS_URL = `../data/${TOUR.slice(-4)}/${TOUR}-riders.json`;
+const WEATHER_URL = `../data/${TOUR.slice(-4)}/${TOUR}-weather.json`;
 const LANG_KEY = 'tdf2026-lang';
 const STRINGS = {
   fi: {
@@ -198,7 +198,7 @@ const STRINGS = {
     colReason: 'Syy',
     withdrawalReasons: {DNS:'Ei startannut (DNS)', DNF:'Keskeytti (DNF)', OTL:'Aikaraja ylittyi (OTL)'},
     teamsStatus: (riders, teams, fin, out) => `Lähtijät: ${teams} joukkuetta ja ${riders} ajajaa — ${fin} ajajaa maalissa Pariisissa, ${out} jäi pois kilpailusta.`,
-    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta <code>data/tdf2026-riders.json</code>, jonka <code>scripts/fetch_riders.py</code> kokoaa letour.fr:n lähtölistasta. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
+    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta <code>data/2026/tdf2026-riders.json</code>, jonka <code>scripts/fetch_riders.py</code> kokoaa letour.fr:n lähtölistasta. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
     teamClsLine: (pos, val) => `Joukkuekilpailu #${pos} · ${val}`,
     teamClsNone: 'Ei sijoitusta joukkuekilpailussa',
     colBib: 'Nro', colGcPos: 'Sija', colGcTime: 'Aika / ero',
@@ -289,7 +289,7 @@ const STRINGS = {
     colReason: 'Reason',
     withdrawalReasons: {DNS:'Did not start (DNS)', DNF:'Abandoned (DNF)', OTL:'Outside the time limit (OTL)'},
     teamsStatus: (riders, teams, fin, out) => `Start list: ${teams} teams and ${riders} riders — ${fin} finished in Paris, ${out} left the race.`,
-    teamsEmpty: 'The rider list could not be loaded. It is read from <code>data/tdf2026-riders.json</code>, which <code>scripts/fetch_riders.py</code> builds from the letour.fr start list. If you opened this page straight from disk (file://), the browser cannot read that file.',
+    teamsEmpty: 'The rider list could not be loaded. It is read from <code>data/2026/tdf2026-riders.json</code>, which <code>scripts/fetch_riders.py</code> builds from the letour.fr start list. If you opened this page straight from disk (file://), the browser cannot read that file.',
     teamClsLine: (pos, val) => `Team classification #${pos} · ${val}`,
     teamClsNone: 'Not placed in the team classification',
     colBib: 'No.', colGcPos: 'GC', colGcTime: 'Time / gap',
@@ -380,7 +380,7 @@ const STRINGS = {
     colReason: 'Motif',
     withdrawalReasons: {DNS:'Non-partant (DNS)', DNF:'Abandon (DNF)', OTL:'Hors délai (OTL)'},
     teamsStatus: (riders, teams, fin, out) => `Liste des partants : ${teams} équipes et ${riders} coureurs — ${fin} à l’arrivée à Paris, ${out} hors course.`,
-    teamsEmpty: 'La liste des coureurs n’a pas pu être chargée. Elle provient de <code>data/tdf2026-riders.json</code>, généré par <code>scripts/fetch_riders.py</code> à partir de la liste des partants de letour.fr. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
+    teamsEmpty: 'La liste des coureurs n’a pas pu être chargée. Elle provient de <code>data/2026/tdf2026-riders.json</code>, généré par <code>scripts/fetch_riders.py</code> à partir de la liste des partants de letour.fr. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
     teamClsLine: (pos, val) => `Classement par équipes #${pos} · ${val}`,
     teamClsNone: 'Non classée au classement par équipes',
     colBib: 'Dossard', colGcPos: 'Clt', colGcTime: 'Temps / écart',
@@ -756,7 +756,7 @@ window.addEventListener('resize', ()=>{ syncStageListHeight(); positionPanel(); 
    it. Above the breakpoint it moves back into its own grid column. */
 
 /* ---------- WEATHER ----------
-   Actual race-day weather loaded from data/tdf2026-weather.json, fetched by
+   Actual race-day weather loaded from data/2026/tdf2026-weather.json, fetched by
    scripts/fetch_weather.py (Open-Meteo's historical archive): the stage's
    start/finish-town daily high/low, not a specific-time reading, since that
    is what a historical archive actually gives you. Missing file/stage
@@ -922,7 +922,7 @@ const STAGE_STAT_KEYS = ['points','mountains','youth','teams'];
 
 /* ---------- TEAMS & RIDERS ----------
    The start list (23 teams x 8 riders) with every rider's final GC placing,
-   from data/<TOUR>-riders.json — see scripts/fetch_riders.py. Teams are
+   from data/<year>/<TOUR>-riders.json — see scripts/fetch_riders.py. Teams are
    already stored in team-classification order, riders in bib order. */
 let RIDERS = null;
 
@@ -944,7 +944,7 @@ const tabButtons = Array.from(document.querySelectorAll('.tabbtn'));
 setupTabs(tabButtons);
 
 /* ---------- AUTOMATIC DATA LOADING ----------
-   The page tries to fetch fresh results from data/<TOUR>-results.json (in
+   The page tries to fetch fresh results from data/<year>/<TOUR>-results.json (in
    the same directory). If the file is missing (e.g. the page was opened
    directly from disk via the file:// protocol), the RESULTS object above
    is used as-is. A GitHub Actions workflow updates the results file

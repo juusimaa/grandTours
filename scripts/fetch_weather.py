@@ -4,7 +4,7 @@ Grand tour weather fetch — actual race-day weather, stage by stage.
 
 Fetches the real recorded weather (not a forecast) at each stage's start and
 finish location, for stages that have already been raced, and writes it to
-data/<tour>-weather.json, which the tour's page reads automatically.
+data/<year>/<tour>-weather.json, which the tour's page reads automatically.
 
 Only stages whose race day has fully passed (in the race's own time zone)
 are fetched — Open-Meteo's historical archive rejects future dates outright,
@@ -24,7 +24,7 @@ Data source: Open-Meteo's free historical weather archive
 (archive-api.open-meteo.com), no API key required. Daily aggregates
 (high/low temperature, max wind, rainfall, mean humidity) at the stage's
 start and finish coordinates, taken from the first/last point of
-data/<tour>-routes.json.
+data/<year>/<tour>-routes.json.
 """
 
 import json
@@ -43,7 +43,7 @@ ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 # array in the tour's own HTML page (the schedule is fixed months ahead of
 # the race, so this only needs updating if the route changes). "summit"
 # marks a summit finish, so the page can show finish altitude for it.
-# Coordinates are NOT duplicated here — they come from data/<tour>-routes.json
+# Coordinates are NOT duplicated here — they come from data/<year>/<tour>-routes.json
 # (first/last point of each stage's polyline).
 VUELTA_STAGES = [
     {"n": 1,  "date": "2026-08-22", "start": "Monaco",                  "finish": "Monaco"},
@@ -98,7 +98,7 @@ TDF_STAGES = [
     {"n": 21, "date": "2026-07-26", "start": "Thoiry",         "finish": "Paris"},
 ]
 
-# data/tdf2026-routes.json has no GPX-derived points for stages 3, 4 and 5
+# data/2026/tdf2026-routes.json has no GPX-derived points for stages 3, 4 and 5
 # (route data wasn't available for those when the file was built — see
 # tdf2026.html's own STAGE_COORDS, which exists for exactly the same reason,
 # as a straight-line fallback for its route map). Mirrored here, in
@@ -112,15 +112,15 @@ TDF_COORDS_FALLBACK = {
 TOURS = {
     "tdf2026": {
         "stages": TDF_STAGES,
-        "routes": "tdf2026-routes.json",
-        "out": "tdf2026-weather.json",
+        "routes": "2026/tdf2026-routes.json",
+        "out": "2026/tdf2026-weather.json",
         "tz": "Europe/Paris",
         "coords_fallback": TDF_COORDS_FALLBACK,
     },
     "vuelta2026": {
         "stages": VUELTA_STAGES,
-        "routes": "vuelta2026-routes.json",
-        "out": "vuelta2026-weather.json",
+        "routes": "2026/vuelta2026-routes.json",
+        "out": "2026/vuelta2026-weather.json",
         "tz": "Europe/Madrid",
     },
 }
