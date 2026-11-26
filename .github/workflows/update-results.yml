@@ -56,7 +56,7 @@ jobs:
         # Cloudflare bot detection; letour.fr is not behind the same
         # protection). fetch_weather.py only needs requests (Open-Meteo is
         # plain JSON, no HTML to parse).
-        run: pip install requests selectolax
+        run: pip install -r scripts/requirements.txt
 
       # If the fetch crashes (e.g. the site structure changes), publishing
       # still continues — the page shows the last successful data.

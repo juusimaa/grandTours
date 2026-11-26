@@ -13,7 +13,7 @@ is empty while no race is live; register a tour only while it is being raced.
 Usage:
     python scripts/fetch_results.py               # fetch every registered tour
     python scripts/fetch_results.py <tour>         # fetch specific tour(s)
-Dependencies:  pip install requests selectolax
+Dependencies:  pip install -r scripts/requirements.txt
 
 Note: we previously used the procyclingstats package, but procyclingstats.com
 is behind Cloudflare bot protection and cannot be reached from the GitHub

@@ -128,8 +128,8 @@ that stage: GC, points, mountains, youth and teams. These come from the
 standings, separate from the individual order of arrival. Team positions use
 the official table order because RCS does not display a team rank cell.
 
-To reproduce the static backfill, install the existing Python dependencies
-(`requests` and `selectolax`) and run:
+To reproduce the static backfill, install the Python dependencies
+(`pip install -r scripts/requirements.txt`) and run:
 
 ```
 python3 scripts/backfill_giro2026_stage_results.py
@@ -221,7 +221,7 @@ Re-running it rewrites nothing unless the content
 actually changed, so it never produces an empty commit:
 
 ```
-pip install requests selectolax
+pip install -r scripts/requirements.txt
 python scripts/fetch_riders.py                              # every registered tour
 python scripts/fetch_riders.py tdf2026 giro2026 vuelta2026   # specific tours
 ```

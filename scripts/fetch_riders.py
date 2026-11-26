@@ -26,7 +26,7 @@ a refresh.
 Usage:
     python scripts/fetch_riders.py                    # every registered tour
     python scripts/fetch_riders.py tdf2026 giro2026    # specific tour(s)
-Dependencies:  pip install requests selectolax
+Dependencies:  pip install -r scripts/requirements.txt
 """
 
 import json

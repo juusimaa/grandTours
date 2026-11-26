@@ -52,6 +52,6 @@ jobs:
       # Network-free tests for the scrapers (fake fetch, saved HTML).
       - name: Run scraper tests
         run: |
-          pip install requests selectolax
+          pip install -r scripts/requirements.txt
           python scripts/test_fetch_results.py
           python scripts/test_fetch_riders.py
