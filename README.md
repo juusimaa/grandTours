@@ -15,7 +15,8 @@ Live: <https://juusimaa.github.io/grandTours/>
 ```
 index.html, riders.html     # landing page (year picker, SEASONS config) and rider search
 <year>/<race>.html          # one page per race and season (2026/tdf.html, 2027/tdf.html, …)
-src/race-page.ts            # shared page helpers -> dist/race-page.js (gitignored build output)
+src/race-page.ts            # helpers shared by all race pages -> dist/ (gitignored build output)
+src/tour-page.ts            # code shared by the Tour de France pages (2026 and 2027)
 modernist.css, race-page.css, riders.css
 data/<year>/<tour>-results.json   # classifications, stage winners, stage results
 data/<year>/<tour>-riders.json    # start list with final GC position/gap
