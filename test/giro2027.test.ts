@@ -42,6 +42,7 @@ describe('Giro 2027 page (route only)', () => {
         (el) => el.textContent,
       );
       expect(stats).toEqual(['3,418.9 km', '50,250 m', '21', '2', '6']);
+      expect(document.getElementById('finalTag')).toBeNull();
       expect(document.querySelector('#teamsGrid .status-card')?.textContent).toContain(
         'start list has not been published',
       );
