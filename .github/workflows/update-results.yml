@@ -67,7 +67,7 @@ jobs:
         continue-on-error: true
 
       # Fetches actual race-day weather for any newly-finished stage
-      # (data/<tour>-weather.json). Only stages whose race day has fully
+      # (data/<year>/<tour>-weather.json). Only stages whose race day has fully
       # passed are fetched — see the script's own docstring — and an
       # already-fetched stage is never re-fetched, so most runs do nothing.
       - name: Fetch weather
@@ -96,11 +96,11 @@ jobs:
         run: |
           git config user.name "tdf-bot"
           git config user.email "actions@users.noreply.github.com"
-          if ! ls data/*-results.json data/*-riders.json data/*-weather.json >/dev/null 2>&1; then
+          if ! ls data/*/*-results.json data/*/*-riders.json data/*/*-weather.json >/dev/null 2>&1; then
             echo "No results, riders or weather available yet, nothing to commit."
             exit 0
           fi
-          git add data/*-results.json data/*-riders.json data/*-weather.json
+          git add data/*/*-results.json data/*/*-riders.json data/*/*-weather.json
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0
@@ -126,11 +126,11 @@ jobs:
         id: expected
         run: |
           pairs=""
-          for f in data/*-results.json; do
+          for f in data/*/*-results.json; do
             [ -e "$f" ] || continue
             v=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1])).get('afterStage',''))" "$f")
             [ -n "$v" ] || continue
-            pairs="$pairs $(basename "$f")=$v"
+            pairs="$pairs ${f#data/}=$v"
           done
           pairs="$(echo "$pairs" | sed 's/^ *//')"
           echo "pairs=$pairs" >> "$GITHUB_OUTPUT"
@@ -211,7 +211,7 @@ jobs:
       # serving the previous build (observed 2026-07-06: stage 3 was committed
       # and the deploy went green, but juusimaa.github.io still served the
       # stage-2 artifact, so the stage dropdown was missing stage 3). This step
-      # fetches each freshly published data/<tour>-results.json and fails the
+      # fetches each freshly published data/<year>/<tour>-results.json and fails the
       # run loudly if afterStage does not match what was uploaded. Cache-busting
       # query + no-cache headers avoid reading a stale CDN copy; it polls for a
       # few minutes to allow propagation.

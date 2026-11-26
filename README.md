@@ -1,326 +1,78 @@
-# Grand tour — self-updating results page
+<p align="center"><img src="logo.svg" alt="Grand Tours logo" width="96"></p>
 
-A results site for the 2026 grand tours: Tour de France, Giro d'Italia, Tour
-de France Femmes and Vuelta a España. Results, start lists, routes and
-weather all live in per-tour files (`data/<tour>-*.json`), so the whole site
-covers all four races from one **tour-aware** codebase. All four races are
-finished, so the site serves static data and nothing is refreshed
-automatically.
+# Grand Tours — results site
 
-```
-index.html                            # "Grand Tours" landing page (race picker and rider-search entry) with a year picker (defaults to 2027), see below
-riders.html                           # rider search across the available 2026 race data
-riders.css                            # rider-search page styles
-2026/tdf.html                         # Tour de France — stages, profiles, map & final results (static)
-2026/giro.html                        # Giro d'Italia — stages, profiles, map, final rankings & stage results (static)
-2026/femmes.html                      # Tour de France Femmes — stages, profiles, map & final results (static)
-2026/vuelta.html                      # Vuelta a España — stages, profiles, map & final results (static)
-2027/tdf.html                         # Tour de France 2027 — Grand Départ stages 1–3 only (from the official press kit); only a reconstructed routes file so far
-src/race-page.ts                      # helper functions shared by all four race pages (i18n, formatting, rendering) — compiles to dist/race-page.js
-src/globals.d.ts                      # ambient types for the globals each page's own inline <script> defines
-dist/race-page.js                     # build output (gitignored) — what the HTML pages actually load, via `npm run build`
-test/race-page.test.ts                # Vitest unit tests for the pure helpers in src/race-page.ts, via `npm test`
-test/riders.test.ts                   # landing-page link and rider-search interaction tests
-test/landing.test.ts                  # landing-page year picker tests
-race-page.css                         # shared component styles for all four race pages, layered on modernist.css
-modernist.css                         # shared design tokens (colour, type, spacing) used by every page
+Results site for the grand tours: the 2026 Tour de France, Giro d'Italia,
+Tour de France Femmes and Vuelta a España (stages, profiles, route maps,
+classifications, teams & riders, race-day weather), a rider search across all
+four, and the first three stages of the 2027 Tour de France. All 2026 races
+are finished, so the site is static and nothing refreshes automatically.
 
-data/<tour>-results.json              # classifications + stage winners — static (all races are finished)
-data/<tour>-riders.json               # start list: teams, riders, each rider's GC position/gap — static, final GC
-data/<tour>-routes.json               # per-stage route tracks for the map, from GPX/komoot (see fetch_routes.py)
-data/tdf2026-weather.json             # actual race-day weather, all 21 stages (race is over)
-data/vuelta2026-weather.json          # actual race-day weather, raced stages only (static, final)
+Live: <https://juusimaa.github.io/grandTours/>
 
-scripts/fetch_results.py              # results fetch script (scrapes letour.fr / lavuelta.es); also holds cancelled-stage overrides
-scripts/backfill_giro2026_stage_results.py # one-off official Giro stage-result backfill
-scripts/fetch_riders.py               # start-list fetch script (letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it)
-scripts/fetch_routes.py               # route fetch script (cyclingstage.com GPX, komoot for the Vuelta, OSRM reconstruction for tdf2027) — run by hand
-scripts/fetch_weather.py              # race-day weather fetch script (Open-Meteo historical archive)
-.github/workflows/update-results.yml  # GitHub Actions build, test & publish workflow (push to main / manual; add a schedule while a race is live)
-.github/workflows/ci.yml              # GitHub Actions lint, format, build & test workflow (pull requests)
-
-tsconfig.json                         # TypeScript compiler options (src/ -> dist/, strict)
-vitest.config.mts                     # Vitest config (jsdom environment)
-eslint.config.mjs                     # ESLint flat config — CI fails a PR on any lint error
-.prettierrc.json / .prettierignore    # Prettier config — CI fails a PR on any unformatted file
-TODO.md                               # planned work, kept out of this file
-```
-
-`index.html` lets the visitor pick a race or open `riders.html` to search riders.
-The rider-search page reads the four start lists, suggests matching names, and
-groups a selected rider's available stage placings by race. The Giro's stage
-placings come from its official individual order of arrival for all 21 stages.
-The Giro Rankings tab also shows GC, points, mountains, youth and team standings
-after each selected stage.
-Each tour page has a back arrow to the landing page. Race pages live under a
-season folder (`2026/<race>.html`) so a future season can be added alongside
-it as `2027/<race>.html` without touching the existing pages. The landing
-page has a year picker above the race list. It defaults to 2027, honours a
-`?year=` link, and remembers the visitor's pick in `localStorage["gt-year"]`.
-Seasons and races are listed in the `SEASONS` config in `index.html`. A race
-without a `page` is shown as "route coming soon". For 2027 only the Tour de
-France links to a page (`2027/tdf.html`, stages 1–3 so far).
-
-### Local development
-
-The four race pages' own per-page logic is still plain JS, inline in each
-HTML file — only the shared helpers in `src/race-page.ts` are TypeScript.
-Browsers can't run `.ts` directly, so it needs a build step:
+## Layout
 
 ```
-npm install       # once
-npm run build     # compiles src/race-page.ts -> dist/race-page.js
-npm run watch     # or: rebuild on every save, while editing
-npm test          # runs the Vitest suite in test/ (build first)
-npm run lint      # ESLint over the whole repo
-npm run format    # Prettier, rewriting files in place
+index.html, riders.html     # landing page (year picker, SEASONS config) and rider search
+<year>/<race>.html          # one page per race and season (2026/tdf.html, 2027/tdf.html, …)
+src/race-page.ts            # helpers shared by all race pages -> dist/ (gitignored build output)
+src/tour-page.ts            # code shared by the Tour de France pages (2026 and 2027)
+modernist.css, race-page.css, riders.css
+data/<year>/<tour>-results.json   # classifications, stage winners, stage results
+data/<year>/<tour>-riders.json    # start list with final GC position/gap
+data/<year>/<tour>-routes.json    # simplified per-stage route tracks for the map
+data/<year>/<tour>-weather.json   # actual race-day weather (tdf2026, vuelta2026)
+scripts/                    # Python fetchers (results, riders, routes, weather) + tests
+test/                       # Vitest suite
+.github/workflows/          # ci.yml (PRs) and update-results.yml (main: fetch, test, deploy)
 ```
 
-**Run `npm run lint` and `npm run format` before pushing.** PR CI gates on
-both (`npm run lint` and `npm run format:check`) _before_ it builds or tests,
-so an unformatted file fails the run on its own.
+`<tour>` is the race id plus year, e.g. `data/2026/vuelta2026-results.json`.
 
-`dist/` is gitignored (build output, not source) — run `npm run build` after
-a fresh clone before opening any page locally, or nothing will render. CI
-does this automatically (see the workflows) before every deploy, so
-`dist/race-page.js` is always rebuilt fresh from `src/race-page.ts`.
-
-Pull requests run `.github/workflows/ci.yml` (lint + format check + build +
-`npm test`); pushes to `main` additionally run
-`.github/workflows/update-results.yml`, which fetches results/riders/weather
-and deploys to Pages — its build job runs the same tests (but not lint or the
-format check), and the deploy job (`needs: build`) only runs if they pass.
-
-### Live vs. static tours
-
-No tour is _live_ right now. All four races (`tdf2026`, `giro2026`,
-`femmes2026`, `vuelta2026`) are _finished_ and **static**: their
-classifications and stage winners are stored once in
-`data/<tour>-results.json` (same schema as the others) and never refetched,
-because `fetch_results.py`'s `TOURS` registry is empty. A finished race must
-not stay registered there: the organisers' URLs carry no year, so next
-season's data would overwrite it. (All four _are_ registered in
-`fetch_riders.py`, which is only ever run by hand — see below.) The Giro and
-Femmes Stages tabs (routes, distances, illustrative profiles) are built from
-a small hardcoded `stages` array in each page itself.
-
-To add a live tour, register it in `fetch_results.py`'s `TOURS` (with a
-source handler), add a schedule back to the workflow, and point a page at its `data/<tour>-results.json`. To add a
-finished race, drop a static `data/<tour>-results.json` in place and build a
-page that reads it — no script or registry entry needed.
-
-### Giro 2026 stage-result source
-
-`data/giro2026-results.json` includes the published individual **Order of
-arrival** (`ORARR`) for stages 1–21 from the [official Giro classifications](https://www.giroditalia.it/en/classifiche/di-tappa/1/)
-(replace the final stage number in the URL for each stage). Rows retain the
-published position, rider name, team, nationality, time and nonzero gap, plus
-the race bib from the official rider link. Rider search matches that bib to
-`data/giro2026-riders.json`, including names that differ between the two
-sources. Riders absent from a stage's individual classification have no row;
-the search page shows `—` and explains that this does not by itself establish
-a withdrawal. Stage winners and final classifications are kept as they were.
-
-Each stage also has `classifications` with the five published standings after
-that stage: GC, points, mountains, youth and teams. These come from the
-[official after-stage rankings](https://www.giroditalia.it/en/classifiche/generali/tappa/1/)
-(replace the final stage number for stages 2–21). They are cumulative
-standings, separate from the individual order of arrival. Team positions use
-the official table order because RCS does not display a team rank cell.
-
-To reproduce the static backfill, install the Python dependencies
-(`pip install -r scripts/requirements.txt`) and run:
+## Development
 
 ```
-python3 scripts/backfill_giro2026_stage_results.py
+npm install && npm run build   # needed after a fresh clone, or no page renders
+npm run watch                  # rebuild on save
+npm test                       # Vitest (build first)
+npm run lint && npm run format # run before pushing; PR CI gates on both
+pip install -r scripts/requirements.txt && python3 -m pytest scripts
 ```
 
-The command validates all 21 finishing orders, their winners, and the five
-after-stage standings before replacing
-`stageResults`. It is intentionally separate from the scheduled
-`fetch_results.py` workflow.
+Pull requests run lint, format check, build and tests. Pushes to `main` run
+`update-results.yml`: fetch data, test, deploy to GitHub Pages. If fetched
+data changed, it opens an auto-merging PR from `bot/data-update` (`main` is
+protected).
 
-## How it works
+## Data
 
-1. GitHub Actions runs the workflow on every push to `main` and on demand
-   from the Actions tab. There is no schedule while no tour is live. When
-   the next race is live, add a `schedule:` back to
-   `.github/workflows/update-results.yml` at odd minutes away from :00/:30
-   (GitHub drops scheduled events under load, hardest on the hour and
-   half-hour — don't use `*/30`; see the file's git history for the full
-   story), and remove it once the race finishes.
-2. The workflow runs `fetch_results.py`, which scrapes the official rankings
-   pages of every tour in its `TOURS` registry (currently none): general classification, points,
-   mountains, youth and team classifications, plus the winner of every stage
-   raced so far.
-3. The script writes `data/<tour>-results.json` for each registered tour. If
-   the content changed, the workflow pushes it to the `bot/data-update`
-   branch and opens a PR that auto-merges once the `test` check passes
-   (`main` is protected: PR and passing `test` required, no bypass). The
-   same run deploys the new data straight away, without waiting for the merge.
-4. GitHub Pages serves the site, and each tour page fetches the JSON for its
-   tour in the browser (e.g. `2026/vuelta.html` → `fetch('../data/vuelta2026-results.json')`).
-   The page therefore always shows the latest committed standings with zero
-   manual intervention.
+| Data               | Script                               | Source                                                               | Run by                                 |
+| ------------------ | ------------------------------------ | -------------------------------------------------------------------- | -------------------------------------- |
+| Results            | `fetch_results.py`                   | letour.fr, lavuelta.es (same template)                               | workflow, tours in `TOURS` (empty now) |
+| Riders             | `fetch_riders.py`                    | letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it              | hand                                   |
+| Routes             | `fetch_routes.py`                    | cyclingstage.com GPX, komoot (Vuelta), OSRM reconstruction (tdf2027) | hand                                   |
+| Weather            | `fetch_weather.py`                   | Open-Meteo historical archive                                        | workflow, finished stages only         |
+| Giro stage results | `backfill_giro2026_stage_results.py` | official giroditalia.it classifications                              | hand, one-off                          |
 
-The page also **auto-selects the stage of the day** when opened (the next
-stage on rest days, the final stage once the race is over).
-
-### Cancelled stages
-
-A stage that is called off (bad weather, a security incident, …) never gets
-result pages on the organiser's site, so the scraper alone can't represent
-it — left alone, it would just look like "not raced yet" forever. Instead,
-`fetch_results.py` has a hand-maintained `CANCELLED_STAGES` dict, keyed by
-`(tour_id, stage_no)`, mapping to a reason code:
-
-```python
-CANCELLED_STAGES = {
-    ("vuelta2026", 3): "weather",
-}
-```
-
-Every run applies this unconditionally — it skips fetching that stage
-entirely and writes `cancelled`/`cancelledReason` onto both its
-`stageWinners` and `stageResults` entries — so the flag survives the next
-scrape instead of being silently overwritten. The reason code must match a
-key in the page's own `cancelledReasons` translation table (in `<tour>.html`'s
-`STRINGS`), which renders the localized message and lets the cancelled stage
-still be picked from the results dropdown.
-
-### Teams & riders tab
-
-Every race page has a third tab listing every team and rider, with each
-rider's current or final general-classification position and gap to the
-leader/winner. All four read `data/<tour>-riders.json`, written by
-`scripts/fetch_riders.py` in one shared schema — but the organisers' sites
-differ enough that the script has one handler per source family:
-
-- **letour.fr / letourfemmes.fr / lavuelta.es** (`tdf2026`, `femmes2026`,
-  `vuelta2026`) — ASO's Tour sites and Unipublic's Vuelta site share the same
-  template, so one `"letour"` handler covers all three. It reads the start
-  list at `/en/riders`, joined to the general classification and the
-  per-stage withdrawal list **by bib number**; the displayed rider names
-  differ between those pages, the bib does not. A rider who left the race
-  therefore carries a DNS/DNF/OTL reason and the stage.
-- **giroditalia.it** (`giro2026`) — teams from `/en/squadre/` and their
-  rosters from each team page, joined to the final classifications **by
-  athlete-page slug**. RCS never prints bib numbers, but every rider link
-  carries one as `data-destination="Rider/<bib>"` (1–8 for the first team,
-  11–18 for the second, … 221–228 — the Giro's own numbering), so the riders
-  still get bibs and are listed in start-list order. Withdrawals are one
-  table per stage page instead of a single list, so the script walks the
-  stage pages to find the stage each rider left; without a published reason
-  they are all reported as DNF. Times are restated from `83:22:51` into the
-  same `83h 22' 51''` form the other tours use.
-
-The workflow does not run this script; it is run by hand only (the GC
-column no longer tracks a live race).
-
-Re-running it rewrites nothing unless the content
-actually changed, so it never produces an empty commit:
-
-```
-pip install -r scripts/requirements.txt
-python scripts/fetch_riders.py                              # every registered tour
-python scripts/fetch_riders.py tdf2026 giro2026 vuelta2026   # specific tours
-```
-
-### Routes & the stage map
-
-Each race page's expanded stage view draws the real route on a Leaflet map,
-from a per-stage GPX track in `data/<tour>-routes.json`. `scripts/fetch_routes.py`
-builds that file from one of three sources per race:
-
-- **cyclingstage.com** GPX exports (`tdf2026`, `giro2026`, `femmes2026`) — a
-  public, free-to-download third-party reconstruction of the route.
-- **komoot** (`vuelta2026`) — the organiser's own official komoot account
-  (`lavuelta`), which is the actual GPS-recorded course rather than a
-  reconstruction, and is preferred wherever the organiser publishes one.
-- **OSRM** (`tdf2027`) — a stopgap until any GPX exists. It routes along roads
-  through a hand-checked waypoint list in the script: the towns and climbs on
-  the official press-kit stage maps, geocoded with Nominatim. It's an
-  approximation that includes the neutralised start, so the routed stages run
-  ~17–34 km over the official distance. `2027/tdf.html` labels the map as
-  reconstructed. Switch the race to a GPX source once one is published.
-
-Each track is simplified with Ramer–Douglas–Peucker so the shipped file stays
-small (the map is an overview locator, not turn-by-turn nav — ~50 m of
-simplification is invisible at that zoom), and stored as `[lat, lon]` pairs
-rounded to 5 decimals. A stage whose route hasn't been published yet is
-simply omitted; the page falls back to a straight start→finish line for it.
-Unlike `fetch_results.py`, `fetch_riders.py` and `fetch_weather.py`, this
-script is **not** part of the workflow — a published route doesn't change, so
-it is run by hand:
-
-```
-python3 scripts/fetch_routes.py            # default: tdf2026
-python3 scripts/fetch_routes.py vuelta2026
-python3 scripts/fetch_routes.py all
-```
-
-### Weather
-
-`2026/tdf.html` and `2026/vuelta.html` each show a "Race-day weather" block per
-stage — actual recorded conditions (not a forecast), a daily high/low/feels
-at the stage's start and finish location, sourced from Open-Meteo's free
-historical archive (`archive-api.open-meteo.com`, no API key). A stage only
-ever shows once its race day has fully passed, both in what gets fetched and
-in what the page renders — a stage still being raced never shows a same-day,
-not-yet-final reading. Both races are over, so both pages show all 21
-stages. `2026/giro.html` and `2026/femmes.html` don't have a weather block; their
-tours aren't registered in `fetch_weather.py`'s `TOURS`.
-
-`scripts/fetch_weather.py` runs in the same workflow as
-`fetch_results.py` (see "How it works" above): every run, it checks each
-registered tour's stage schedule against today's date (in the race's own
-time zone), fetches any newly-finished stage's weather at its start/finish
-coordinates (the first/last point of `data/<tour>-routes.json`, or a small
-hardcoded `coords_fallback` for the handful of Tour stages that routes file
-has no GPX points for), and writes `data/<tour>-weather.json`. A stage
-already in that file is never re-fetched — a past day's weather doesn't
-change — so most runs do nothing, and the workflow opens a data PR for
-`data/*-weather.json` alongside results only when something new was actually
-fetched. Add another tour to the `TOURS` dict in `fetch_weather.py`, with its
-stage schedule and time zone, to cover it too.
-
-## Why letour.fr and not procyclingstats.com
-
-The site originally scraped procyclingstats.com via the `procyclingstats`
-Python package. That site sits behind Cloudflare bot protection, which
-blocks plain scraper traffic — and blocks it _harder_ from GitHub Actions'
-datacenter IPs than from a home network, to the point where even
-`cloudscraper` (a Cloudflare-bypass library) couldn't reliably get through.
-letour.fr, the official Tour de France site, serves its rankings as plain
-server-rendered HTML with no such protection, so `fetch_results.py` scrapes
-it directly with `requests` + `selectolax` instead — and the same approach
-covers lavuelta.es too, since Unipublic's Vuelta site is built on the
-identical template.
-
-Each classification is fetched and parsed independently, so a change to
-letour.fr's or lavuelta.es's HTML that breaks one table (e.g. mountains)
-doesn't take down the others — check the Actions log for warnings if a table
-stops updating.
+- **Adding a live race:** register it in `fetch_results.py`'s `TOURS`, add a
+  `schedule:` to `update-results.yml` (odd minutes, not `*/30`), and remove
+  both when the race ends. Organiser URLs carry no year, so a finished race
+  left registered would be overwritten by next season.
+- **Adding a finished race:** drop static files into `data/<year>/` and build
+  a page that reads them.
+- **Cancelled stages:** list them in `CANCELLED_STAGES` in `fetch_results.py`;
+  the reason code must match the page's `cancelledReasons` strings.
+- Riders are joined to classifications by bib (ASO/Unipublic) or athlete-page
+  slug (Giro). Routes are simplified with Ramer–Douglas–Peucker; a stage
+  without a route falls back to a straight start→finish line. The 2027 Tour
+  routes are an OSRM approximation until GPX is published.
+- procyclingstats.com is not used: its Cloudflare protection blocks GitHub
+  Actions runners.
 
 ## License & disclaimer
 
-The **source code** of this project (the HTML pages, `src/`, `test/`,
-`scripts/`, the CSS files and the GitHub Actions workflows) is released under
-the [MIT License](LICENSE) — feel free to use, modify, and share it.
-
-The **results data**, however, is a different matter and the MIT license does
-**not** extend to it:
-
-- This is an unofficial, non-commercial fan project. It is **not affiliated
-  with, endorsed by, or connected to** Amaury Sport Organisation (A.S.O.),
-  RCS Sport, Unipublic, letour.fr, letourfemmes.fr, giroditalia.it,
-  lavuelta.es, or the races themselves.
-- Race results shown here are fetched from those organisers' own sites and
-  remain the property of their respective owners. No ownership of, or rights
-  to, that data are claimed or granted by this project.
-- "Tour de France", "Giro d'Italia", "Tour de France Femmes", "Vuelta a
-  España" and related names and logos are trademarks of their respective
-  organisers and are used here only descriptively to identify the events.
-
-If you reuse this code, you are responsible for sourcing your own data and
-complying with the terms of whatever source you use.
+The source code is [MIT](LICENSE). The race data is not: it comes from the
+organisers' sites and belongs to them. This is an unofficial, non-commercial
+fan project, not affiliated with A.S.O., RCS Sport, Unipublic or the races.
+Race names and logos are trademarks of their owners, used here only to
+identify the events. If you reuse the code, source your own data.

@@ -119,16 +119,16 @@
 <script>
 /* ---------- TOUR ----------
    The site is being extended to cover all three grand tours; each tour has
-   its own results file at data/<TOUR>-results.json. This page shows the
+   its own results file at data/<year>/<TOUR>-results.json. This page shows the
    2027 Tour de France — only the three Grand Départ stages are published so
-   far (official press kit, see sourcesBody). Only data/<TOUR>-routes.json
+   far (official press kit, see sourcesBody). Only data/<year>/<TOUR>-routes.json
    exists, and it is a reconstruction (see scripts/fetch_routes.py); results,
    start list and weather fall back to their empty states. */
 const TOUR = 'tdf2027';
-const RESULTS_URL = `../data/${TOUR}-results.json`;
-const ROUTES_URL = `../data/${TOUR}-routes.json`;
-const RIDERS_URL = `../data/${TOUR}-riders.json`;
-const WEATHER_URL = `../data/${TOUR}-weather.json`;
+const RESULTS_URL = `../data/${TOUR.slice(-4)}/${TOUR}-results.json`;
+const ROUTES_URL = `../data/${TOUR.slice(-4)}/${TOUR}-routes.json`;
+const RIDERS_URL = `../data/${TOUR.slice(-4)}/${TOUR}-riders.json`;
+const WEATHER_URL = `../data/${TOUR.slice(-4)}/${TOUR}-weather.json`;
 const LANG_KEY = 'tdf2026-lang';
 const STRINGS = {
   fi: {
@@ -466,7 +466,7 @@ const stages = [
 ];
 
 /* Start/finish coordinates [lon, lat], from the endpoints of the
-   reconstructed tracks in data/tdf2027-routes.json (fetch_routes.py prints
+   reconstructed tracks in data/2027/tdf2027-routes.json (fetch_routes.py prints
    them). Used as a dashed straight line if that file can't be loaded. */
 const STAGE_COORDS = {
   1:[[-3.173,55.952],[-2.942,54.897]],
@@ -502,7 +502,7 @@ window.addEventListener('resize', ()=>{ syncStageListHeight(); positionPanel(); 
    it. Above the breakpoint it moves back into its own grid column. */
 
 /* ---------- WEATHER ----------
-   Actual race-day weather loaded from data/tdf2027-weather.json, fetched by
+   Actual race-day weather loaded from data/2027/tdf2027-weather.json, fetched by
    scripts/fetch_weather.py (Open-Meteo's historical archive): the stage's
    start/finish-town daily high/low, not a specific-time reading, since that
    is what a historical archive actually gives you. Missing file/stage
@@ -646,7 +646,7 @@ const STAGE_STAT_KEYS = ['points','mountains','youth','teams'];
 
 /* ---------- TEAMS & RIDERS ----------
    The start list (23 teams x 8 riders) with every rider's final GC placing,
-   from data/<TOUR>-riders.json — see scripts/fetch_riders.py. Teams are
+   from data/<year>/<TOUR>-riders.json — see scripts/fetch_riders.py. Teams are
    already stored in team-classification order, riders in bib order. */
 let RIDERS = null;
 
@@ -668,7 +668,7 @@ const tabButtons = Array.from(document.querySelectorAll('.tabbtn'));
 setupTabs(tabButtons);
 
 /* ---------- AUTOMATIC DATA LOADING ----------
-   The page tries to fetch fresh results from data/<TOUR>-results.json (in
+   The page tries to fetch fresh results from data/<year>/<TOUR>-results.json (in
    the same directory). If the file is missing (e.g. the page was opened
    directly from disk via the file:// protocol), the RESULTS object above
    is used as-is. A GitHub Actions workflow updates the results file
@@ -697,7 +697,7 @@ function todayStageIndex(){
 document.documentElement.lang = lang;
 activeIdx = todayStageIndex();
 renderAll();
-// TODO: re-enable loadResults(); loadRiders(); loadWeather(); once data/tdf2027-{results,riders,weather}.json exist.
+// TODO: re-enable loadResults(); loadRiders(); loadWeather(); once data/2027/tdf2027-{results,riders,weather}.json exist.
 </script>
 <script data-goatcounter="https://grandtours.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>

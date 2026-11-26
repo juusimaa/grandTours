@@ -111,10 +111,10 @@
 <script>
 /* Language preference is shared with the rest of the site via the same key. */
 const LANG_KEY = 'tdf2026-lang';
-const ROUTES_URL = '../data/vuelta2026-routes.json';
-const RIDERS_URL = '../data/vuelta2026-riders.json';
-const RESULTS_URL = '../data/vuelta2026-results.json';
-const WEATHER_URL = '../data/vuelta2026-weather.json';
+const ROUTES_URL = '../data/2026/vuelta2026-routes.json';
+const RIDERS_URL = '../data/2026/vuelta2026-riders.json';
+const RESULTS_URL = '../data/2026/vuelta2026-results.json';
+const WEATHER_URL = '../data/2026/vuelta2026-weather.json';
 
 const STRINGS = {
   fi: {
@@ -163,7 +163,7 @@ const STRINGS = {
     riderOutOnStage: n => `Etapilla ${n}`,
     riderOutUnknown: 'Ei maalissa',
     teamsStatus: (riders, teams, fin, out) => `Lähtijät: ${teams} joukkuetta ja ${riders} ajajaa — ${fin} ajajaa maalissa Granadassa, ${out} jäi pois kilpailusta.`,
-    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta <code>data/vuelta2026-riders.json</code>, jonka <code>scripts/fetch_riders.py</code> kokoaa lavuelta.es:n lähtölistasta. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
+    teamsEmpty: 'Ajajalistaa ei saatu ladattua. Lista luetaan tiedostosta <code>data/2026/vuelta2026-riders.json</code>, jonka <code>scripts/fetch_riders.py</code> kokoaa lavuelta.es:n lähtölistasta. Jos avasit sivun suoraan levyltä (file://), selain ei voi lukea tiedostoa.',
     teamClsLine: (pos, val) => `Joukkuekilpailu #${pos} · ${val}`,
     teamClsNone: 'Ei vielä sijoitusta joukkuekilpailussa',
     resultsEmpty: 'Kilpailu ei ole vielä alkanut — tuloksia ei ole saatavilla.',
@@ -252,7 +252,7 @@ const STRINGS = {
     riderOutOnStage: n => `On stage ${n}`,
     riderOutUnknown: 'Did not finish',
     teamsStatus: (riders, teams, fin, out) => `Start list: ${teams} teams and ${riders} riders — ${fin} finished in Granada, ${out} left the race.`,
-    teamsEmpty: 'The rider list could not be loaded. It is read from <code>data/vuelta2026-riders.json</code>, which <code>scripts/fetch_riders.py</code> builds from the lavuelta.es start list. If you opened this page straight from disk (file://), the browser cannot read that file.',
+    teamsEmpty: 'The rider list could not be loaded. It is read from <code>data/2026/vuelta2026-riders.json</code>, which <code>scripts/fetch_riders.py</code> builds from the lavuelta.es start list. If you opened this page straight from disk (file://), the browser cannot read that file.',
     teamClsLine: (pos, val) => `Team classification #${pos} · ${val}`,
     teamClsNone: 'Not yet placed in the team classification',
     resultsEmpty: 'The race has not started yet — no results are available.',
@@ -341,7 +341,7 @@ const STRINGS = {
     riderOutOnStage: n => `Étape ${n}`,
     riderOutUnknown: 'Non-partant / abandon',
     teamsStatus: (riders, teams, fin, out) => `Liste des partants : ${teams} équipes et ${riders} coureurs — ${fin} à l’arrivée à Grenade, ${out} hors course.`,
-    teamsEmpty: 'La liste des coureurs n’a pas pu être chargée. Elle provient de <code>data/vuelta2026-riders.json</code>, généré par <code>scripts/fetch_riders.py</code> à partir de la liste des partants de lavuelta.es. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
+    teamsEmpty: 'La liste des coureurs n’a pas pu être chargée. Elle provient de <code>data/2026/vuelta2026-riders.json</code>, généré par <code>scripts/fetch_riders.py</code> à partir de la liste des partants de lavuelta.es. Si la page a été ouverte directement depuis le disque (file://), le navigateur ne peut pas lire ce fichier.',
     teamClsLine: (pos, val) => `Classement par équipes #${pos} · ${val}`,
     teamClsNone: 'Pas encore classée au classement par équipes',
     resultsEmpty: 'La course n’a pas encore commencé — aucun résultat disponible.',
@@ -586,7 +586,7 @@ function selectStage(idx){
 }
 
 /* ---------- WEATHER ----------
-   Actual race-day weather loaded from data/vuelta2026-weather.json, fetched
+   Actual race-day weather loaded from data/2026/vuelta2026-weather.json, fetched
    by scripts/fetch_weather.py (Open-Meteo's historical archive) on the same
    schedule as results. Only stages whose race day has already passed are
    ever written there, but the page re-checks the date itself too, so a
@@ -689,7 +689,7 @@ function renderPanel(st){
 }
 
 /* ---------- RANKINGS ----------
-   Live standings from data/vuelta2026-results.json -- see
+   Live standings from data/2026/vuelta2026-results.json -- see
    scripts/fetch_results.py, which scrapes lavuelta.es and is refreshed on a
    schedule (see .github/workflows/update-results.yml). RESULTS starts empty
    and is populated by loadResults() below; classifications/stage results
@@ -905,7 +905,7 @@ function renderStageResult(n){
 }
 
 /* ---------- TEAMS & RIDERS ----------
-   The start list (23 teams x 8 riders) from data/vuelta2026-riders.json --
+   The start list (23 teams x 8 riders) from data/2026/vuelta2026-riders.json --
    see scripts/fetch_riders.py. Teams are stored in team-classification
    order (once the classification exists), riders in bib order. */
 let RIDERS = null;

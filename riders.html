@@ -201,7 +201,7 @@ function renderSuggestions() {
 
 function stageData(race) {
   if (!resultsCache.has(race.id)) {
-    resultsCache.set(race.id, fetch(`data/${race.id}2026-results.json`).then(response => {
+    resultsCache.set(race.id, fetch(`data/2026/${race.id}2026-results.json`).then(response => {
       if (!response.ok) throw new Error('HTTP ' + response.status);
       return response.json();
     }));
@@ -315,7 +315,7 @@ document.querySelectorAll('#langSel .langbtn').forEach(button => {
 
 renderLanguage();
 Promise.all(RACES.map(async race => {
-  const response = await fetch(`data/${race.id}2026-riders.json`);
+  const response = await fetch(`data/2026/${race.id}2026-riders.json`);
   if (!response.ok) throw new Error('HTTP ' + response.status);
   return { race, data: await response.json() };
 })).then(files => {
