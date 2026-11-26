@@ -31,9 +31,13 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # contents:write = the bot may commit results.json.
+    # contents:write = push the bot/data-update branch; pull-requests:write =
+    # open the data PR and turn on auto-merge; actions:write = start ci.yml
+    # on that branch (see "Open data PR if changed").
     permissions:
       contents: write
+      pull-requests: write
+      actions: write
     # Expose, per tour, the afterStage value that is about to be published so
     # the deploy job can confirm the live site really serves it (see "Verify
     # published results" below). Space-separated "<file>=<afterStage>" pairs.
@@ -71,9 +75,24 @@ jobs:
         continue-on-error: true
 
       # Persist results, riders and weather into the repo (persistence +
-      # history). A commit made by GITHUB_TOKEN does NOT trigger the workflow
-      # again -> no loop.
-      - name: Commit if changed
+      # history). main is protected (PR + passing `test` check, no bypass), so
+      # the bot pushes to the bot/data-update branch and opens a PR that
+      # auto-merges once `test` passes. This run still deploys the fresh data
+      # below without waiting for the merge.
+      #
+      # Two GITHUB_TOKEN rules shape this: a PR it opens does NOT fire the
+      # pull_request event, so ci.yml is started by hand with workflow_dispatch
+      # (the one event GITHUB_TOKEN may trigger) to put the `test` check on the
+      # branch head; and the merge it makes does NOT fire `push`, so there is
+      # no loop. Needs the repo settings "Allow auto-merge" and "Allow GitHub
+      # Actions to create and approve pull requests".
+      # continue-on-error: a failed push/PR must not block deploying the data
+      # just fetched (the next run retries); check the run's annotations.
+      - name: Open data PR if changed
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: bot/data-update
         run: |
           git config user.name "tdf-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -84,10 +103,20 @@ jobs:
           git add data/*-results.json data/*-riders.json data/*-weather.json
           if git diff --cached --quiet; then
             echo "No changes."
-          else
-            git commit -m "Results, riders & weather updated $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git push
+            exit 0
           fi
+          # One rolling branch, rebuilt from this run's main each time: an
+          # unmerged older update is replaced by this newer, complete one.
+          git switch -c "$BRANCH"
+          git commit -m "Results, riders & weather updated $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push --force origin "$BRANCH"
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number')" ]; then
+            gh pr create --base main --head "$BRANCH" \
+              --title "Data update (results, riders & weather)" \
+              --body "Automated data update from the scheduled workflow. Auto-merges once \`test\` passes."
+          fi
+          gh workflow run ci.yml --ref "$BRANCH"
+          gh pr merge "$BRANCH" --auto --squash --delete-branch
 
       # Read each tour's afterStage from the exact files about to be uploaded,
       # so the deploy job can verify the live site matches. Emits space-

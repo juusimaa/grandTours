@@ -155,7 +155,10 @@ after-stage standings before replacing
    mountains, youth and team classifications, plus the winner of every stage
    raced so far.
 3. The script writes `data/<tour>-results.json` for each registered tour. If
-   the content changed, the workflow commits it back to the repo.
+   the content changed, the workflow pushes it to the `bot/data-update`
+   branch and opens a PR that auto-merges once the `test` check passes
+   (`main` is protected: PR and passing `test` required, no bypass). The
+   same run deploys the new data straight away, without waiting for the merge.
 4. GitHub Pages serves the site, and each tour page fetches the JSON for its
    tour in the browser (e.g. `2026/vuelta.html` → `fetch('../data/vuelta2026-results.json')`).
    The page therefore always shows the latest committed standings with zero
@@ -277,7 +280,7 @@ coordinates (the first/last point of `data/<tour>-routes.json`, or a small
 hardcoded `coords_fallback` for the handful of Tour stages that routes file
 has no GPX points for), and writes `data/<tour>-weather.json`. A stage
 already in that file is never re-fetched — a past day's weather doesn't
-change — so most runs do nothing, and the workflow commits
+change — so most runs do nothing, and the workflow opens a data PR for
 `data/*-weather.json` alongside results only when something new was actually
 fetched. Add another tour to the `TOURS` dict in `fetch_weather.py`, with its
 stage schedule and time zone, to cover it too.
