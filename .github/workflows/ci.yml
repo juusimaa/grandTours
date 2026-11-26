@@ -6,6 +6,9 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  # update-results.yml starts this on its bot/data-update branch: a PR opened
+  # with GITHUB_TOKEN does not fire pull_request, and main requires `test`.
+  workflow_dispatch:
 
 permissions:
   contents: read
