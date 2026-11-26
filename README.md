@@ -3,10 +3,9 @@
 A results site for the 2026 grand tours: Tour de France, Giro d'Italia, Tour
 de France Femmes and Vuelta a España. Results, start lists, routes and
 weather all live in per-tour files (`data/<tour>-*.json`), so the whole site
-covers all four races from one **tour-aware** codebase. Only the Vuelta is
-still being raced (22 Aug – 13 Sep 2026); it keeps its own results and
-weather current automatically, while the other three are finished and serve
-static data.
+covers all four races from one **tour-aware** codebase. All four races are
+finished, so the site serves static data and nothing is refreshed
+automatically.
 
 ```
 index.html                            # "Grand Tours" landing page (race picker and rider-search entry) with a year picker (defaults to 2027), see below
@@ -15,7 +14,7 @@ riders.css                            # rider-search page styles
 2026/tdf.html                         # Tour de France — stages, profiles, map & final results (static)
 2026/giro.html                        # Giro d'Italia — stages, profiles, map, final rankings & stage results (static)
 2026/femmes.html                      # Tour de France Femmes — stages, profiles, map & final results (static)
-2026/vuelta.html                      # Vuelta a España — stages, profiles, map & auto-updating results (live)
+2026/vuelta.html                      # Vuelta a España — stages, profiles, map & final results (static)
 2027/tdf.html                         # Tour de France 2027 — Grand Départ stages 1–3 only (from the official press kit); only a reconstructed routes file so far
 src/race-page.ts                      # helper functions shared by all four race pages (i18n, formatting, rendering) — compiles to dist/race-page.js
 src/globals.d.ts                      # ambient types for the globals each page's own inline <script> defines
@@ -27,18 +26,18 @@ race-page.css                         # shared component styles for all four rac
 modernist.css                         # shared design tokens (colour, type, spacing) used by every page
 theme.css                             # earlier colour theme — no longer linked from any page, kept for reference
 
-data/<tour>-results.json              # classifications + stage winners — auto-updated for vuelta2026, static for the rest
-data/<tour>-riders.json               # start list: teams, riders, each rider's GC position/gap — GC column auto-updated for tdf2026/vuelta2026
+data/<tour>-results.json              # classifications + stage winners — static (all races are finished)
+data/<tour>-riders.json               # start list: teams, riders, each rider's GC position/gap — static, final GC
 data/<tour>-routes.json               # per-stage route tracks for the map, from GPX/komoot (see fetch_routes.py)
 data/tdf2026-weather.json             # actual race-day weather, all 21 stages (race is over)
-data/vuelta2026-weather.json          # actual race-day weather, raced stages only — auto-updated
+data/vuelta2026-weather.json          # actual race-day weather, raced stages only (static, final)
 
 scripts/fetch_results.py              # results fetch script (scrapes letour.fr / lavuelta.es); also holds cancelled-stage overrides
 scripts/backfill_giro2026_stage_results.py # one-off official Giro stage-result backfill
 scripts/fetch_riders.py               # start-list fetch script (letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it)
 scripts/fetch_routes.py               # route fetch script (cyclingstage.com GPX, komoot for the Vuelta, OSRM reconstruction for tdf2027) — run by hand
 scripts/fetch_weather.py              # race-day weather fetch script (Open-Meteo historical archive)
-.github/workflows/update-results.yml  # GitHub Actions build, test & publish workflow (push to main / schedule)
+.github/workflows/update-results.yml  # GitHub Actions build, test & publish workflow (push to main / manual; add a schedule while a race is live)
 .github/workflows/ci.yml              # GitHub Actions lint, format, build & test workflow (pull requests)
 
 tsconfig.json                         # TypeScript compiler options (src/ -> dist/, strict)
@@ -95,26 +94,19 @@ format check), and the deploy job (`needs: build`) only runs if they pass.
 
 ### Live vs. static tours
 
-- **Vuelta a España** (`vuelta2026`) is the only _live_ tour right now: it is
-  registered in the `TOURS` dict in `scripts/fetch_results.py` (scraping
-  lavuelta.es) and in `scripts/fetch_weather.py`, so the scheduled workflow
-  keeps `data/vuelta2026-results.json` and `data/vuelta2026-weather.json`
-  current as stages are raced.
-- **Tour de France** (`tdf2026`) is a _finished_ race but stays registered in
-  `fetch_results.py`'s `TOURS`: the workflow still polls letour.fr for it on
-  every run, but the final data never changes, so it just re-confirms the
-  same result and never produces an empty commit (see "How it works" below).
-- **Giro d'Italia** (`giro2026`) and **Tour de France Femmes** (`femmes2026`)
-  are _finished_ and **static**: their classifications and stage winners are
-  stored once in `data/<tour>-results.json` (same schema as the others) and
-  never refetched, because they are **not** in `fetch_results.py`'s `TOURS`
-  registry at all. (They _are_ registered in `fetch_riders.py`, which is only
-  ever run by hand — see below.) Their Stages tabs (routes, distances,
-  illustrative profiles) are built from a small hardcoded `stages` array in
-  each page itself.
+No tour is _live_ right now. All four races (`tdf2026`, `giro2026`,
+`femmes2026`, `vuelta2026`) are _finished_ and **static**: their
+classifications and stage winners are stored once in
+`data/<tour>-results.json` (same schema as the others) and never refetched,
+because `fetch_results.py`'s `TOURS` registry is empty. A finished race must
+not stay registered there: the organisers' URLs carry no year, so next
+season's data would overwrite it. (All four _are_ registered in
+`fetch_riders.py`, which is only ever run by hand — see below.) The Giro and
+Femmes Stages tabs (routes, distances, illustrative profiles) are built from
+a small hardcoded `stages` array in each page itself.
 
 To add a live tour, register it in `fetch_results.py`'s `TOURS` (with a
-source handler) and point a page at its `data/<tour>-results.json`. To add a
+source handler), add a schedule back to the workflow, and point a page at its `data/<tour>-results.json`. To add a
 finished race, drop a static `data/<tour>-results.json` in place and build a
 page that reads it — no script or registry entry needed.
 
@@ -152,20 +144,14 @@ after-stage standings before replacing
 ## How it works
 
 1. GitHub Actions runs the workflow on every push to `main` and on demand
-   from the Actions tab. While the Vuelta is being raced it also runs on a
-   schedule (every 15 minutes — at :07, :22, :37 and :52 — from 14:00 to
-   19:59 UTC on race days, plus a light run at 06:23 UTC for late
-   corrections) — see the `cron:` entries at the top of
-   `.github/workflows/update-results.yml`. Those odd minutes and the
-   deliberate over-scheduling are load-bearing — GitHub drops scheduled
-   events under load, hardest on the hour and half-hour — so don't "tidy"
-   them back to `*/30`; the workflow comment has the full story. That
-   schedule block is meant to be removed once the Vuelta finishes (13 Sep
-   2026), the same way it was removed after the Tour de France, so the
-   workflow doesn't keep polling a site with nothing left to fetch.
+   from the Actions tab. There is no schedule while no tour is live. When
+   the next race is live, add a `schedule:` back to
+   `.github/workflows/update-results.yml` at odd minutes away from :00/:30
+   (GitHub drops scheduled events under load, hardest on the hour and
+   half-hour — don't use `*/30`; see the file's git history for the full
+   story), and remove it once the race finishes.
 2. The workflow runs `fetch_results.py`, which scrapes the official rankings
-   pages of every tour in its `TOURS` registry (currently letour.fr for
-   `tdf2026`, lavuelta.es for `vuelta2026`): general classification, points,
+   pages of every tour in its `TOURS` registry (currently none): general classification, points,
    mountains, youth and team classifications, plus the winner of every stage
    raced so far.
 3. The script writes `data/<tour>-results.json` for each registered tour. If
@@ -226,16 +212,10 @@ differ enough that the script has one handler per source family:
   they are all reported as DNF. Times are restated from `83:22:51` into the
   same `83h 22' 51''` form the other tours use.
 
-The scheduled workflow runs this script too, but only for the tours whose GC
-is still moving: `python scripts/fetch_riders.py tdf2026 vuelta2026`, right
-after `fetch_results.py`, so each rider's position and gap tracks the results
-just fetched instead of staying pinned to whatever stage the script was last
-run at by hand. `giro2026` and `femmes2026` are left out — their
-classifications are final, and the `giro` handler is far pricier (a request
-per stage plus one per team).
+The workflow does not run this script; it is run by hand only (the GC
+column no longer tracks a live race).
 
-Run it by hand for those two, or to pick up a start-list change the GC
-refresh wouldn't catch. Re-running it rewrites nothing unless the content
+Re-running it rewrites nothing unless the content
 actually changed, so it never produces an empty commit:
 
 ```
@@ -285,12 +265,11 @@ at the stage's start and finish location, sourced from Open-Meteo's free
 historical archive (`archive-api.open-meteo.com`, no API key). A stage only
 ever shows once its race day has fully passed, both in what gets fetched and
 in what the page renders — a stage still being raced never shows a same-day,
-not-yet-final reading. The Tour de France is over, so `2026/tdf.html` always
-shows all 21 stages; `2026/vuelta.html` fills in day by day as the race is
-run. `2026/giro.html` and `2026/femmes.html` don't have a weather block; their
+not-yet-final reading. Both races are over, so both pages show all 21
+stages. `2026/giro.html` and `2026/femmes.html` don't have a weather block; their
 tours aren't registered in `fetch_weather.py`'s `TOURS`.
 
-`scripts/fetch_weather.py` is part of the same scheduled workflow as
+`scripts/fetch_weather.py` runs in the same workflow as
 `fetch_results.py` (see "How it works" above): every run, it checks each
 registered tour's stage schedule against today's date (in the race's own
 time zone), fetches any newly-finished stage's weather at its start/finish

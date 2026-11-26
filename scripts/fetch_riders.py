@@ -206,6 +206,7 @@ def fetch_letour(base: str, out: Path) -> int:
 
     # General classification (individual + teams) after the latest stage; both
     # come from the same ajax stack the results scraper uses.
+    # A fetch error must not be read as "nobody finished": keep the old file.
     gc, team_gc, after_stage = {}, {}, None
     try:
         stacks = ajax_stacks(fetch(f"{base}/en/rankings"))
@@ -226,6 +227,8 @@ def fetch_letour(base: str, out: Path) -> int:
                 }
     except Exception as e:
         print(f"  warning: fetching the classifications failed: {e}")
+        print(f"Not updating {out}; keeping the previous file.")
+        return 0
 
     # Withdrawals: one page covers every stage, keyed here by bib so a rider
     # missing from the GC can be shown with the stage and reason they left.
@@ -236,6 +239,8 @@ def fetch_letour(base: str, out: Path) -> int:
                 left[row["bib"]] = {"stage": stage_no, "reason": row["reason"], "name": row["rider"]}
     except Exception as e:
         print(f"  warning: fetching withdrawals failed: {e}")
+        print(f"Not updating {out}; keeping the previous file.")
+        return 0
 
     teams = []
     for team in startlist:
@@ -486,6 +491,8 @@ def fetch_giro(base: str, out: Path) -> int:
         after_stage = max(stages) if stages else None
     except Exception as e:
         print(f"  warning: fetching the classifications failed: {e}")
+        print(f"Not updating {out}; keeping the previous file.")
+        return 0
 
     left, stage_bibs = giro_stage_pages(base, after_stage)
     for slug, bib in stage_bibs.items():
@@ -500,7 +507,8 @@ def fetch_giro(base: str, out: Path) -> int:
             roster = parse_giro_roster(fetch(url))
         except Exception as e:
             print(f"  warning: fetching the roster of {name} failed: {e}")
-            roster = []
+            print(f"Not updating {out}; keeping the previous file.")
+            return 0
 
         riders = []
         for r in roster:
