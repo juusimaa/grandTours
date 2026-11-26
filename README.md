@@ -5,8 +5,8 @@
 Results site for the grand tours: the 2026 Tour de France, Giro d'Italia,
 Tour de France Femmes and Vuelta a España (stages, profiles, route maps,
 classifications, teams & riders, race-day weather), a rider search across all
-four, the 2027 Giro d'Italia route (all 21 stages) and the first three stages
-of the 2027 Tour de France. All 2026 races are finished, so the site is
+four, and the 2027 routes of the Giro d'Italia, Tour de France (all 21
+stages each) and Tour de France Femmes (9 stages). All 2026 races are finished, so the site is
 static and nothing refreshes automatically.
 
 Live: <https://juusimaa.github.io/grandTours/>
@@ -47,13 +47,13 @@ protected).
 
 ## Data
 
-| Data               | Script                               | Source                                                                                | Run by                                 |
-| ------------------ | ------------------------------------ | ------------------------------------------------------------------------------------- | -------------------------------------- |
-| Results            | `fetch_results.py`                   | letour.fr, lavuelta.es (same template)                                                | workflow, tours in `TOURS` (empty now) |
-| Riders             | `fetch_riders.py`                    | letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it                               | hand                                   |
-| Routes             | `fetch_routes.py`                    | cyclingstage.com GPX (incl. giro2027), komoot (Vuelta), OSRM reconstruction (tdf2027) | hand                                   |
-| Weather            | `fetch_weather.py`                   | Open-Meteo historical archive                                                         | workflow, finished stages only         |
-| Giro stage results | `backfill_giro2026_stage_results.py` | official giroditalia.it classifications                                               | hand, one-off                          |
+| Data               | Script                               | Source                                                                                           | Run by                                 |
+| ------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| Results            | `fetch_results.py`                   | letour.fr, lavuelta.es (same template)                                                           | workflow, tours in `TOURS` (empty now) |
+| Riders             | `fetch_riders.py`                    | letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it                                          | hand                                   |
+| Routes             | `fetch_routes.py`                    | cyclingstage.com GPX (incl. giro2027), komoot (Vuelta), OSRM reconstruction (tdf2027 stages 1–3) | hand                                   |
+| Weather            | `fetch_weather.py`                   | Open-Meteo historical archive                                                                    | workflow, finished stages only         |
+| Giro stage results | `backfill_giro2026_stage_results.py` | official giroditalia.it classifications                                                          | hand, one-off                          |
 
 - **Adding a live race:** register it in `fetch_results.py`'s `TOURS`, add a
   `schedule:` to `update-results.yml` (odd minutes, not `*/30`), and remove
@@ -65,8 +65,9 @@ protected).
   the reason code must match the page's `cancelledReasons` strings.
 - Riders are joined to classifications by bib (ASO/Unipublic) or athlete-page
   slug (Giro). Routes are simplified with Ramer–Douglas–Peucker; a stage
-  without a route falls back to a straight start→finish line. The 2027 Tour
-  routes are an OSRM approximation until GPX is published.
+  without a route falls back to a straight start→finish line. 2027 Tour stages
+  1–3 are an OSRM approximation; Tour stages 4–21 and the 2027 Femmes have
+  no route yet (straight lines) until GPX is published.
 - procyclingstats.com is not used: its Cloudflare protection blocks GitHub
   Actions runners.
 
