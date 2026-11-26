@@ -1,33 +1,9 @@
 name: Update results and publish
 
 on:
-  schedule:
-    # GitHub Actions ALWAYS uses UTC. The 2026 Vuelta a España runs 22 Aug –
-    # 13 Sep 2026; its stages typically finish around 17:00-18:30 CEST
-    # (15:00-16:30 UTC). Cover 14:00-19:59 UTC on race days = 17:00-22:59
-    # Finnish time (summer time, UTC+3). Split into an August and a
-    # September cron since a single expression can't span both.
-    #
-    # Do NOT go back to '*/30 ...'. Scheduled events are best-effort: GitHub
-    # delays and outright drops them under load, and :00 / :30 are the two
-    # most congested minutes on the whole platform, so a public repo on the
-    # free tier is deprioritised there first. During 23-29 Aug 2026 that cost
-    # us most of the window — 12 runs/day on 23 Aug decayed to 2-3/day by
-    # 27-29 Aug, with single runs landing 4-6 HOURS late.
-    #
-    # So: fire at odd minutes well away from the hour boundary, and fire
-    # oftener than we need. Each tick is an independent ~45 s attempt that
-    # no-ops if results haven't changed, and the run is free on a public
-    # repo, so over-scheduling costs nothing and buys redundancy — if half
-    # the ticks are dropped we still publish roughly every 20 minutes.
-    - cron: '7,22,37,52 14-19 22-31 8 *'
-    - cron: '7,22,37,52 14-19 1-13 9 *'
-    # Light safety run in the morning in case of late-recorded corrections.
-    - cron: '23 6 22-31 8 *'
-    - cron: '23 6 1-13 9 *'
-    # Remove this schedule block once the 2026 Vuelta a España is over (13
-    # Sep 2026) — the way it was removed after the Tour de France — so the
-    # workflow doesn't keep polling a site with nothing left to fetch.
+  # No tour is live, so there is no schedule. When a new race is live, add a
+  # schedule back at odd minutes away from :00/:30 (GitHub drops scheduled
+  # runs at congested minutes; see git history of this file for the rationale).
   # Redeploy whenever something is pushed to main (e.g. a hand-edited index.html).
   push:
     branches: [main]
@@ -80,22 +56,10 @@ jobs:
 
       # If the fetch crashes (e.g. the site structure changes), publishing
       # still continues — the page shows the last successful data.
-      # Fetches every tour registered in fetch_results.py (currently just
-      # tdf2026), writing data/<tour>-results.json for each.
+      # Fetches every tour registered in fetch_results.py's TOURS -- none
+      # while no race is live.
       - name: Fetch results
         run: python scripts/fetch_results.py
-        continue-on-error: true
-
-      # Refreshes the "Teams & riders" GC column (each rider's/team's live
-      # position, time and gap) so it tracks the results just fetched above,
-      # instead of staying pinned to whatever stage it was last hand-run at.
-      # Scoped to the same tours as fetch_results.py (not fetch_riders.py's
-      # full default list) — tdf2026/vuelta2026 are the only ones with a
-      # GC still moving; giro2026/femmes2026 are over and its "giro" handler
-      # is far pricier (a request per stage plus one per team), so leaving
-      # them out avoids pointless load on an already-final classification.
-      - name: Fetch riders
-        run: python scripts/fetch_riders.py tdf2026 vuelta2026
         continue-on-error: true
 
       # Fetches actual race-day weather for any newly-finished stage

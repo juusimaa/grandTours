@@ -7,14 +7,12 @@ stage and writes them to data/<tour>-results.json, which index.html reads
 automatically.
 
 This scaffolding is tour-aware so the site can cover all three grand tours.
-Each tour is registered in TOURS with its own source and output file. Today
-only the Tour de France (tdf2026) is configured; the Giro d'Italia and Vuelta
-a España will be added there with their own source handler (letour.fr only
-covers the Tour de France).
+Each tour is registered in TOURS with its own source and output file. TOURS
+is empty while no race is live; register a tour only while it is being raced.
 
 Usage:
     python scripts/fetch_results.py               # fetch every registered tour
-    python scripts/fetch_results.py tdf2026        # fetch specific tour(s)
+    python scripts/fetch_results.py <tour>         # fetch specific tour(s)
 Dependencies:  pip install requests selectolax
 
 Note: we previously used the procyclingstats package, but procyclingstats.com
@@ -35,23 +33,17 @@ from selectolax.parser import HTMLParser
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
-# Registry of grand tours the site covers. Each entry names the scraper
+# Registry of grand tours being raced right now. Each entry names the scraper
 # ("source") to use, the site base URL, and the output file under data/.
-# Add giro2026 here once its source handler exists.
-TOURS = {
-    "tdf2026": {
-        "source": "letour",
-        "base": "https://www.letour.fr",
-        "out": "tdf2026-results.json",
-    },
-    # lavuelta.es (Unipublic/ASO) is built on the same site template as
-    # letour.fr -- see fetch_riders.py's TOURS entry for the same tour.
-    "vuelta2026": {
-        "source": "letour",
-        "base": "https://www.lavuelta.es",
-        "out": "vuelta2026-results.json",
-    },
-}
+# Finished races are static data and must NOT stay registered: organiser URLs
+# carry no year, so next season's data would overwrite them. Register a tour
+# only while it is being raced, e.g.:
+#   "tdf2027": {
+#       "source": "letour",
+#       "base": "https://www.letour.fr",
+#       "out": "tdf2027-results.json",
+#   },
+TOURS = {}
 
 # Stages that were called off and will never have letour/lavuelta result data
 # -- e.g. a stage cancelled for bad weather. Keyed by (tour_id, stage number),
@@ -462,6 +454,9 @@ def fetch_tour(tour_id: str, cfg: dict) -> int:
 
 def main() -> int:
     requested = sys.argv[1:] or list(TOURS)
+    if not requested:
+        print("No tours registered — nothing to fetch.")
+        return 0
     unknown = [t for t in requested if t not in TOURS]
     if unknown:
         print(f"Unknown tour(s): {', '.join(unknown)}. Known: {', '.join(TOURS)}")
