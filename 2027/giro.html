@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f3f2f2">
+<title>Giro d'Italia 2027 — etapit & reitti</title>
+<meta name="description" content="Giro d'Italia 2027 (8.–30.5.2027) — kaikki 21 etappia, reitit ja havainnolliset korkeusprofiilit. Tulokset ilmestyvät kilpailun alettua. · All 21 stages, routes and illustrative profiles of the 2027 Giro d'Italia; results follow once the race starts.">
+<link rel="canonical" href="https://juusimaa.github.io/Tdf2026/2027/giro.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Grand Tours 2027">
+<meta property="og:title" content="Giro d'Italia 2027 — stages & route">
+<meta property="og:description" content="All 21 stages, routes and illustrative profiles of the 2027 Giro d'Italia.">
+<meta property="og:url" content="https://juusimaa.github.io/Tdf2026/2027/giro.html">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231E2A22'/%3E%3Cpath d='M4 23 L11 12 L16 17 L22 7 L28 23 Z' fill='%23C99A2E'/%3E%3Ccircle cx='22' cy='7' r='2.6' fill='%23B23B32'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Leaflet (real interactive route map, restyled to the Modernist chrome).
+     Loaded from unpkg with Subresource Integrity so a tampered CDN response
+     is rejected. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<!-- Modernist design tokens (shared with index.html / tdf2026.html). -->
+<link rel="stylesheet" href="../modernist.css">
+<link rel="stylesheet" href="../race-page.css">
+<style>
+  .finaltag{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-700);background:var(--color-neutral-100);border:1px solid var(--color-divider);padding:5px 12px;}
+
+  /* ---------- results tab ---------- */
+  .sectionhead{padding:var(--space-4) clamp(20px,4vw,48px);border-bottom:2px solid var(--color-divider);font-family:var(--font-heading);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;}
+  table.winners tr.pink td.winner{color:var(--color-accent-700);}
+</style>
+</head>
+<body>
+<noscript>
+  <div class="noscript-note">
+    <b>JavaScript pois käytöstä</b><br>
+    Tämä sivu rakentaa etapit, profiilit ja tulokset selaimessa JavaScriptillä.
+    Ota JavaScript käyttöön nähdäksesi sisällön. Viralliset tulokset: giroditalia.it, cyclinguptodate.com.
+    <hr style="border:none;border-top:1px solid var(--color-divider);margin:10px 0;">
+    <b>JavaScript is disabled</b><br>
+    This page builds the stages, profiles and results in your browser with JavaScript.
+    Please enable JavaScript to view the content. Official results: giroditalia.it, cyclinguptodate.com.
+  </div>
+</noscript>
+
+<header class="tdf-header">
+  <div class="left">
+    <a class="backlink" id="backLink" href="../index.html">← <span id="backLinkText"></span></a>
+    <span class="wordmark">Giro d&rsquo;Italia 2027</span>
+  </div>
+  <div class="tdf-langs" id="langSel" role="group" aria-label="Kieli / Language">
+    <button class="langbtn" data-lang="fi" aria-label="Suomeksi" aria-pressed="false">FI</button>
+    <button class="langbtn" data-lang="fr" aria-label="En français" aria-pressed="false">FR</button>
+    <button class="langbtn" data-lang="en" aria-label="In English" aria-pressed="false">EN</button>
+  </div>
+</header>
+
+<section class="tdf-hero">
+  <span class="eyebrow" id="eyebrow"></span>
+  <h1>Giro d&rsquo;Italia 2027</h1>
+  <div class="stripe"><span style="background:#008c45"></span><span style="background:#ffffff"></span><span style="background:#ce2b37"></span></div>
+  <p class="lede" id="subDesc"></p>
+  <span class="finaltag" id="finalTag"></span>
+</section>
+
+<nav class="tabs" role="tablist" aria-label="Näkymät / Views">
+  <button class="tabbtn active" data-view="stages" role="tab" id="tabStages"
+          aria-controls="view-stages" aria-selected="true" tabindex="0"></button>
+  <button class="tabbtn" data-view="results" role="tab" id="tabResults"
+          aria-controls="view-results" aria-selected="false" tabindex="-1"></button>
+  <button class="tabbtn" data-view="teams" role="tab" id="tabTeams"
+          aria-controls="view-teams" aria-selected="false" tabindex="-1"></button>
+</nav>
+
+<section class="view active" id="view-stages" role="tabpanel" aria-labelledby="tabStages" tabindex="0">
+  <div class="stagelayout">
+    <nav class="stagerail">
+      <div class="railhead" id="stageListHeader"></div>
+      <ul class="stagerail-list" id="stageList"></ul>
+    </nav>
+    <main class="panel" id="panel"></main>
+  </div>
+</section>
+
+<section class="view" id="view-results" role="tabpanel" aria-labelledby="tabResults" tabindex="0">
+  <div class="toolbar">
+    <label class="rlabel" id="rankSelectLabel" for="rankStageSelect"></label>
+    <select class="rankselect" id="rankStageSelect"></select>
+    <span class="statusline" id="resultsStatusLine"></span>
+  </div>
+  <div id="resultsGrid"></div>
+</section>
+
+<section class="view" id="view-teams" role="tabpanel" aria-labelledby="tabTeams" tabindex="0">
+  <div id="teamsGrid"></div>
+</section>
+
+<footer class="tdf-footer">
+  <span class="disclabel" id="disclaimerLabel"></span>
+  <p class="discbody" id="disclaimerText"></p>
+  <p class="discbody" id="profileDisclaimer"></p>
+  <span class="sourcestitle" id="sourcesLabel"></span>
+  <p class="sourcesbody" id="sourcesText"></p>
+  <span class="disclabel" id="footerNote"></span>
+</footer>
+
+<script src="../dist/race-page.js"></script>
+<script>
+/* ---------- TOUR ---------- */
+const DATA_URL = '../data/2027/giro2027-results.json';
+const ROUTES_URL = '../data/2027/giro2027-routes.json';
+const RIDERS_URL = '../data/2027/giro2027-riders.json';
+const LANG_KEY = 'tdf2026-lang';
+const STRINGS = {
+  fi: {
+    backToTours: 'Grand Tourit',
+    eyebrow: 'Reitti · 110. Giro d’Italia · 8.–30.5.2027',
+    subDesc: 'Giro starttaa Triestestä 8. toukokuuta 2027, ensimmäinen etappi ajetaan Triestessä ja toinen jatkaa Sloveniaan, Ljubljanasta Koperiin. Maali on Roomassa — 21 etappia. Tulokset ilmestyvät kilpailun alettua.',
+    finalTag: 'Reitti julkistettu · kilpailu ei ole vielä alkanut',
+    tabStages: 'Etapit & profiilit', tabResults: 'Sijoitukset', tabTeams: 'Joukkueet & ajajat',
+    stageListHeader: '21 etappia',
+    classHeading: 'Luokitukset',
+    stagesHeading: 'Etappivoittajat',
+    rankShowLabel: 'Näytä', rankGeneral: 'Kokonaistilanne — kaikki paidat',
+    rankStageOpt: (n,route) => `Etappi ${n} · ${route}`,
+    stageResultTitle: n => `Etapin ${n} tulos`,
+    stageResultEmpty: 'Tämän etapin tuloksia ei ole saatavilla.',
+    stageClassHeading: n => `Luokitukset etapin ${n} jälkeen`,
+    stageClassEmpty: 'Tämän etapin luokituksia ei ole saatavilla.',
+    expandLess: '▲ Näytä vain top 10', expandMore: n => `▼ Näytä kaikki (${n})`,
+    restDay: 'Lepopäivä',
+    stagePrefix: 'Etappi',
+    factDistance: 'Matka', factGain: 'Nousumetrit', factType: 'Tyyppi', factWinner: 'Etappivoitto',
+    descHeader: 'Etapin kuvaus', climbsHeader: 'Nousut (GPM)',
+    climbHead: ['Nousu', 'Lk.', 'Pituus', 'Kaltevuus', 'Kohta'],
+    noClimbs: 'Ei luokiteltuja nousuja.',
+    sprintsHeader: 'Välisprintit', sprintHead: ['Sprintti', 'Kohta'],
+    sprintChip: 'Sprintti', noSprints: 'Ei välisprinttejä.', atKm: 'km',
+    legCat: 'Lk.', legUncat: 'Luokittelematon', legSprint: 'Välisprintti',
+    chartCaption: 'Havainnollistava profiili — nousut ja sprintit on merkitty todelliseen kilometrikohtaan; korkeuskäyrä ei ole mitattua GPS-dataa.',
+    profileAria: n => `Etapin ${n} havainnollistava korkeusprofiili`,
+    minimapAria: n => `Etapin ${n} likimääräinen sijainti kartalla`,
+    minimapExpand: 'Suurenna kartta',
+    minimapCollapse: 'Pienennä kartta',
+    minimapRecenter: 'Keskitä kartta reittiin',
+    minimapCaption: 'Etapin oikea reitti OpenStreetMap-kartalla. Rosa = lähtö, punainen = maali. Sulje oikean yläkulman painikkeesta.',
+    minimapCaptionApprox: 'Reittidataa ei vielä saatavilla — näytetään suora viiva lähdöstä maaliin. Sulje oikean yläkulman painikkeesta.',
+    summitNote: name => `Maalinousu: ${name}.`,
+    winnerNote: w => `Etappivoitto: ${w}.`,
+    typeLabels: {flat:'Tasainen', hilly:'Kumpuileva', mountain:'Vuoristo', itt:'Yksilöaika-ajo'},
+    typeDesc: {flat:'Tasainen etappi', hilly:'Kumpuileva etappi', mountain:'Vuoristoetappi', itt:'Yksilöaika-ajo'},
+    gcName: 'Kokonaiskilpailu', gcJersey: 'Maglia Rosa',
+    pointsName: 'Pistekilpailu', pointsJersey: 'Maglia Ciclamino',
+    momName: 'Vuorikilpailu', momJersey: 'Maglia Azzurra',
+    youthName: 'Nuorten kilpailu', youthJersey: 'Maglia Bianca',
+    teamsName: 'Joukkuekilpailu', teamsJersey: 'Joukkueet',
+    colPos: '#', colRider: 'Ajaja', colTime: 'Aika', colGap: 'Ero', colPts: 'Pisteet',
+    teamsHeading: 'Joukkueet & ajajat',
+    teamsStatus: (riders, teams, fin, out) => `Lähtijät: ${teams} joukkuetta ja ${riders} ajajaa — ${fin} ajajaa maalissa, ${out} jäi pois kilpailusta. Sija ja ero päivittyvät kilpailun aikana.`,
+    teamsEmpty: 'Lähtölistaa ei ole vielä julkaistu. Joukkueet ja ajajat ilmestyvät tähän, kun lista on saatavilla (data/2027/giro2027-riders.json).',
+    teamClsLine: (pos, val) => `Joukkuekilpailu #${pos} · ${val}`,
+    teamClsNone: 'Ei sijoitusta joukkuekilpailussa',
+    colBib: 'Nro', colGcPos: 'Sija', colGcTime: 'Aika / ero',
+    riderOutOnStage: n => `Etapilla ${n}`,
+    riderOutUnknown: 'Ei maalissa',
+    dnfTitle: 'Keskeytti (DNF)',
+    colStage: 'Etappi', colRoute: 'Reitti', colWinner: 'Voittaja',
+    profileDisclaimer: 'Korkeusprofiilit ovat havainnollistavia: käyrän muoto on rakennettu nousujen sijainneista, mutta se ei ole GPS-mitattua korkeusdataa. Nousut ja välisprintit on merkitty julkaistuun kilometrikohtaan (osa likimääräisiä). Nousujen luokat (GPM) näytetään vain, kun järjestäjä on ne julkaissut — muutoin "—". Nousujen pituudet ja kaltevuudet: cyclingstage.com. Etappivoittajat: Tulokset-välilehti.',
+    disclaimerLabel: 'Ei-virallinen fanisivusto.',
+    disclaimerText: 'Tämä on epävirallinen, ei-kaupallinen fanisivusto, joka ei liity RCS Sportiin tai Giro d’Italiaan. Tulokset ovat oikeudenomistajiensa omaisuutta.',
+    sourcesLabel: 'Lähteet:', sourcesText: 'Reitti, etapit ja matkat: giroditalia.it/en/the-route. Reittijäljet: cyclingstage.com (GPX, giro-2027-gpx). Etappien tyypit on päätelty viralliskuvauksista. Tulokset, joukkueet ja ajajat lisätään kilpailun alettua.',
+    footerNote: '© 2027 Jouni Uusimaa · Sivun ulkoasu ja koodi (MIT-lisenssi). Epävirallinen, ei-kaupallinen fanisivusto. Ei liity RCS Sportiin tai Giro d’Italiaan. Tulokset ovat oikeudenomistajiensa omaisuutta.',
+  },
+  en: {
+    backToTours: 'Grand Tours',
+    eyebrow: 'Route · 110th Giro d’Italia · 8–30 May 2027',
+    subDesc: 'The Giro starts in Trieste on 8 May 2027; stage 1 is run in Trieste and stage 2 crosses into Slovenia, from Ljubljana to Koper. The finish is in Rome — 21 stages. Results appear once the race starts.',
+    finalTag: 'Route announced · race not started',
+    tabStages: 'Stages & profiles', tabResults: 'Rankings', tabTeams: 'Teams & riders',
+    stageListHeader: '21 stages',
+    classHeading: 'Classifications',
+    stagesHeading: 'Stage winners',
+    rankShowLabel: 'Show', rankGeneral: 'General rankings — all jerseys',
+    rankStageOpt: (n,route) => `Stage ${n} · ${route}`,
+    stageResultTitle: n => `Stage ${n} result`,
+    stageResultEmpty: 'Results for this stage are not available.',
+    stageClassHeading: n => `Rankings after stage ${n}`,
+    stageClassEmpty: 'Rankings after this stage are not available.',
+    expandLess: '▲ Show top 10 only', expandMore: n => `▼ Show all (${n})`,
+    restDay: 'Rest day',
+    stagePrefix: 'Stage',
+    factDistance: 'Distance', factGain: 'Elevation gain', factType: 'Type', factWinner: 'Stage winner',
+    descHeader: 'Stage description', climbsHeader: 'Climbs (KOM)',
+    climbHead: ['Climb', 'Cat', 'Length', 'Gradient', 'At'],
+    noClimbs: 'No categorized climbs.',
+    sprintsHeader: 'Intermediate sprints', sprintHead: ['Sprint', 'At'],
+    sprintChip: 'Sprint', noSprints: 'No intermediate sprints.', atKm: 'km',
+    legCat: 'Cat', legUncat: 'Uncategorized', legSprint: 'Sprint',
+    chartCaption: 'Illustrative profile — climbs and sprints are marked at their real kilometre point; the elevation curve is not GPS-measured data.',
+    profileAria: n => `Illustrative elevation profile of stage ${n}`,
+    minimapAria: n => `Approximate location of stage ${n} on the map`,
+    minimapExpand: 'Enlarge map',
+    minimapCollapse: 'Shrink map',
+    minimapRecenter: 'Center map on route',
+    minimapCaption: 'Actual stage route on OpenStreetMap. Rose = start, red = finish. Close with the button in the top-right corner.',
+    minimapCaptionApprox: 'Route data not available yet — showing a straight line from start to finish. Close with the button in the top-right corner.',
+    summitNote: name => `Summit finish at ${name}.`,
+    winnerNote: w => `Stage won by ${w}.`,
+    typeLabels: {flat:'Flat', hilly:'Hilly', mountain:'Mountain', itt:'Individual time trial'},
+    typeDesc: {flat:'Flat stage', hilly:'Hilly stage', mountain:'Mountain stage', itt:'Individual time trial'},
+    gcName: 'General classification', gcJersey: 'Maglia Rosa',
+    pointsName: 'Points classification', pointsJersey: 'Maglia Ciclamino',
+    momName: 'Mountains classification', momJersey: 'Maglia Azzurra',
+    youthName: 'Young rider classification', youthJersey: 'Maglia Bianca',
+    teamsName: 'Teams classification', teamsJersey: 'Teams',
+    colPos: '#', colRider: 'Rider', colTime: 'Time', colGap: 'Gap', colPts: 'Points',
+    teamsHeading: 'Teams & riders',
+    teamsStatus: (riders, teams, fin, out) => `Start list: ${teams} teams and ${riders} riders — ${fin} finished, ${out} left the race. Position and gap update during the race.`,
+    teamsEmpty: 'The start list has not been published yet. Teams and riders will appear here once it is available (data/2027/giro2027-riders.json).',
+    teamClsLine: (pos, val) => `Team classification #${pos} · ${val}`,
+    teamClsNone: 'Not placed in the team classification',
+    colBib: 'No.', colGcPos: 'GC', colGcTime: 'Time / gap',
+    riderOutOnStage: n => `On stage ${n}`,
+    riderOutUnknown: 'Did not finish',
+    dnfTitle: 'Abandoned (DNF)',
+    colStage: 'Stage', colRoute: 'Route', colWinner: 'Winner',
+    profileDisclaimer: 'The elevation profiles are illustrative: the curve is built from the climb positions and is not GPS-measured data. Climbs and intermediate sprints are marked at their published kilometre point (some approximate). Climb categories (GPM) are shown only where the organiser published them — otherwise "—". Climb lengths and average gradients: cyclingstage.com. Stage winners: the Results tab.',
+    disclaimerLabel: 'Unofficial fan project.',
+    disclaimerText: 'This is an unofficial, non-commercial fan project, not affiliated with RCS Sport or the Giro d’Italia. Results remain the property of their respective owners.',
+    sourcesLabel: 'Sources:', sourcesText: 'Route, stages and distances: giroditalia.it/en/the-route. Route tracks: cyclingstage.com GPX (giro-2027-gpx). Stage types are inferred from the official stage descriptions. Results, teams and riders are added once the race starts.',
+    footerNote: '© 2027 Jouni Uusimaa · Page & design; code under the MIT licence. An unofficial, non-commercial fan project. Not affiliated with RCS Sport or the Giro d’Italia. Results remain the property of their respective owners.',
+  },
+  fr: {
+    backToTours: 'Grands Tours',
+    eyebrow: 'Parcours · 110e Giro d’Italia · 8–30 mai 2027',
+    subDesc: 'Le Giro part de Trieste le 8 mai 2027 ; la 1re étape se court à Trieste et la 2e passe en Slovénie, de Ljubljana à Koper. Arrivée à Rome — 21 étapes. Les classements apparaîtront dès le départ de la course.',
+    finalTag: 'Parcours annoncé · course pas encore commencée',
+    tabStages: 'Étapes et profils', tabResults: 'Classements', tabTeams: 'Équipes et coureurs',
+    stageListHeader: '21 étapes',
+    classHeading: 'Classements',
+    stagesHeading: 'Vainqueurs d’étape',
+    rankShowLabel: 'Afficher', rankGeneral: 'Classement général — tous les maillots',
+    rankStageOpt: (n,route) => `Étape ${n} · ${route}`,
+    stageResultTitle: n => `Résultat de l’étape ${n}`,
+    stageResultEmpty: 'Les résultats de cette étape ne sont pas disponibles.',
+    stageClassHeading: n => `Classements après l’étape ${n}`,
+    stageClassEmpty: 'Les classements après cette étape ne sont pas disponibles.',
+    expandLess: '▲ Afficher seulement le top 10', expandMore: n => `▼ Tout afficher (${n})`,
+    restDay: 'Jour de repos',
+    stagePrefix: 'Étape',
+    factDistance: 'Distance', factGain: 'Dénivelé', factType: 'Type', factWinner: 'Vainqueur',
+    descHeader: 'Description de l’étape', climbsHeader: 'Ascensions (GPM)',
+    climbHead: ['Ascension', 'Cat.', 'Longueur', 'Pente', 'Au'],
+    noClimbs: 'Aucune ascension catégorisée.',
+    sprintsHeader: 'Sprints intermédiaires', sprintHead: ['Sprint', 'Au'],
+    sprintChip: 'Sprint', noSprints: 'Pas de sprint intermédiaire.', atKm: 'km',
+    legCat: 'Cat.', legUncat: 'Non catégorisée', legSprint: 'Sprint',
+    chartCaption: 'Profil illustratif — ascensions et sprints placés à leur kilomètre réel ; la courbe d’altitude n’est pas mesurée au GPS.',
+    profileAria: n => `Profil d’altitude illustratif de l’étape ${n}`,
+    minimapAria: n => `Situation approximative de l’étape ${n} sur la carte`,
+    minimapExpand: 'Agrandir la carte',
+    minimapCollapse: 'Réduire la carte',
+    minimapRecenter: 'Centrer la carte sur le parcours',
+    minimapCaption: 'Parcours réel de l’étape sur OpenStreetMap. Rose = départ, rouge = arrivée. Fermer avec le bouton en haut à droite.',
+    minimapCaptionApprox: 'Données du parcours indisponibles — ligne droite du départ à l’arrivée. Fermer avec le bouton en haut à droite.',
+    summitNote: name => `Arrivée au sommet à ${name}.`,
+    winnerNote: w => `Étape remportée par ${w}.`,
+    typeLabels: {flat:'Plat', hilly:'Vallonné', mountain:'Montagne', itt:'Contre-la-montre individuel'},
+    typeDesc: {flat:'Étape de plaine', hilly:'Étape vallonnée', mountain:'Étape de montagne', itt:'Contre-la-montre individuel'},
+    gcName: 'Classement général', gcJersey: 'Maglia Rosa',
+    pointsName: 'Classement par points', pointsJersey: 'Maglia Ciclamino',
+    momName: 'Classement de la montagne', momJersey: 'Maglia Azzurra',
+    youthName: 'Classement du meilleur jeune', youthJersey: 'Maglia Bianca',
+    teamsName: 'Classement par équipes', teamsJersey: 'Équipes',
+    colPos: '#', colRider: 'Coureur', colTime: 'Temps', colGap: 'Écart', colPts: 'Points',
+    teamsHeading: 'Équipes et coureurs',
+    teamsStatus: (riders, teams, fin, out) => `Liste des partants : ${teams} équipes et ${riders} coureurs — ${fin} à l’arrivée, ${out} hors course. La place et l’écart sont mis à jour pendant la course.`,
+    teamsEmpty: 'La liste des partants n’a pas encore été publiée. Les équipes et les coureurs apparaîtront ici dès qu’elle sera disponible (data/2027/giro2027-riders.json).',
+    teamClsLine: (pos, val) => `Classement par équipes #${pos} · ${val}`,
+    teamClsNone: 'Non classée au classement par équipes',
+    colBib: 'Dossard', colGcPos: 'Clt', colGcTime: 'Temps / écart',
+    riderOutOnStage: n => `Étape ${n}`,
+    riderOutUnknown: 'Non classé',
+    dnfTitle: 'Abandon (DNF)',
+    colStage: 'Étape', colRoute: 'Parcours', colWinner: 'Vainqueur',
+    profileDisclaimer: 'Les profils sont illustratifs : la courbe est construite à partir de la position des ascensions et n’est pas mesurée au GPS. Ascensions et sprints intermédiaires sont placés à leur kilomètre publié (certains approximatifs). Les catégories (GPM) ne sont indiquées que lorsqu’elles ont été publiées par l’organisateur — sinon « — ». Longueurs et pentes moyennes : cyclingstage.com. Vainqueurs d’étape : onglet Classements.',
+    disclaimerLabel: 'Projet de fans non officiel.',
+    disclaimerText: 'Projet de fans non officiel et non commercial, sans lien avec RCS Sport ni le Giro d’Italia. Les résultats restent la propriété de leurs ayants droit.',
+    sourcesLabel: 'Sources :', sourcesText: 'Parcours, étapes et distances : giroditalia.it/en/the-route. Tracés : GPX de cyclingstage.com (giro-2027-gpx). Les types d’étape sont déduits des descriptions officielles. Classements, équipes et coureurs seront ajoutés dès le départ de la course.',
+    footerNote: '© 2027 Jouni Uusimaa · Page et design ; code sous licence MIT. Projet de fans non officiel et non commercial. Sans lien avec RCS Sport ni le Giro d’Italia. Les résultats restent la propriété de leurs détenteurs.',
+  },
+};
+
+let lang = detectLang();
+
+let RESULTS = null;
+let RIDERS = null;
+let rankView = 'general'; // 'general' or a selected stage number
+const expandState = {}; // The shared stage-table expander reads this state.
+
+/* Climb category colours: Giro GPM categories are numeric 1 (hardest) to 4,
+   with many climbs left uncategorized (organiser never published a cat). */
+const CAT_COLOR = {1:'var(--color-accent-600)', 2:'var(--color-accent-500)', 3:'var(--color-accent-400)', 4:'var(--color-accent-300)'};
+const UNCAT_COLOR = 'var(--color-neutral-400)';
+const stages = [
+  {n:1, date:'2027-05-08', start:'Trieste', finish:'Trieste', km:172, type:'hilly',
+   climbs:[], sprints:[]},
+  {n:2, date:'2027-05-09', start:'Ljubljana', finish:'Koper', km:166, type:'hilly',
+   climbs:[], sprints:[]},
+  {n:3, date:'2027-05-10', start:'Cervignano del Friuli', finish:'Possagno', km:163, type:'flat',
+   climbs:[], sprints:[]},
+  {n:4, date:'2027-05-11', start:'Argenta', finish:'Misano Adriatico', km:151, type:'flat',
+   climbs:[], sprints:[]},
+  {n:5, date:'2027-05-12', start:'Filottrano', finish:'Sarnano-Sassotetto', km:139, type:'mountain', summit:'Sassotetto',
+   climbs:[], sprints:[]},
+  {n:6, date:'2027-05-13', start:'Alba Adriatica', finish:'Lanciano', km:148, type:'hilly',
+   climbs:[], sprints:[]},
+  {n:7, date:'2027-05-14', start:'Sulmona', finish:'Campo di Giove', km:19.6, type:'itt',
+   climbs:[], sprints:[]},
+  {n:8, date:'2027-05-15', start:'Trasacco', finish:'Napoli', km:219, type:'hilly',
+   climbs:[], sprints:[]},
+  {n:9, date:'2027-05-16', start:'Itri', finish:'Subiaco-Monte Livata', km:180, type:'mountain', summit:'Monte Livata',
+   climbs:[], sprints:[]},
+  {n:10, date:'2027-05-18', start:'Palombara Sabina', finish:'Norcia', km:218, type:'hilly',
+   climbs:[], sprints:[]},
+  {n:11, date:'2027-05-19', start:'Gualdo Tadino', finish:'Scarperia (Mugello)', km:220, type:'hilly',
+   climbs:[], sprints:[]},
+  {n:12, date:'2027-05-20', start:'Montecatini Terme', finish:'Zeri (Passo Due Santi)', km:173, type:'mountain', summit:'Passo dei Due Santi',
+   climbs:[], sprints:[]},
+  {n:13, date:'2027-05-21', start:'Borgo Val di Taro', finish:'Reggio Emilia', km:176, type:'flat',
+   climbs:[], sprints:[]},
+  {n:14, date:'2027-05-22', start:'Cantù', finish:'Piani di Bobbio', km:187, type:'mountain', summit:'Piani di Bobbio',
+   climbs:[], sprints:[]},
+  {n:15, date:'2027-05-23', start:'Monza', finish:'Milano', km:37.3, type:'itt',
+   climbs:[], sprints:[]},
+  {n:16, date:'2027-05-25', start:'Sondrio', finish:'Aprica', km:192, type:'mountain',
+   climbs:[{name:'Mortirolo'},{name:'Gavia'},{name:'Mortirolo'}], sprints:[]},
+  {n:17, date:'2027-05-26', start:'Chiari', finish:"Vo'", km:194, type:'hilly',
+   climbs:[], sprints:[]},
+  {n:18, date:'2027-05-27', start:'Rovereto', finish:'Madonna di Campiglio', km:154, type:'mountain', summit:'Madonna di Campiglio',
+   climbs:[], sprints:[]},
+  {n:19, date:'2027-05-28', start:'Rovereto', finish:'Sacile', km:199, type:'flat',
+   climbs:[], sprints:[]},
+  {n:20, date:'2027-05-29', start:'Pordenone', finish:'Monte Zoncolan', km:180, type:'mountain', summit:'Monte Zoncolan',
+   climbs:[{name:'Passo Duron'},{name:'Sella Valcalda'},{name:'Monte Zoncolan',km:180,len:10.1,grad:11.9}], sprints:[]},
+  {n:21, date:'2027-05-30', start:'Roma', finish:'Roma', km:131, type:'flat',
+   climbs:[], sprints:[]},
+];
+const REST_AFTER = {9:'2027-05-17', 15:'2027-05-24'};
+const STAGE_COORDS = {1:[[13.712,45.712],[13.767,45.651]],2:[[14.454,46.034],[13.725,45.544]],3:[[13.324,45.826],[11.879,45.858]],4:[[11.857,44.587],[12.683,43.961]],5:[[13.365,43.41],[13.227,43.01]],6:[[13.937,42.819],[14.396,42.225]],7:[[13.921,42.053],[14.045,42.011]],8:[[13.497,41.955],[14.189,40.807]],9:[[13.469,41.329],[13.151,41.938]],10:[[12.785,42.04],[13.095,42.792]],11:[[12.716,43.278],[11.371,43.998]],12:[[10.749,43.884],[9.753,44.389]],13:[[9.788,44.495],[10.631,44.704]],14:[[9.145,45.752],[9.494,45.962]],15:[[9.281,45.618],[9.191,45.465]],16:[[9.912,46.17],[10.156,46.155]],17:[[9.92,45.495],[11.64,45.33]],18:[[11.009,45.88],[10.827,46.23]],19:[[11.084,45.919],[12.508,45.951]],20:[[12.658,45.933],[12.927,46.502]],21:[[12.463,41.818],[12.485,41.886]]};
+function winnerFor(n){
+  if(!RESULTS || !Array.isArray(RESULTS.stageWinners)) return '';
+  const w=RESULTS.stageWinners.find(x=>x.n===n);
+  return w ? (w.winner||'') : '';
+}
+function genDesc(st){
+  const sep = lang==='fr' ? ' : ' : ': ';
+  const parts=[`${t('typeDesc')[st.type]}${sep}${esc(st.start)} → ${esc(st.finish)}, ${fmtKm(st.km)}.`];
+  if(st.summit) parts.push(esc(t('summitNote')(st.summit)));
+  const w=winnerFor(st.n);
+  if(w) parts.push(esc(t('winnerNote')(w)));
+  return '<p>'+parts.join(' ')+'</p>';
+}
+
+/* ---------- ELEVATION PROFILE ----------
+   Built from genProfile(st) (illustrative shape from climb positions/type —
+   see the profile-generation helpers above), styled per the Modernist
+   system: monochrome ink line/fill, accent-shade climb bands, dashed accent
+   sprint flag. Only climbs with a known summit km get a marker, matching
+   the original site's behaviour (see climbsWithKm). */
+function renderProfile(st){
+  const W=900, H=250, padL=30, padR=16, padT=22, padB=30;
+  const {d, plotH} = buildPath(genProfile(st), st.km, W,H,padL,padR,padT,padB);
+  const baseY = padT+plotH;
+
+  let svg = `<svg class="profile" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(t('profileAria')(st.n))}">`;
+
+  for(let g=0; g<=4; g++){
+    const gy = padT + plotH*g/4;
+    svg += `<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="var(--color-neutral-300)" stroke-width="1"/>`;
+  }
+  const step = st.km > 150 ? 50 : (st.km > 60 ? 20 : 10);
+  for(let k=0; k<=st.km+0.01; k+=step){
+    const kx = xForKm(k, st.km, W, padL, padR);
+    svg += `<line x1="${kx}" y1="${padT}" x2="${kx}" y2="${baseY}" stroke="var(--color-neutral-200)" stroke-width="1"/>`;
+    svg += `<text x="${kx}" y="${H-10}" font-family="Archivo, sans-serif" font-size="11" font-weight="600" fill="var(--color-neutral-600)" text-anchor="middle">${Math.round(k)}</text>`;
+  }
+
+  climbsWithKm(st).forEach(c=>{
+    const cx = xForKm(c.km, st.km, W, padL, padR);
+    const foot = xForKm(Math.max(0, c.km-(c.len||4)), st.km, W, padL, padR);
+    const col = CAT_COLOR[c.cat] || UNCAT_COLOR;
+    svg += `<rect x="${foot}" y="${padT}" width="${Math.max(2,cx-foot)}" height="${plotH}" fill="${col}" opacity="0.18"/>`;
+    svg += `<line x1="${cx}" y1="${padT}" x2="${cx}" y2="${baseY}" stroke="${col}" stroke-width="2"/>`;
+    svg += `<rect x="${cx-4}" y="${padT-12}" width="8" height="8" fill="${col}"/>`;
+  });
+
+  svg += `<path d="${d} L ${xForKm(st.km,st.km,W,padL,padR)},${baseY} L ${padL},${baseY} Z" fill="var(--color-text)" opacity="0.1"/>`;
+  svg += `<path d="${d}" fill="none" stroke="var(--color-text)" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  (st.sprints||[]).forEach(s=>{
+    const sx = xForKm(s.km, st.km, W, padL, padR);
+    const top = padT + plotH*0.28;
+    svg += `<line x1="${sx}" y1="${top}" x2="${sx}" y2="${baseY}" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    svg += `<path d="M ${sx} ${top} L ${sx+14} ${top+5} L ${sx} ${top+10} Z" fill="var(--color-accent)"/>`;
+  });
+
+  svg += `<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="var(--color-text)" stroke-width="2"/>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+let routesData = null, routesPromise = null;
+let stageMap = null, stageMapFitBounds = null;
+let mapExpanded = false; // persists across stage switches; renderPanel reflects it
+
+function initStageMap(st){
+  initStageMapCommon(st, STAGE_COORDS);
+}
+
+/* ---------- STAGE LIST ---------- */
+let activeIdx = 0;
+function renderStageList(){
+  const listEl = document.getElementById('stageList');
+  const stagelayout = document.querySelector('.stagelayout');
+  const panel = document.getElementById('panel');
+  if(panel && stagelayout && listEl.contains(panel)) stagelayout.appendChild(panel);
+  listEl.innerHTML = '';
+  stages.forEach((s, idx)=>{
+    const li = document.createElement('li');
+    li.className = 'stage-item';
+    const btn = document.createElement('button');
+    btn.className = 'stage-btn' + (idx===activeIdx ? ' active' : '');
+    btn.dataset.idx = idx;
+    btn.innerHTML = `
+      <span class="num">${String(s.n).padStart(2,'0')}</span>
+      <span class="btn-text">
+        <span class="btn-route">${esc(s.start)} → ${esc(s.finish)}</span>
+        <span class="btn-meta">${fmtDate(s.date)} · ${fmtKm(s.km)} · ${t('typeLabels')[s.type]}</span>
+      </span>`;
+    btn.addEventListener('click', ()=>selectStage(idx));
+    li.appendChild(btn);
+    listEl.appendChild(li);
+    if(REST_AFTER[s.n]){
+      const rli = document.createElement('li');
+      rli.className = 'stage-item';
+      const div = document.createElement('div');
+      div.className = 'rest-row';
+      div.textContent = `${fmtDate(REST_AFTER[s.n])} · ${t('restDay')}`;
+      rli.appendChild(div);
+      listEl.appendChild(rli);
+    }
+  });
+  positionPanel();
+}
+
+/* Keeps the stage-rail column exactly as tall as the detail panel next to
+   it — see the equivalent comment in tdf2026.html. Skipped below 980px. */
+function syncStageListHeight(){
+  const list = document.querySelector('.stagerail');
+  const panel = document.getElementById('panel');
+  const stagesView = document.getElementById('view-stages');
+  if(!list || !panel || !stagesView) return;
+  if(window.innerWidth<=980 || !stagesView.classList.contains('active')){
+    list.style.height = '';
+    return;
+  }
+  list.style.height = panel.offsetHeight + 'px';
+}
+window.addEventListener('resize', ()=>{ syncStageListHeight(); positionPanel(); });
+
+/* Below the 980px breakpoint the detail panel has no side column to live in,
+   so it's moved into the stage list right after the selected stage's row —
+   otherwise it renders below the entire list, far from the row that opened
+   it. Above the breakpoint it moves back into its own grid column. */
+
+function selectStage(idx){
+  activeIdx = idx;
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.toggle('active', +b.dataset.idx===idx));
+  const b = document.querySelector(`.stage-btn[data-idx="${idx}"]`);
+  if(b) b.scrollIntoView({block:'nearest'});
+  renderPanel(stages[idx]);
+  positionPanel();
+  syncStageListHeight();
+}
+
+/* ---------- RENDER MAIN PANEL ---------- */
+function renderPanel(st){
+  const panel = document.getElementById('panel');
+  destroyStageMap();
+
+  const climbs = st.climbs || [];
+  let climbRows = '';
+  if(climbs.length){
+    climbRows = climbs.map(c=>`
+      <tr>
+        <td><span class="climbname"><span class="sq" style="background:${CAT_COLOR[c.cat]||UNCAT_COLOR}"></span>${esc(c.name)}</span></td>
+        <td class="num cat">${catChip(c.cat)}</td>
+        <td class="num">${c.len ? fmtKm(c.len) : '—'}</td>
+        <td class="num">${c.grad ? esc(c.grad)+' %' : '—'}</td>
+        <td class="loc">${c.km!=null ? '~ '+t('atKm')+' '+Math.round(c.km) : '—'}</td>
+      </tr>`).join('');
+  }
+
+  const sprints = st.sprints || [];
+  let sprintRows = '';
+  if(sprints.length){
+    sprintRows = sprints.map((s,i)=>`
+      <tr>
+        <td>${t('sprintChip')}${sprints.length>1?' '+(i+1):''}</td>
+        <td class="num">~ ${t('atKm')} ${Math.round(s.km)}</td>
+      </tr>`).join('');
+  }
+
+  const w = winnerFor(st.n);
+
+  panel.innerHTML = `
+    <div class="panelhead">
+      <div>
+        <span class="kicker">${t('stagePrefix')} ${st.n} · ${fmtDate(st.date)}</span>
+        <h2>${esc(st.start)} → ${esc(st.finish)}</h2>
+      </div>
+      <span class="typechip">${t('typeLabels')[st.type]}</span>
+    </div>
+
+    <div class="factrow">
+      <div class="factcell"><span class="label">${t('factDistance')}</span><span class="value">${fmtKm(st.km)}</span></div>
+      <div class="factcell"><span class="label">${t('factType')}</span><span class="value">${t('typeLabels')[st.type]}</span></div>
+      <div class="factcell"><span class="label">${t('factGain')}</span><span class="value">${st.gain ? fmtGain(st.gain) : '—'}</span></div>
+      <div class="factcell"><span class="label">${t('factWinner')}</span><span class="value" style="color:var(--color-accent-700)">${w ? esc(w) : '—'}</span></div>
+    </div>
+
+    ${mapExpanded ? bigMapBoxHTML(st) : ''}
+
+    <div class="detailgrid${mapExpanded ? ' big' : ''}">
+      ${mapExpanded ? '' : `<div class="mapcell">${mapCellHTML(st)}</div>`}
+      <div class="profilecell">
+        <span class="label">${profileLabel()}</span>
+        ${renderProfile(st)}
+        <div class="legend">
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[1]}"></span>${t('legCat')} 1</span>
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[2]}"></span>2</span>
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[3]}"></span>3</span>
+          <span class="legenditem"><span class="legswatch" style="background:${CAT_COLOR[4]}"></span>4</span>
+          <span class="legenditem"><span class="legswatch" style="background:${UNCAT_COLOR}"></span>${t('legUncat')}</span>
+          <span class="legenditem"><span class="legswatch" style="background:var(--color-accent)"></span>${t('legSprint')}</span>
+        </div>
+        <span class="chart-caption">${t('chartCaption')}</span>
+      </div>
+    </div>
+
+    <div class="detailbody">
+      <div>
+        <h3>${t('descHeader')}</h3>
+        <div class="prose">${genDesc(st)}</div>
+      </div>
+      <div>
+        <h3>${t('climbsHeader')}</h3>
+        ${climbRows
+          ? `<table class="dtable"><thead><tr><th>${t('climbHead')[0]}</th><th>${t('climbHead')[1]}</th><th>${t('climbHead')[2]}</th><th>${t('climbHead')[3]}</th><th>${t('climbHead')[4]}</th></tr></thead><tbody>${climbRows}</tbody></table>`
+          : `<p class="empty-note">${t('noClimbs')}</p>`}
+      </div>
+      <div>
+        <h3>${t('sprintsHeader')}</h3>
+        ${sprintRows
+          ? `<table class="dtable sprints"><thead><tr><th>${t('sprintHead')[0]}</th><th>${t('sprintHead')[1]}</th></tr></thead><tbody>${sprintRows}</tbody></table>`
+          : `<p class="empty-note">${t('noSprints')}</p>`}
+      </div>
+    </div>
+  `;
+
+  bindMapControls(st);
+  initStageMap(st);
+}
+/* Jersey swatch colours: the site's established maglia hexes, not Modernist
+   tokens — the system has one accent, so real jersey colours are content, same
+   treatment as the hub's flag stripes. Teams uses a neutral token instead of
+   the grey #8B8F84 (the youth swatch) so it reads as a distinct swatch. */
+const CLASSES = [
+  {key:'gc',        nameKey:'gcName',     jerseyKey:'gcJersey',     colour:'#D6497F',                cols:'time'},
+  {key:'points',    nameKey:'pointsName', jerseyKey:'pointsJersey', colour:'#8E4BB0',                cols:'pts'},
+  {key:'mountains', nameKey:'momName',    jerseyKey:'momJersey',    colour:'#2E7CBF',                cols:'pts'},
+  {key:'youth',     nameKey:'youthName',  jerseyKey:'youthJersey',  colour:'#8B8F84',                cols:'time'},
+  {key:'teams',     nameKey:'teamsName',  jerseyKey:'teamsJersey',  colour:'var(--color-neutral-700)', cols:'time', team:true},
+];
+
+/* Per-card divider borders in a 2-col grid: right rule on the left card of
+   each pair, bottom rule on every row but the last (same formula as the
+   design's own cardStyle — see tdf2026.html). */
+
+function riderCell(row, teamOnly){
+  if(teamOnly) return `<span class="rname">${esc(row.rider)}</span>`;
+  return `<span class="rname">${esc(row.rider)}</span>${row.team?`<span class="rteam">${esc(row.team)}${row.nat?' · '+esc(row.nat):''}</span>`:''}`;
+}
+
+/* Leader's row shows the absolute time/points value; every other row shows
+   the gap to the leader where one exists (points classifications have no
+   gap field, so this naturally falls back to the points value for them). */
+function classRowHTML(r, teamOnly){
+  const val = r.gap!==undefined && r.pos>1 ? r.gap : r.val;
+  return `<tr class="${r.pos<=3?'podium':''}">
+    <td class="pos">${esc(r.pos)}</td>
+    <td class="rider">${riderCell(r, teamOnly)}</td>
+    <td class="val">${esc(val)}</td>
+  </tr>`;
+}
+
+/* The shared stageStatTable helper uses this renderer for Giro stage rows. */
+function resultRowHTML(r){ return classRowHTML(r, false); }
+
+function classCard(cfg, i, n, source, expandKey){
+  const rows = (source && source[cfg.key] && source[cfg.key].rows) || [];
+  const body = expandKey
+    ? (rows.length ? stageStatTable(rows, expandKey) : `<p class="empty-cls">${esc(t('stageClassEmpty'))}</p>`)
+    : `<table class="results"><tbody>${rows.map(r=>classRowHTML(r, cfg.team)).join('')}</tbody></table>`;
+  return `<div class="cls-card" style="${cardBorderStyle(i, n)}">
+    <div class="cls-head">
+      <span class="names"><span class="name">${esc(t(cfg.nameKey))}</span><span class="fr">${esc(t(cfg.jerseyKey))}</span></span>
+      <span class="swatch" style="background:${cfg.colour}"></span>
+    </div>
+    <div class="cls-body">${body}</div>
+  </div>`;
+}
+
+/* Match the TdF Rankings selector while keeping the current stage on rerender. */
+function renderRankSelect(){
+  const select = document.getElementById('rankStageSelect');
+  const winners = (RESULTS && RESULTS.stageWinners) || [];
+  if(rankView!=='general' && !winners.some(w=>String(w.n)===String(rankView))) rankView = 'general';
+  select.innerHTML = `<option value="general">${esc(t('rankGeneral'))}</option>`
+    + winners.map(w=>`<option value="${w.n}">${esc(t('rankStageOpt')(w.n, w.route||''))}</option>`).join('');
+  select.value = String(rankView);
+}
+
+/* Preserve the existing final standings and stage-winner list as the default view. */
+function renderGeneralRankings(){
+  const winners = (RESULTS && RESULTS.stageWinners) || [];
+  const gcWinner = (RESULTS && RESULTS.gc && RESULTS.gc.rows[0] && RESULTS.gc.rows[0].rider) || '';
+  const winnerRows = winners.map(w=>{
+    const pink = w.winner && w.winner===gcWinner;
+    return `<tr class="${pink?'pink':''}">
+      <td class="n">${esc(w.n)}</td>
+      <td class="route">${esc(w.route||'')}</td>
+      <td class="winner">${esc(w.winner||'')}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('resultsGrid').innerHTML = `
+    <div class="sectionhead">${esc(t('classHeading'))}</div>
+    <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length, RESULTS)).join('')}</div>
+    <div class="stagewins-block">
+      <h3>${esc(t('stagesHeading'))}</h3>
+      <table class="winners"><tbody>${winnerRows}</tbody></table>
+    </div>`;
+}
+
+/* Show the individual finish and all five published standings after this stage. */
+function renderStageResult(n){
+  const stage = RESULTS && RESULTS.stageResults && RESULTS.stageResults[n];
+  const rows = stage && Array.isArray(stage.rows) ? stage.rows : [];
+  const winner = RESULTS && RESULTS.stageWinners && RESULTS.stageWinners.find(w=>String(w.n)===String(n));
+  const body = rows.length ? stageStatTable(rows, '__stage') : `<p class="empty-cls">${esc(t('stageResultEmpty'))}</p>`;
+  const classifications = stage && stage.classifications;
+  const classCards = classifications
+    ? `<div class="sectionhead">${esc(t('stageClassHeading')(n))}</div>
+       <div class="clsgrid">${CLASSES.map((cfg,i)=>classCard(cfg, i, CLASSES.length, classifications, `__stage_${cfg.key}`)).join('')}</div>`
+    : `<div class="status-card">${esc(t('stageClassEmpty'))}</div>`;
+  document.getElementById('resultsGrid').innerHTML = `<div class="cls-card" style="border-bottom:2px solid var(--color-divider)">
+    <div class="cls-head">
+      <span class="names"><span class="name">${esc(t('stageResultTitle')(n))}</span><span class="fr">${esc(winner?.route||'')}</span></span>
+      <span class="swatch" style="background:var(--color-accent)"></span>
+    </div>
+    <div class="cls-body">${body}</div>
+  </div>${classCards}`;
+  bindExpanders(document.getElementById('resultsGrid'));
+}
+
+function renderResults(){
+  renderRankSelect();
+  document.getElementById('resultsStatusLine').textContent = RESULTS?.updated ? fmtUpdated(RESULTS.updated) : '';
+  if(rankView==='general') renderGeneralRankings();
+  else renderStageResult(rankView);
+}
+
+/* ---------- TEAMS & RIDERS ----------
+   Start list (teams x riders) with each rider's GC place, from
+   data/2027/giro2027-riders.json. giroditalia.it publishes no reason codes beyond
+   DNF, so the sub line always reads "Abandoned (DNF)" for a rider who left —
+   folded under the name rather than a separate badge, matching tdf2026.html. */
+function teamCard(team, i, n){
+  const nameHTML = team.url
+    ? `<a class="team-link" href="${esc(team.url)}" target="_blank" rel="noopener">${esc(team.name)}</a>`
+    : `<span class="team-link">${esc(team.name)}</span>`;
+  const subParts = [
+    team.gcPos ? t('teamClsLine')(team.gcPos, team.gcGap||team.gcVal) : t('teamClsNone'),
+    team.nat || ''
+  ].filter(Boolean);
+  return `<div class="team-card" style="${cardBorderStyle(i, n)}">
+    <div class="team-head">
+      <span class="team-rank${team.gcPos===1?' first':''}">${esc(team.gcPos||'–')}</span>
+      <span class="team-meta">${nameHTML}<span class="team-clsline">${esc(subParts.join(' · '))}</span></span>
+    </div>
+    <table class="riders">
+      <thead><tr>
+        <th>${t('colBib')}</th><th>${t('colRider')}</th>
+        <th>${t('colGcPos')}</th><th>${t('colGcTime')}</th>
+      </tr></thead>
+      <tbody>${team.riders.map(riderRowHTML).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+function renderTeams(){
+  const grid = document.getElementById('teamsGrid');
+  if(!RIDERS || !Array.isArray(RIDERS.teams) || !RIDERS.teams.length){
+    grid.innerHTML = `<div class="status-card">${esc(t('teamsEmpty'))}</div>`;
+    return;
+  }
+  const out = RIDERS.riderCount - RIDERS.finishers;
+  const statusHTML = `<div class="teamsstatus">${esc(t('teamsStatus')(RIDERS.riderCount, RIDERS.teamCount, RIDERS.finishers, out))}</div>`;
+  const cardsHTML = RIDERS.teams.map((team,i)=>teamCard(team, i, RIDERS.teams.length)).join('');
+  grid.innerHTML = statusHTML + `<div class="clsgrid">${cardsHTML}</div>`;
+}
+
+/* ---------- STATIC TEXT + FULL RENDER ---------- */
+function render(){
+  document.getElementById('backLinkText').textContent = t('backToTours');
+  document.getElementById('eyebrow').textContent = t('eyebrow');
+  document.getElementById('subDesc').textContent = t('subDesc');
+  document.getElementById('finalTag').textContent = t('finalTag');
+  document.getElementById('tabStages').textContent = t('tabStages');
+  document.getElementById('tabResults').textContent = t('tabResults');
+  document.getElementById('tabTeams').textContent = t('tabTeams');
+  document.getElementById('rankSelectLabel').textContent = t('rankShowLabel');
+  document.getElementById('stageListHeader').textContent = t('stageListHeader');
+  document.getElementById('disclaimerLabel').textContent = t('disclaimerLabel');
+  document.getElementById('disclaimerText').textContent = t('disclaimerText');
+  document.getElementById('profileDisclaimer').textContent = t('profileDisclaimer');
+  document.getElementById('sourcesLabel').textContent = t('sourcesLabel');
+  document.getElementById('sourcesText').textContent = t('sourcesText');
+  document.getElementById('footerNote').textContent = t('footerNote');
+
+  renderStageList();
+  renderPanel(stages[activeIdx]);
+  renderResults();
+  renderTeams();
+
+  document.querySelectorAll('#langSel button').forEach(b=>{
+    const active = b.dataset.lang===lang;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  document.documentElement.lang = lang;
+  syncStageListHeight();
+}
+
+document.querySelectorAll('#langSel button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    lang = btn.dataset.lang;
+    localStorage.setItem(LANG_KEY, lang);
+    render();
+  });
+});
+
+document.getElementById('rankStageSelect').addEventListener('change', event=>{
+  rankView = event.target.value==='general' ? 'general' : Number(event.target.value);
+  Object.keys(expandState).forEach(key=>{ if(key.startsWith('__stage')) delete expandState[key]; });
+  renderResults();
+});
+
+/* ---------- TAB SWITCHING (WAI-ARIA tabs pattern) ---------- */
+const tabButtons = Array.from(document.querySelectorAll('.tabbtn'));
+setupTabs(tabButtons);
+
+/* ---------- DATA LOADING ---------- */
+async function load(){
+  try{
+    const resp = await fetch(DATA_URL, {cache:'no-store'});
+    if(resp.ok) RESULTS = await resp.json();
+  }catch(e){ /* file:// or offline — winners/standings simply blank */ }
+  try{
+    const resp = await fetch(RIDERS_URL, {cache:'no-store'});
+    if(resp.ok){
+      const data = await resp.json();
+      if(data && Array.isArray(data.teams)) RIDERS = data;
+    }
+  }catch(e){ /* file:// or offline — the teams view shows its note */ }
+  render();
+}
+load();
+</script>
+<script data-goatcounter="https://grandtours.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
