@@ -5,8 +5,9 @@
 Results site for the grand tours: the 2026 Tour de France, Giro d'Italia,
 Tour de France Femmes and Vuelta a España (stages, profiles, route maps,
 classifications, teams & riders, race-day weather), a rider search across all
-four, and the first three stages of the 2027 Tour de France. All 2026 races
-are finished, so the site is static and nothing refreshes automatically.
+four, the 2027 Giro d'Italia route (all 21 stages) and the first three stages
+of the 2027 Tour de France. All 2026 races are finished, so the site is
+static and nothing refreshes automatically.
 
 Live: <https://juusimaa.github.io/grandTours/>
 
@@ -14,7 +15,7 @@ Live: <https://juusimaa.github.io/grandTours/>
 
 ```
 index.html, riders.html     # landing page (year picker, SEASONS config) and rider search
-<year>/<race>.html          # one page per race and season (2026/tdf.html, 2027/tdf.html, …)
+<year>/<race>.html          # one page per race and season (2026/tdf.html, 2027/giro.html, …)
 src/race-page.ts            # helpers shared by all race pages -> dist/ (gitignored build output)
 src/tour-page.ts            # code shared by the Tour de France pages (2026 and 2027)
 modernist.css, race-page.css, riders.css
@@ -46,13 +47,13 @@ protected).
 
 ## Data
 
-| Data               | Script                               | Source                                                               | Run by                                 |
-| ------------------ | ------------------------------------ | -------------------------------------------------------------------- | -------------------------------------- |
-| Results            | `fetch_results.py`                   | letour.fr, lavuelta.es (same template)                               | workflow, tours in `TOURS` (empty now) |
-| Riders             | `fetch_riders.py`                    | letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it              | hand                                   |
-| Routes             | `fetch_routes.py`                    | cyclingstage.com GPX, komoot (Vuelta), OSRM reconstruction (tdf2027) | hand                                   |
-| Weather            | `fetch_weather.py`                   | Open-Meteo historical archive                                        | workflow, finished stages only         |
-| Giro stage results | `backfill_giro2026_stage_results.py` | official giroditalia.it classifications                              | hand, one-off                          |
+| Data               | Script                               | Source                                                                                | Run by                                 |
+| ------------------ | ------------------------------------ | ------------------------------------------------------------------------------------- | -------------------------------------- |
+| Results            | `fetch_results.py`                   | letour.fr, lavuelta.es (same template)                                                | workflow, tours in `TOURS` (empty now) |
+| Riders             | `fetch_riders.py`                    | letour.fr, letourfemmes.fr, lavuelta.es, giroditalia.it                               | hand                                   |
+| Routes             | `fetch_routes.py`                    | cyclingstage.com GPX (incl. giro2027), komoot (Vuelta), OSRM reconstruction (tdf2027) | hand                                   |
+| Weather            | `fetch_weather.py`                   | Open-Meteo historical archive                                                         | workflow, finished stages only         |
+| Giro stage results | `backfill_giro2026_stage_results.py` | official giroditalia.it classifications                                               | hand, one-off                          |
 
 - **Adding a live race:** register it in `fetch_results.py`'s `TOURS`, add a
   `schedule:` to `update-results.yml` (odd minutes, not `*/30`), and remove

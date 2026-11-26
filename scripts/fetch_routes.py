@@ -51,6 +51,11 @@ RACES = {
         "url": "https://cdn.cyclingstage.com/images/giro-italy/2026/stage-{n}-route.gpx",
         "referer": "https://www.cyclingstage.com/giro-2026-gpx/",
     },
+    "giro2027": {
+        "source": "cyclingstage",
+        "url": "https://cdn.cyclingstage.com/images/giro-italy/2027/stage-{n}-route.gpx",
+        "referer": "https://www.cyclingstage.com/giro-2027-gpx/",
+    },
     "vuelta2026": {
         "source": "komoot",
         "komoot_user": "lavuelta",

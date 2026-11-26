@@ -22,13 +22,13 @@ const activeYear = (page: JSDOM) =>
   page.window.document.querySelector('#yearSel .yearbtn.active')?.textContent;
 
 describe('landing page year picker', () => {
-  it('defaults to 2027, where only the Tour de France page is published yet', () => {
+  it('defaults to 2027, where the Giro and Tour de France pages are published', () => {
     const page = load();
     const { document } = page.window;
     expect(activeYear(page)).toBe('2027');
     expect(document.getElementById('footerYear')?.textContent).toBe('2027');
-    expect(raceLinks(page)).toEqual(['2027/tdf.html']);
-    expect(document.querySelectorAll('#raceList .race.is-upcoming')).toHaveLength(3);
+    expect(raceLinks(page)).toEqual(['2027/giro.html', '2027/tdf.html']);
+    expect(document.querySelectorAll('#raceList .race.is-upcoming')).toHaveLength(2);
     page.window.close();
   });
 
