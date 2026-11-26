@@ -24,7 +24,6 @@ test/riders.test.ts                   # landing-page link and rider-search inter
 test/landing.test.ts                  # landing-page year picker tests
 race-page.css                         # shared component styles for all four race pages, layered on modernist.css
 modernist.css                         # shared design tokens (colour, type, spacing) used by every page
-theme.css                             # earlier colour theme — no longer linked from any page, kept for reference
 
 data/<tour>-results.json              # classifications + stage winners — static (all races are finished)
 data/<tour>-riders.json               # start list: teams, riders, each rider's GC position/gap — static, final GC
@@ -129,8 +128,8 @@ that stage: GC, points, mountains, youth and teams. These come from the
 standings, separate from the individual order of arrival. Team positions use
 the official table order because RCS does not display a team rank cell.
 
-To reproduce the static backfill, install the existing Python dependencies
-(`requests` and `selectolax`) and run:
+To reproduce the static backfill, install the Python dependencies
+(`pip install -r scripts/requirements.txt`) and run:
 
 ```
 python3 scripts/backfill_giro2026_stage_results.py
@@ -222,7 +221,7 @@ Re-running it rewrites nothing unless the content
 actually changed, so it never produces an empty commit:
 
 ```
-pip install requests selectolax
+pip install -r scripts/requirements.txt
 python scripts/fetch_riders.py                              # every registered tour
 python scripts/fetch_riders.py tdf2026 giro2026 vuelta2026   # specific tours
 ```

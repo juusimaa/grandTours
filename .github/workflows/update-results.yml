@@ -56,7 +56,7 @@ jobs:
         # Cloudflare bot detection; letour.fr is not behind the same
         # protection). fetch_weather.py only needs requests (Open-Meteo is
         # plain JSON, no HTML to parse).
-        run: pip install requests selectolax
+        run: pip install -r scripts/requirements.txt
 
       # If the fetch crashes (e.g. the site structure changes), publishing
       # still continues — the page shows the last successful data.
@@ -159,6 +159,13 @@ jobs:
           npm run build
           npm test
           rm -rf node_modules
+
+      # Scraper tests (no network). Like npm test above, a failure stops the
+      # deploy. -B: no __pycache__ in the Pages artifact (path: .).
+      - name: Run scraper tests
+        run: |
+          python -B scripts/test_fetch_results.py
+          python -B scripts/test_fetch_riders.py
 
       - uses: actions/configure-pages@v6
 

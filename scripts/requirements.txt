@@ -1,0 +1,4 @@
+requests
+# shortcut: selectolax 1.0 removed the `selectolax.parser` (Modest) backend the
+# scrapers import; pinned below 1.0 until they move to `selectolax.lexbor`.
+selectolax<1

@@ -241,6 +241,8 @@ describe('HTML page scripts initialization', () => {
         const src = scriptEl.getAttribute('src');
         if (src === '../dist/race-page.js') {
           scripts.push(distCode);
+        } else if (src === '../dist/tour-page.js') {
+          scripts.push(readFileSync(resolve(__dirname, '..', 'dist/tour-page.js'), 'utf8'));
         } else if (!src) {
           scripts.push(scriptEl.textContent ?? '');
         }

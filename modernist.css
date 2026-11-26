@@ -2,8 +2,6 @@
    Modernist — design tokens for the Grand Tours "Modernist" pages
    (index.html, tdf2026.html). Ported from design_handoff_grand_tours_hub/ and
    design_handoff_tdf2026/ (design/modernist-styles.css, identical in both).
-   Scoped to these pages only: giro2026.html and vuelta2026.html keep the
-   older look via theme.css until they're ported too.
    ============================================================================ */
 
 :root {
