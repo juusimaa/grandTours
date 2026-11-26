@@ -33,7 +33,6 @@
 <link rel="stylesheet" href="../modernist.css">
 <link rel="stylesheet" href="../race-page.css">
 <style>
-  .finaltag{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-700);background:var(--color-neutral-100);border:1px solid var(--color-divider);padding:5px 12px;}
 
   /* ---------- results tab ---------- */
   .sectionhead{padding:var(--space-4) clamp(20px,4vw,48px);border-bottom:2px solid var(--color-divider);font-family:var(--font-heading);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;}
@@ -70,7 +69,6 @@
   <h1>Giro d&rsquo;Italia 2027</h1>
   <div class="stripe"><span style="background:#008c45"></span><span style="background:#ffffff"></span><span style="background:#ce2b37"></span></div>
   <p class="lede" id="subDesc"></p>
-  <span class="finaltag" id="finalTag"></span>
 </section>
 
 <div class="statrow" id="topstats"></div>
@@ -128,7 +126,6 @@ const STRINGS = {
     backToTours: 'Grand Tourit',
     eyebrow: 'Reitti · 110. Giro d’Italia · 8.–30.5.2027',
     subDesc: 'Giro starttaa Triestestä 8. toukokuuta 2027, ensimmäinen etappi ajetaan Triestessä ja toinen jatkaa Sloveniaan, Ljubljanasta Koperiin. Maali on Roomassa — 21 etappia. Tulokset ilmestyvät kilpailun alettua.',
-    finalTag: 'Reitti julkistettu · kilpailu ei ole vielä alkanut',
     statDistance: 'Kokonaismatka', statGain: 'Nousumetrit', statStages: 'Etapit', statRestDays: 'Lepopäivät', statSummits: 'Mäkimaalit',
     tabStages: 'Etapit & profiilit', tabResults: 'Sijoitukset', tabTeams: 'Joukkueet & ajajat',
     stageListHeader: '21 etappia',
@@ -188,7 +185,6 @@ const STRINGS = {
     backToTours: 'Grand Tours',
     eyebrow: 'Route · 110th Giro d’Italia · 8–30 May 2027',
     subDesc: 'The Giro starts in Trieste on 8 May 2027; stage 1 is run in Trieste and stage 2 crosses into Slovenia, from Ljubljana to Koper. The finish is in Rome — 21 stages. Results appear once the race starts.',
-    finalTag: 'Route announced · race not started',
     statDistance: 'Total distance', statGain: 'Elevation gain', statStages: 'Stages', statRestDays: 'Rest days', statSummits: 'Summit finishes',
     tabStages: 'Stages & profiles', tabResults: 'Rankings', tabTeams: 'Teams & riders',
     stageListHeader: '21 stages',
@@ -248,7 +244,6 @@ const STRINGS = {
     backToTours: 'Grands Tours',
     eyebrow: 'Parcours · 110e Giro d’Italia · 8–30 mai 2027',
     subDesc: 'Le Giro part de Trieste le 8 mai 2027 ; la 1re étape se court à Trieste et la 2e passe en Slovénie, de Ljubljana à Koper. Arrivée à Rome — 21 étapes. Les classements apparaîtront dès le départ de la course.',
-    finalTag: 'Parcours annoncé · course pas encore commencée',
     statDistance: 'Distance totale', statGain: 'Dénivelé positif', statStages: 'Étapes', statRestDays: 'Jours de repos', statSummits: 'Arrivées au sommet',
     tabStages: 'Étapes et profils', tabResults: 'Classements', tabTeams: 'Équipes et coureurs',
     stageListHeader: '21 étapes',
@@ -758,7 +753,6 @@ function render(){
   document.getElementById('backLinkText').textContent = t('backToTours');
   document.getElementById('eyebrow').textContent = t('eyebrow');
   document.getElementById('subDesc').textContent = t('subDesc');
-  document.getElementById('finalTag').textContent = t('finalTag');
   renderTopStats();
   document.getElementById('tabStages').textContent = t('tabStages');
   document.getElementById('tabResults').textContent = t('tabResults');
